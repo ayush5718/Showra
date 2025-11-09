@@ -3,7 +3,11 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
+
+import { supabase } from "@/lib/supabaseClient";
+import { useAuthStore } from "@/lib/auth/store";
 
 const navLinks = [
   { href: "#features", label: "Features" },
@@ -15,6 +19,8 @@ const navLinks = [
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, isAuthenticating, setAuthenticating, setUser } = useAuthStore();
+  const authLoading = isAuthenticating;
 
   useEffect(() => {
     const onScroll = () => {
@@ -40,12 +46,50 @@ export function Navbar() {
 
   const closeMobileMenu = () => setMobileOpen(false);
 
+  useEffect(() => {
+    if (user) return;
+    let isMounted = true;
+    supabase.auth.getUser().then(({ data: { user: authUser } }) => {
+      if (!isMounted || !authUser) return;
+      const metadata = authUser.user_metadata as Record<string, any>;
+      setUser({
+        id: authUser.id,
+        name: metadata?.name ?? authUser.email ?? "Showra Maker",
+        username: metadata?.user_name ?? metadata?.nickname ?? authUser.email ?? "maker",
+        avatarUrl:
+          metadata?.avatar_url ??
+          `https://api.dicebear.com/7.x/initials/svg?seed=${metadata?.user_name ?? "showra"}`,
+        email: authUser.email ?? undefined,
+      });
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [setUser, user]);
+
+  const handleGetStarted = async () => {
+    if (authLoading) return;
+    try {
+      setAuthenticating(true);
+      await supabase.auth.signInWithOAuth({
+        provider: "github",
+        options: { redirectTo: `${window.location.origin}/auth/callback?next=/dashboard` },
+      });
+    } catch (error) {
+      console.error("GitHub login failed", error);
+      setAuthenticating(false);
+    }
+  };
+
   return (
     <>
-      <header
+      <motion.header
         className={`navbar-shell fixed top-0 left-0 z-50 w-full overflow-visible transition-all duration-500 ${
           scrolled ? "navbar-shell--scrolled" : ""
         }`}
+        initial={{ opacity: 0, y: -30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       >
         <div className="pointer-events-none absolute inset-0 -z-10">
           <div className="absolute inset-0 bg-[radial-gradient(140%_180%_at_10%_-50%,rgba(120,126,255,0.22),transparent_65%)] opacity-80" />
@@ -81,13 +125,34 @@ export function Navbar() {
           </nav>
 
           <div className="flex items-center gap-3">
-            <Link
-              href="/generate"
-              className="inline-flex items-center overflow-hidden rounded-2xl border border-white/10 bg-[linear-gradient(120deg,rgba(108,99,255,0.92),rgba(51,208,255,0.92))] px-4 py-[0.55rem] text-sm font-semibold text-white shadow-[0_22px_65px_-28px_rgba(70,140,255,0.88)] transition duration-300 hover:-translate-y-[1px] hover:shadow-[0_28px_85px_-30px_rgba(78,205,255,0.92)] sm:px-5 sm:py-[0.65rem]"
-              onClick={closeMobileMenu}
-            >
-              Get Started
-            </Link>
+            {user ? (
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center overflow-hidden rounded-2xl border border-white/10 bg-[linear-gradient(120deg,rgba(108,99,255,0.92),rgba(51,208,255,0.92))] px-4 py-[0.55rem] text-sm font-semibold text-white shadow-[0_22px_65px_-28px_rgba(70,140,255,0.88)] transition duration-300 hover:-translate-y-[1px] hover:shadow-[0_28px_85px_-30px_rgba(78,205,255,0.92)] sm:px-5 sm:py-[0.65rem]"
+              >
+                Dashboard
+              </Link>
+            ) : (
+              <button
+                type="button"
+                className={`inline-flex items-center overflow-hidden rounded-2xl border border-white/10 bg-[linear-gradient(120deg,rgba(108,99,255,0.92),rgba(51,208,255,0.92))] px-4 py-[0.55rem] text-sm font-semibold text-white shadow-[0_22px_65px_-28px_rgba(70,140,255,0.88)] transition duration-300 hover:-translate-y-[1px] hover:shadow-[0_28px_85px_-30px_rgba(78,205,255,0.92)] sm:px-5 sm:py-[0.65rem] ${
+                  authLoading ? "cursor-not-allowed opacity-80" : ""
+                }`}
+                onClick={handleGetStarted}
+                disabled={authLoading}
+              >
+                {authLoading ? (
+                  <span className="inline-flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Getting ready…
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-2">
+                    Get Started
+                  </span>
+                )}
+              </button>
+            )}
 
             <button
               type="button"
@@ -99,7 +164,7 @@ export function Navbar() {
             </button>
           </div>
         </div>
-      </header>
+      </motion.header>
 
       {mobileOpen && (
         <div className="fixed inset-0 z-40 flex flex-col bg-[#060716]/95 px-6 pb-12 pt-24 backdrop-blur-2xl md:hidden">

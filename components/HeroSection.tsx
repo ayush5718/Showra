@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { InputBox } from "./InputBox";
 import { HeroHighlight, Highlight } from "./ui/HeroHighlight";
-import { Sparkles, BarChart3, Share2, Coffee, ArrowUpRight } from "lucide-react";
+import { Sparkles, BarChart3, Share2, Coffee } from "lucide-react";
 
 interface HeroSectionProps {
   onGenerate: (value: string) => void;
@@ -99,49 +99,52 @@ export function HeroSection({ onGenerate }: HeroSectionProps) {
         </motion.div>
       </HeroHighlight>
 
-      <motion.div
-        className="relative mt-6 w-full max-w-[26rem] sm:mt-10"
-        initial={{ opacity: 0, y: 32 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.62, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      <motion.a
+        href="https://www.buymeacoffee.com/showra"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group pointer-events-auto absolute -bottom-10 right-10 hidden select-none lg:flex"
+        initial={{ opacity: 0, scale: 0.8, x: 40 }}
+        animate={{ opacity: 1, scale: 1, x: 0 }}
+        transition={{ delay: 1, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
       >
-        <div className="absolute left-1/2 top-0 -z-10 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,215,103,0.4),transparent_70%)] blur-2xl" />
-        <motion.div
-          className="group relative overflow-hidden rounded-[22px] border border-[#ffeba1]/70 bg-gradient-to-br from-[#ffe27a] via-[#ffcd4f] to-[#ffad38] p-[1px] shadow-[0_30px_70px_-30px_rgba(255,188,74,0.8)]"
-          animate={{ scale: [1, 1.015, 1] }}
-          transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}
+        <motion.span
+          className="relative inline-flex items-center gap-3 rounded-full border border-[#ffeba1]/70 bg-gradient-to-r from-[#ffe27a] via-[#ffcd4f] to-[#ffad38] px-5 py-3 text-sm font-semibold text-[#3b1a00] shadow-[0_28px_65px_-28px_rgba(255,188,74,0.9)] transition duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_36px_85px_-30px_rgba(255,190,72,1)]"
+          animate={{ scale: [1, 1.02, 1] }}
+          transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut" }}
         >
-          <div className="relative flex flex-col items-center gap-4 rounded-[21px] bg-[#150b00]/60 px-5 py-6 text-center backdrop-blur-2xl sm:flex-row sm:justify-between sm:text-left">
-            <motion.span
-              className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-[#fff1a3] to-[#ffc54b] text-[#351400] shadow-[0_16px_30px_-14px_rgba(255,188,72,0.8)]"
-              animate={{ y: [-3, 3, -3] }}
-              transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <Coffee className="h-6 w-6" />
-            </motion.span>
-            <div className="flex-1 space-y-1">
-              <p className="text-sm font-semibold uppercase tracking-[0.32em] text-[#ffd652]/90">
-                buy me a coffee
-              </p>
-              <p className="text-base font-semibold text-[#ffe9b0] sm:text-lg">
-                Sip-powered creativity keeps Showra glowing.
-              </p>
-              <p className="text-xs text-[#ffe9b0]/80 sm:text-sm">
-                Sponsor a brew and unlock bonus card templates + early features.
-              </p>
-            </div>
-            <a
-              href="https://www.buymeacoffee.com/showra"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full bg-[#150b00]/70 px-4 py-2 text-sm font-semibold text-[#ffd24c] shadow-[0_12px_30px_-20px_rgba(0,0,0,0.45)] transition hover:bg-[#150b00]/90 hover:text-[#ffdf72]"
-            >
-              Fuel the magic
-              <ArrowUpRight className="h-4 w-4" />
-            </a>
-          </div>
-        </motion.div>
-      </motion.div>
+          <Coffee className="hidden h-5 w-5 drop-shadow-[0_6px_10px_rgba(0,0,0,0.2)] sm:inline-block" />
+          <span className="text-xs font-semibold uppercase tracking-[0.32em] text-[#d38d00] sm:hidden">
+            buy me a coffee
+          </span>
+          <span className="hidden leading-tight sm:inline">
+            Brewing brilliance since midnight ideas ☕💡
+          </span>
+          <span className="inline-flex items-center gap-1 rounded-full bg-[#3b1a00]/80 px-3 py-1 text-[0.72rem] font-semibold text-[#ffd96d] sm:ml-1 sm:text-xs">
+            Fuel the magic →
+          </span>
+        </motion.span>
+      </motion.a>
+
+      <motion.a
+        href="https://www.buymeacoffee.com/showra"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group pointer-events-auto absolute inset-x-6 bottom-6 flex select-none items-center justify-center rounded-full border border-[#ffeba1]/70 bg-gradient-to-r from-[#ffe27a] via-[#ffcd4f] to-[#ffad38] px-4 py-3 text-sm font-semibold text-[#3b1a00] shadow-[0_26px_60px_-28px_rgba(255,188,74,0.85)] transition duration-300 hover:shadow-[0_32px_80px_-30px_rgba(255,188,72,0.95)] sm:inset-x-10 lg:hidden"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.1, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <span className="inline-flex items-center gap-2">
+          <Coffee className="h-5 w-5 drop-shadow-[0_6px_10px_rgba(0,0,0,0.2)]" />
+          <span className="text-xs uppercase tracking-[0.32em] text-[#d38d00]">
+            buy me a coffee
+          </span>
+          <span className="inline-flex items-center gap-1 rounded-full bg-[#3b1a00]/80 px-3 py-1 text-[0.7rem] font-semibold text-[#ffd96d]">
+            Fuel the magic →
+          </span>
+        </span>
+      </motion.a>
     </section>
   );
 }
