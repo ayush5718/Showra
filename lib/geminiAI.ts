@@ -3,6 +3,8 @@
 // This client-side file only calls the API route, never uses the key directly
 
 import { transformGitHubProfile } from "@/lib/utils/transform/githubTransform";
+import { loadAIAnalysis, saveAIAnalysis } from "@/lib/utils/storage";
+import { getAIAnalysisFromMetadata, saveAIAnalysisToMetadata } from "@/lib/utils/supabase/userMetadata";
 
 interface GitHubProfileData {
   profile: {
@@ -32,7 +34,33 @@ interface AISkillAnalysis {
   strengthAreas?: Array<{ category: string; rating: number }>;
 }
 
-export async function analyzeDeveloperProfile(data: GitHubProfileData): Promise<AISkillAnalysis> {
+export async function analyzeDeveloperProfile(
+  data: GitHubProfileData,
+  forceRefresh: boolean = false
+): Promise<AISkillAnalysis> {
+  const profileLogin = data.profile.login;
+  
+  // Check cache first (unless forcing refresh)
+  if (!forceRefresh) {
+    // Try localStorage first (faster)
+    const cachedAnalysis = loadAIAnalysis(profileLogin);
+    if (cachedAnalysis) {
+      return cachedAnalysis;
+    }
+    
+    // Try Supabase metadata
+    try {
+      const supabaseAnalysis = await getAIAnalysisFromMetadata(profileLogin);
+      if (supabaseAnalysis) {
+        // Also save to localStorage for faster access next time
+        saveAIAnalysis(profileLogin, supabaseAnalysis);
+        return supabaseAnalysis;
+      }
+    } catch (error) {
+      // Silently continue to API call if Supabase check fails
+    }
+  }
+  
   try {
     // Use Next.js API route to avoid CORS issues
     const response = await fetch('/api/analyze-profile', {
@@ -68,6 +96,12 @@ export async function analyzeDeveloperProfile(data: GitHubProfileData): Promise<
     if (!analysis.expertise || !Array.isArray(analysis.expertise)) {
       return useCustomTransformation(data);
     }
+    
+    // Save to cache (both localStorage and Supabase)
+    saveAIAnalysis(profileLogin, analysis);
+    saveAIAnalysisToMetadata(profileLogin, analysis).catch(() => {
+      // Silently fail if Supabase save fails
+    });
     
     return analysis;
   } catch (error) {

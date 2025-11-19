@@ -16,6 +16,8 @@ export interface UserMetadata {
     topRepo?: any;
     heatmap?: any[];
     timeline?: any[];
+    aiAnalysis?: any;
+    aiAnalysisTimestamp?: string;
   };
   preferences?: {
     selectedCardDesign?: 'card1' | 'card2' | 'card3' | 'card4';
@@ -144,5 +146,42 @@ export async function updateAnalytics(analytics: Partial<UserMetadata['analytics
       ...analytics,
     },
   });
+}
+
+/**
+ * Save AI analysis to user metadata
+ */
+export async function saveAIAnalysisToMetadata(profileLogin: string, analysis: any): Promise<boolean> {
+  const metadata = await getUserMetadata();
+  return updateUserMetadata({
+    githubData: {
+      ...metadata?.githubData,
+      aiAnalysis: analysis,
+      aiAnalysisTimestamp: new Date().toISOString(),
+    },
+  });
+}
+
+/**
+ * Get saved AI analysis from metadata
+ */
+export async function getAIAnalysisFromMetadata(profileLogin: string): Promise<any | null> {
+  const metadata = await getUserMetadata();
+  const githubData = metadata?.githubData;
+  
+  if (!githubData?.aiAnalysis) {
+    return null;
+  }
+  
+  // Check if analysis is still valid (7 days)
+  if (githubData.aiAnalysisTimestamp) {
+    const timestamp = new Date(githubData.aiAnalysisTimestamp).getTime();
+    const sevenDays = 7 * 24 * 60 * 60 * 1000;
+    if (Date.now() - timestamp > sevenDays) {
+      return null;
+    }
+  }
+  
+  return githubData.aiAnalysis;
 }
 

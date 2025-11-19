@@ -51,6 +51,7 @@ interface DevCard2Props {
   heatmap: Array<{ date: string; count: number }>;
   repositories?: Array<{ name: string; description: string | null; stars: number; language: string | null }>;
   skipAI?: boolean;
+  aiAnalysis?: AISkillAnalysis | null; // Pre-fetched analysis from CardWrapper
 }
 
 function formatNumber(num: number): string {
@@ -131,7 +132,8 @@ export function DevCard2({
   technologies,
   heatmap,
   repositories,
-  skipAI = false
+  skipAI = false,
+  aiAnalysis: propAiAnalysis
 }: DevCard2Props) {
   const cardElementRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
@@ -142,17 +144,38 @@ export function DevCard2({
 
   const monthlyContributions = useMemo(() => buildMonthlyContributions(heatmap), [heatmap]);
   
-  const [aiAnalysis, setAiAnalysis] = useState<AISkillAnalysis | null>(null);
+  const [aiAnalysis, setAiAnalysis] = useState<AISkillAnalysis | null>(propAiAnalysis || null);
   const [analyzing, setAnalyzing] = useState(false);
-  const analysisRequestedRef = useRef(false);
+  const analyzedProfileRef = useRef<string | null>(null);
+  const analysisInProgressRef = useRef<boolean>(false);
+
+  // Use prop analysis if provided, otherwise fetch
+  useEffect(() => {
+    if (propAiAnalysis) {
+      setAiAnalysis(propAiAnalysis);
+      return;
+    }
+  }, [propAiAnalysis]);
 
   useEffect(() => {
-    if (skipAI || topLanguages.length === 0 || analysisRequestedRef.current) return;
-    analysisRequestedRef.current = true;
+    // Skip if analysis is provided via props
+    if (propAiAnalysis) {
+      return;
+    }
+
+    const profileKey = profile.login;
+    
+    // Skip if already analyzed for this profile or analysis is in progress
+    if (skipAI || topLanguages.length === 0 || analyzedProfileRef.current === profileKey || analysisInProgressRef.current) return;
+    
+    // Mark as analyzed and in progress before starting
+    analyzedProfileRef.current = profileKey;
+    analysisInProgressRef.current = true;
 
     const fetchAIAnalysis = async () => {
       setAnalyzing(true);
       try {
+        // analyzeDeveloperProfile now checks cache automatically
         const analysis = await analyzeDeveloperProfile({
           profile,
           stats,
@@ -168,7 +191,7 @@ export function DevCard2({
             stars: repo.stars,
             language: repo.language
           }))
-        });
+        }, false); // false = use cache if available
         setAiAnalysis(analysis);
       } catch (error) {
         setAiAnalysis({
@@ -179,11 +202,12 @@ export function DevCard2({
         });
       } finally {
         setAnalyzing(false);
+        analysisInProgressRef.current = false;
       }
     };
 
     fetchAIAnalysis();
-  }, [profile, stats, topLanguages, topRepo, repositories, skipAI]);
+  }, [profile.login, skipAI, propAiAnalysis, topLanguages, stats, topRepo, repositories]);
 
   const exportCard = async () => {
     if (!cardElementRef.current) return;

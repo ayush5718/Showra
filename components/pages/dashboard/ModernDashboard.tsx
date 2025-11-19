@@ -13,7 +13,7 @@ import LightRays from "@/components/react-bits/LigthRays/LightRays";
 import SplitText from "@/components/common/SplitText";
 import { CardSkeleton } from "@/components/ui/CardSkeleton";
 import { READMESkeleton } from "@/components/ui/READMESkeleton";
-import { saveCardData, loadCardData, clearCardData } from "@/lib/utils/storage";
+import { saveCardData, loadCardData, clearCardData, clearAIAnalysis } from "@/lib/utils/storage";
 import { CardSelector, CardVariant } from "@/components/features/card/variants/CardSelector";
 import { saveUserPreferences, getUserPreferences, saveGitHubDataToMetadata } from "@/lib/utils/supabase/userMetadata";
 
@@ -711,7 +711,10 @@ export function ModernDashboard() {
                 README Code
               </button>
               <button
-                onClick={() => fetchGitHubData(true)}
+                onClick={() => {
+                  clearAIAnalysis(); // Clear AI analysis cache on refresh
+                  fetchGitHubData(true);
+                }}
                 disabled={isRefreshing || profileLoading}
                 className="px-3 py-3 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 text-white/60 hover:bg-white/10 transition-all disabled:opacity-50"
                 title="Refresh Data"
@@ -756,6 +759,7 @@ export function ModernDashboard() {
                     <button
                       onClick={() => {
                         clearCardData();
+                        clearAIAnalysis();
                         fetchGitHubData(true);
                       }}
                       className="px-6 py-3 rounded-xl bg-red-500/20 border border-red-500/30 text-red-300 text-sm font-semibold hover:bg-red-500/30 transition-colors"
@@ -771,6 +775,7 @@ export function ModernDashboard() {
                     className="flex justify-center"
                   >
                     <CardWrapper
+                      key={cardData?.profile?.login || 'default'} // Stable key based on profile to prevent remounting on variant change
                       variant={selectedCard}
                       profile={cardData?.profile ?? fallbackProfileData}
                       stats={cardData?.stats ?? fallbackStats}
@@ -800,6 +805,7 @@ export function ModernDashboard() {
                     <button
                       onClick={() => {
                         clearCardData();
+                        clearAIAnalysis();
                         fetchGitHubData(true);
                       }}
                       className="px-6 py-3 rounded-xl bg-red-500/20 border border-red-500/30 text-red-300 text-sm font-semibold hover:bg-red-500/30 transition-colors"

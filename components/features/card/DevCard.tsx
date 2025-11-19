@@ -63,6 +63,7 @@ interface DevCardProps {
   heatmap: HeatmapDay[];
   repositories?: Array<{ name: string; description: string | null; stars: number; language: string | null }>;
   skipAI?: boolean;
+  aiAnalysis?: AISkillAnalysis | null; // Pre-fetched analysis from CardWrapper
 }
 
 
@@ -308,7 +309,8 @@ export function DevCard({
   technologies,
   heatmap,
   repositories,
-  skipAI = false
+  skipAI = false,
+  aiAnalysis: propAiAnalysis
 }: DevCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const cardElementRef = useRef<HTMLDivElement>(null);
@@ -321,25 +323,40 @@ export function DevCard({
 
   const monthlyContributions = useMemo(() => buildMonthlyContributions(heatmap), [heatmap]);
   
-  const [aiAnalysis, setAiAnalysis] = useState<AISkillAnalysis | null>(null);
+  const [aiAnalysis, setAiAnalysis] = useState<AISkillAnalysis | null>(propAiAnalysis || null);
   const [analyzing, setAnalyzing] = useState(false);
-  const analysisRequestedRef = useRef(false);
+  const analyzedProfileRef = useRef<string | null>(null);
+  const analysisInProgressRef = useRef<boolean>(false);
 
+  // Use prop analysis if provided, otherwise fetch
+  useEffect(() => {
+    if (propAiAnalysis) {
+      setAiAnalysis(propAiAnalysis);
+      return;
+    }
+  }, [propAiAnalysis]);
 
   useEffect(() => {
-    // Prevent multiple calls
-    if (skipAI || topLanguages.length === 0 || analysisRequestedRef.current) {
+    // Skip if analysis is provided via props
+    if (propAiAnalysis) {
       return;
     }
 
+    const profileKey = profile.login;
+    
+    // Skip if already analyzed for this profile or analysis is in progress
+    if (skipAI || topLanguages.length === 0 || analyzedProfileRef.current === profileKey || analysisInProgressRef.current) {
+      return;
+    }
 
-    analysisRequestedRef.current = true;
-
+    // Mark as analyzed and in progress before starting
+    analyzedProfileRef.current = profileKey;
+    analysisInProgressRef.current = true;
 
     const fetchAIAnalysis = async () => {
       setAnalyzing(true);
       try {
-        // analyzeDeveloperProfile always returns a result (either AI or fallback)
+        // analyzeDeveloperProfile now checks cache automatically
         const analysis = await analyzeDeveloperProfile({
           profile,
           stats,
@@ -355,12 +372,9 @@ export function DevCard({
             stars: repo.stars,
             language: repo.language
           }))
-        });
-        // Always set the analysis (it will be fallback if API fails)
+        }, false); // false = use cache if available
         setAiAnalysis(analysis);
       } catch (error) {
-        // This should never happen as analyzeDeveloperProfile always returns a fallback
-        // But just in case, we'll set a basic fallback
         setAiAnalysis({
           expertise: [],
           summary: `${profile.name || profile.login} - ${stats.repos} repositories, proficient in ${topLanguages.slice(0, 3).map(l => l.name).join(', ') || 'multiple technologies'}`,
@@ -369,12 +383,12 @@ export function DevCard({
         });
       } finally {
         setAnalyzing(false);
+        analysisInProgressRef.current = false;
       }
     };
 
-
     fetchAIAnalysis();
-  }, [profile, stats, topLanguages, topRepo, repositories, skipAI]);
+  }, [profile.login, skipAI, propAiAnalysis, topLanguages, stats, topRepo, repositories]);
 
 
   const exportCard = async () => {
