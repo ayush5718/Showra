@@ -480,7 +480,7 @@ export function ModernDashboard() {
 
   if (!user) {
     return (
-      <main className="relative flex min-h-screen items-center justify-center bg-black px-4">
+      <main className="relative flex min-h-screen items-center justify-center bg-[#0A0A0A] px-4">
         <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-10 text-center text-white/70">
           <p className="text-sm sm:text-base">Loading your dashboard…</p>
         </div>
@@ -490,42 +490,12 @@ export function ModernDashboard() {
   }
 
   return (
-    <main className="relative min-h-screen bg-black">
-      {/* Animated Grid Background */}
+    <main className="relative min-h-screen bg-[#0A0A0A]">
+      {/* Grid Background */}
       <div className="pointer-events-none fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:4rem_4rem]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.05),transparent_70%)]" />
-        
-        <motion.div
-          className="absolute left-[10%] top-[20%] h-64 w-64 rounded-full bg-white/5 blur-3xl"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3],
-            x: [0, 30, 0],
-            y: [0, -20, 0],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div
-          className="absolute right-[15%] bottom-[25%] h-80 w-80 rounded-full bg-white/5 blur-3xl"
-          animate={{
-            scale: [1, 1.3, 1],
-            opacity: [0.2, 0.4, 0.2],
-            x: [0, -25, 0],
-            y: [0, 15, 0],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 2,
-          }}
-        />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-20" />
+        <div className="absolute left-[10%] top-[20%] h-96 w-96 rounded-full bg-[#9D4BFF]/10 blur-[120px]" />
+        <div className="absolute right-[15%] bottom-[25%] h-96 w-96 rounded-full bg-[#00E5FF]/10 blur-[120px]" />
       </div>
 
       {/* Hero Section - First View */}
@@ -540,12 +510,12 @@ export function ModernDashboard() {
         <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
           {/* User Avatar */}
           <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             className="relative z-10 mb-8"
           >
-            <div className="relative mx-auto flex h-32 w-32 items-center justify-center overflow-hidden rounded-full border-4 border-white/20 bg-white/5 shadow-2xl sm:h-40 sm:w-40">
+            <div className="relative mx-auto flex h-32 w-32 items-center justify-center overflow-hidden rounded-full border-4 border-white/20 bg-white/5 sm:h-40 sm:w-40">
               {user.avatarUrl ? (
                 <Image
                   src={user.avatarUrl}
@@ -559,7 +529,7 @@ export function ModernDashboard() {
                   {user.name.slice(0, 1)}
                 </span>
               )}
-              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-500/20 via-purple-500/20 to-pink-500/20 blur-xl" />
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#00E5FF]/20 via-[#FF00CC]/20 to-[#9D4BFF]/20 blur-xl" />
             </div>
           </motion.div>
 
@@ -591,14 +561,14 @@ export function ModernDashboard() {
               from your GitHub profile and ready to share with the world.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
-              <div className="flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-2">
-                <span className="text-sm font-medium text-cyan-300">✨ Auto-generated</span>
+              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2">
+                <span className="text-sm font-medium text-white/70">✨ Auto-generated</span>
               </div>
-              <div className="flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-2">
-                <span className="text-sm font-medium text-purple-300">📊 Real-time stats</span>
+              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2">
+                <span className="text-sm font-medium text-white/70">📊 Real-time stats</span>
               </div>
-              <div className="flex items-center gap-2 rounded-full border border-pink-500/30 bg-pink-500/10 px-4 py-2">
-                <span className="text-sm font-medium text-pink-300">🎨 Beautiful design</span>
+              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2">
+                <span className="text-sm font-medium text-white/70">🎨 Beautiful design</span>
               </div>
             </div>
           </motion.div>
@@ -615,8 +585,8 @@ export function ModernDashboard() {
       >
         <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="text-center space-y-3 w-full mb-8">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-cyan-500/20 to-purple-500/20 border border-cyan-500/30">
-              <span className="text-xs font-semibold text-cyan-400">STEP 1</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5">
+              <span className="text-xs font-semibold text-white/70">STEP 1</span>
             </div>
             <h2 className="text-3xl font-bold text-white sm:text-4xl md:text-5xl">
               {profileLoading ? "Loading your DevCard..." : cardData ? "Your DevCard is Ready! 🎉" : "Preparing your DevCard..."}
@@ -683,8 +653,8 @@ export function ModernDashboard() {
       >
         <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="text-center space-y-3 mb-8">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30">
-              <span className="text-xs font-semibold text-purple-400">STEP 2</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5">
+              <span className="text-xs font-semibold text-white/70">STEP 2</span>
             </div>
             <h2 className="text-3xl font-bold text-white sm:text-4xl md:text-5xl">
               Generate Your GitHub README
@@ -713,11 +683,11 @@ export function ModernDashboard() {
       {/* Dynamic Sticky Navigation Button - Right Side */}
       <motion.div
         className="fixed right-6 bottom-6 z-50"
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: 1, scale: 1 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 0.5 }}
       >
-        <motion.button
+        <button
           onClick={() => {
             if (currentSection === 'hero') {
               const devCardSection = document.getElementById('dev-card-section');
@@ -736,36 +706,7 @@ export function ModernDashboard() {
               }
             }
           }}
-          className="group relative flex items-center gap-2 rounded-full border-2 px-6 py-4 text-sm font-bold text-white backdrop-blur-md shadow-2xl transition-all"
-          style={{
-            borderColor: currentSection === 'hero' ? 'rgba(0, 229, 255, 0.5)' : 'rgba(168, 85, 247, 0.5)',
-            background: currentSection === 'hero' 
-              ? 'linear-gradient(135deg, rgba(0, 229, 255, 0.2) 0%, rgba(255, 0, 204, 0.2) 100%)'
-              : 'linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(255, 0, 204, 0.2) 100%)',
-          }}
-          animate={{
-            y: [0, -8, 0],
-            scale: [1, 1.05, 1],
-          }}
-          transition={{
-            y: {
-              duration: 1.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-            },
-            scale: {
-              duration: 1.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-            },
-          }}
-          whileHover={{
-            scale: 1.1,
-            boxShadow: currentSection === 'hero'
-              ? '0 0 30px rgba(0, 229, 255, 0.6)'
-              : '0 0 30px rgba(168, 85, 247, 0.6)',
-          }}
-          whileTap={{ scale: 0.95 }}
+          className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-6 py-4 text-sm font-bold text-white backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/20"
         >
           <ArrowDown className="h-5 w-5" />
           <span>
@@ -775,15 +716,7 @@ export function ModernDashboard() {
               ? 'Go to README' 
               : 'Back to Card'}
           </span>
-          <motion.div
-            className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 blur-xl transition-opacity"
-            style={{
-              background: currentSection === 'hero'
-                ? 'linear-gradient(135deg, rgba(0, 229, 255, 0.4) 0%, rgba(255, 0, 204, 0.4) 100%)'
-                : 'linear-gradient(135deg, rgba(168, 85, 247, 0.4) 0%, rgba(255, 0, 204, 0.4) 100%)',
-            }}
-          />
-        </motion.button>
+        </button>
       </motion.div>
     </main>
   );
