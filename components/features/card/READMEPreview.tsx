@@ -33,13 +33,19 @@ Full-stack developer passionate about building beautiful and functional applicat
 
 type TabType = "markdown" | "preview";
 
-export function READMEPreview() {
+interface READMEPreviewProps {
+  readmeContent?: string;
+}
+
+export function READMEPreview({ readmeContent }: READMEPreviewProps) {
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("preview");
 
+  const content = readmeContent || demoREADME;
+
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(demoREADME);
+      await navigator.clipboard.writeText(content);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -142,7 +148,7 @@ export function READMEPreview() {
             >
               <div className="markdown-preview">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {demoREADME}
+                  {content}
                 </ReactMarkdown>
               </div>
             </motion.div>
@@ -156,7 +162,7 @@ export function READMEPreview() {
               className="p-4 sm:p-6"
             >
               <pre className="font-mono text-xs sm:text-sm leading-relaxed text-white/90 whitespace-pre-wrap break-words overflow-x-auto">
-                <code className="text-white/80">{demoREADME}</code>
+                <code className="text-white/80">{content}</code>
               </pre>
             </motion.div>
           )}

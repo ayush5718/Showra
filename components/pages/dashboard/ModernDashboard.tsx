@@ -16,6 +16,7 @@ import { READMESkeleton } from "@/components/ui/READMESkeleton";
 import { saveCardData, loadCardData, clearCardData, clearAIAnalysis } from "@/lib/utils/storage";
 import { CardSelector, CardVariant } from "@/components/features/card/variants/CardSelector";
 import { saveUserPreferences, getUserPreferences, saveGitHubDataToMetadata } from "@/lib/utils/supabase/userMetadata";
+import { generateMarkdown, convertCardDataToFormData } from "@/lib/utils/generateReadme";
 
 interface GitHubProfile {
   login: string;
@@ -100,6 +101,7 @@ export function ModernDashboard() {
   const [activeTab, setActiveTab] = useState<'card' | 'readme'>('card');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedCard, setSelectedCard] = useState<CardVariant>('card1');
+  const [generatedREADME, setGeneratedREADME] = useState<string>('');
 
   // Load preferences and card data on mount
   useEffect(() => {
@@ -114,7 +116,7 @@ export function ModernDashboard() {
     
     const stored = loadCardData();
     if (stored) {
-      setCardData({
+      const loadedCardData = {
         profile: stored.profile,
         stats: stored.stats,
         languages: stored.languages,
@@ -122,7 +124,8 @@ export function ModernDashboard() {
         topRepo: stored.topRepo,
         heatmap: stored.heatmap,
         timeline: stored.timeline,
-      });
+      };
+      setCardData(loadedCardData);
       setRepositories(stored.repositories || []);
       setProfile({
         login: stored.profile.login,
@@ -140,6 +143,16 @@ export function ModernDashboard() {
         twitter_username: stored.profile.twitterUsername,
         created_at: stored.profile.createdAt,
       });
+      // Generate README from loaded card data
+      const formData = convertCardDataToFormData(loadedCardData, {
+        templateStyle: 'modern',
+        showVisitors: true,
+        showTrophies: true,
+        showStats: true,
+        showStreak: true,
+      });
+      const readme = generateMarkdown(formData);
+      setGeneratedREADME(readme);
       // Clear any existing errors if we have cached data
       setProfileError(null);
     }
@@ -492,6 +505,17 @@ export function ModernDashboard() {
         setProfile(profileData);
         setCardData(finalCardData);
         setProfileError(null);
+        
+        // Generate README from card data
+        const formData = convertCardDataToFormData(finalCardData, {
+          templateStyle: 'modern',
+          showVisitors: true,
+          showTrophies: true,
+          showStats: true,
+          showStreak: true,
+        });
+        const readme = generateMarkdown(formData);
+        setGeneratedREADME(readme);
       } catch (error) {
         if (!isMounted) return;
         setProfileError(error instanceof Error ? error.message : "Failed to load your dev card.");
@@ -819,7 +843,7 @@ export function ModernDashboard() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
                   >
-                    <READMEPreview />
+                    <READMEPreview readmeContent={generatedREADME} />
                   </motion.div>
                 )}
               </div>

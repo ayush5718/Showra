@@ -27,7 +27,7 @@ export function ModernHero() {
   };
 
   return (
-    <section className="relative flex items-center justify-center overflow-hidden bg-[#0A0A0A] max-h-[900px] md:pt-16 min-h-[600px] before:absolute before:w-full before:h-full before:bg-gradient-to-r before:from-[#00E5FF]/10 before:via-[#FF00CC]/5 before:to-[#9D4BFF]/10 before:rounded-full before:top-0 before:blur-3xl before:-z-10">
+    <section className="relative flex items-center justify-center overflow-hidden bg-[#0A0A0A] lg:max-h-[900px] pt-16 min-h-[600px] before:absolute before:w-full before:h-full before:bg-gradient-to-r before:from-[#00E5FF]/10 before:via-[#FF00CC]/5 before:to-[#9D4BFF]/10 before:rounded-full before:top-0 before:blur-3xl before:-z-10">
       {/* LightRays Background Effect */}
       <div className="absolute inset-0 z-0">
         <LightRays
@@ -72,7 +72,7 @@ export function ModernHero() {
                   <span className="absolute inset-0 rounded-full bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] p-[1px] opacity-60 group-hover:opacity-100 transition-opacity">
                     <span className="block h-full w-full rounded-full bg-[#0A0A0A]" />
                   </span>
-                  
+
                   {/* Content with gradient text */}
                   <span className="relative z-10 flex items-center gap-2 bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] bg-clip-text text-transparent">
                     <Sparkles className="h-3.5 w-3.5 text-[#00E5FF] group-hover:text-[#FF00CC] transition-colors" />
