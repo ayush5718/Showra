@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useRef, useState, useMemo, useEffect } from "react";
-import { Download, Github, Share2, X, Copy, Check, Twitter, Facebook, Linkedin, Mail, Image as ImageIcon } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import * as htmlToImage from "html-to-image";
+import { Github } from "lucide-react";
+import { motion } from "framer-motion";
 import { analyzeDeveloperProfile } from "@/lib/geminiAI";
 import { CardLoadingAnimation } from "../CardLoadingAnimation";
 import styles from "./DevCard2.module.css";
@@ -162,12 +161,6 @@ export function DevCard2({
   skipAI = false,
   aiAnalysis: propAiAnalysis
 }: DevCard2Props) {
-  const cardElementRef = useRef<HTMLDivElement>(null);
-  const [downloading, setDownloading] = useState(false);
-  const [showShareModal, setShowShareModal] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [imageCopied, setImageCopied] = useState(false);
-  const [sharingImage, setSharingImage] = useState(false);
 
   const monthlyContributions = useMemo(() => buildMonthlyContributions(heatmap), [heatmap]);
   
@@ -236,43 +229,6 @@ export function DevCard2({
     fetchAIAnalysis();
   }, [profile.login, skipAI, propAiAnalysis, topLanguages, stats, topRepo, repositories]);
 
-  const exportCard = async () => {
-    if (!cardElementRef.current) return;
-    setDownloading(true);
-    
-    try {
-      const element = cardElementRef.current;
-      const imgs = element.querySelectorAll("img");
-      await Promise.all(Array.from(imgs).map(img => {
-        if ((img as HTMLImageElement).complete) return Promise.resolve();
-        return new Promise(res => {
-          (img as HTMLImageElement).onload = res;
-          (img as HTMLImageElement).onerror = res;
-          setTimeout(res, 3000);
-        });
-      }));
-  
-      const rect = element.getBoundingClientRect();
-      const dataUrl = await htmlToImage.toPng(element, {
-        width: rect.width,
-        height: rect.height,
-        style: {
-          transform: 'scale(1)',
-        },
-        pixelRatio: 2,
-      });
-
-      const link = document.createElement('a');
-      link.download = `devcard-${profile.login}.png`;
-      link.href = dataUrl;
-      link.click();
-    } catch (error) {
-      console.error('Export failed:', error);
-    } finally {
-      setDownloading(false);
-    }
-  };
-
   if (analyzing && !skipAI) {
     return (
       <div className={styles.cardWrapper}>
@@ -284,7 +240,7 @@ export function DevCard2({
   return (
     <div className={styles.cardWrapper}>
       <div className={styles.captureContainer}>
-        <div ref={cardElementRef} className={styles.card}>
+        <div className={styles.card}>
           <div className={styles.gradientBorder}></div>
           
           <div className={styles.content}>
@@ -496,62 +452,6 @@ export function DevCard2({
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className={styles.actions}>
-        <button onClick={exportCard} disabled={downloading} className={styles.actionBtn}>
-          <Download size={18} />
-          {downloading ? 'Exporting...' : 'Download'}
-        </button>
-        <button onClick={() => setShowShareModal(true)} className={styles.actionBtn}>
-          <Share2 size={18} />
-          Share
-        </button>
-      </div>
-
-      {/* Share Modal - Same as DevCard */}
-      <AnimatePresence>
-        {showShareModal && (
-          <motion.div
-            className={styles.modalOverlay}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setShowShareModal(false)}
-          >
-            <motion.div
-              className={styles.modal}
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className={styles.modalHeader}>
-                <h3>Share Your Dev Card</h3>
-                <button onClick={() => setShowShareModal(false)}>
-                  <X size={20} />
-                </button>
-              </div>
-              <div className={styles.modalContent}>
-                <button
-                  onClick={async () => {
-                    try {
-                      await navigator.clipboard.writeText(window.location.href);
-                      setCopied(true);
-                      setTimeout(() => setCopied(false), 2000);
-                    } catch (err) {
-                      console.error('Failed to copy:', err);
-                    }
-                  }}
-                  className={styles.modalOption}
-                >
-                  {copied ? <Check size={24} /> : <Copy size={24} />}
-                  <span>{copied ? "Copied!" : "Copy Link"}</span>
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

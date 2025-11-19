@@ -4,10 +4,12 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Download, RefreshCw, Code, AlertCircle, Share2 } from "lucide-react";
+import * as htmlToImage from "html-to-image";
 import { useAuthStore } from "@/lib/auth/store";
 import { supabase } from "@/lib/supabaseClient";
 import { CardWrapper } from "@/components/features/card/variants/CardWrapper";
 import { READMEPreview } from "@/components/features/card/READMEPreview";
+import { ReadmeLoader } from "@/components/ui/ReadmeLoader";
 import { getTopTechnologies } from "@/lib/utils/transform/detectTechnologies";
 import LightRays from "@/components/react-bits/LigthRays/LightRays";
 import SplitText from "@/components/common/SplitText";
@@ -17,6 +19,7 @@ import { saveCardData, loadCardData, clearCardData, clearAIAnalysis } from "@/li
 import { CardSelector, CardVariant } from "@/components/features/card/variants/CardSelector";
 import { saveUserPreferences, getUserPreferences, saveGitHubDataToMetadata } from "@/lib/utils/supabase/userMetadata";
 import { generateMarkdown, convertCardDataToFormData } from "@/lib/utils/generateReadme";
+import { generateReadmeWithAI } from "@/lib/utils/generateReadmeAI";
 
 interface GitHubProfile {
   login: string;
@@ -102,6 +105,7 @@ export function ModernDashboard() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedCard, setSelectedCard] = useState<CardVariant>('card1');
   const [generatedREADME, setGeneratedREADME] = useState<string>('');
+  const [isGeneratingREADME, setIsGeneratingREADME] = useState(false);
 
   // Load preferences and card data on mount
   useEffect(() => {
@@ -143,16 +147,59 @@ export function ModernDashboard() {
         twitter_username: stored.profile.twitterUsername,
         created_at: stored.profile.createdAt,
       });
-      // Generate README from loaded card data
-      const formData = convertCardDataToFormData(loadedCardData, {
-        templateStyle: 'modern',
-        showVisitors: true,
-        showTrophies: true,
-        showStats: true,
-        showStreak: true,
-      });
-      const readme = generateMarkdown(formData);
-      setGeneratedREADME(readme);
+      // Generate README using AI from loaded card data
+      (async () => {
+        setIsGeneratingREADME(true);
+        try {
+          // Generate devcard share URL
+          const devcardShareUrl = typeof window !== 'undefined' 
+            ? `${window.location.origin}/card/${stored.profile.login}?variant=${selectedCard}`
+            : '';
+          
+          const aiReadme = await generateReadmeWithAI({
+            profile: {
+              login: stored.profile.login,
+              name: stored.profile.name,
+              bio: stored.profile.bio,
+              location: stored.profile.location,
+              company: stored.profile.company,
+              blog: stored.profile.blog,
+              twitterUsername: stored.profile.twitterUsername,
+            },
+            stats: {
+              repos: stored.stats.repos,
+              stars: stored.stats.stars,
+              forks: stored.stats.forks,
+              contributions: stored.stats.contributions,
+              followers: stored.stats.followers,
+            },
+            languages: stored.languages,
+            topRepo: stored.topRepo,
+            repositories: stored.repositories?.map((repo: any) => ({
+              name: repo.name,
+              description: repo.description,
+              stars: repo.stars || repo.stargazers_count || 0,
+              language: repo.language,
+            })),
+            devcardUrl: devcardShareUrl,
+          });
+          setGeneratedREADME(aiReadme);
+        } catch (error) {
+          console.error("Failed to generate README with AI, using fallback:", error);
+          // Fallback to template-based generation
+          const formData = convertCardDataToFormData(loadedCardData, {
+            templateStyle: 'modern',
+            showVisitors: true,
+            showTrophies: true,
+            showStats: true,
+            showStreak: true,
+          });
+          const readme = generateMarkdown(formData);
+          setGeneratedREADME(readme);
+        } finally {
+          setIsGeneratingREADME(false);
+        }
+      })();
       // Clear any existing errors if we have cached data
       setProfileError(null);
     }
@@ -506,16 +553,57 @@ export function ModernDashboard() {
         setCardData(finalCardData);
         setProfileError(null);
         
-        // Generate README from card data
-        const formData = convertCardDataToFormData(finalCardData, {
-          templateStyle: 'modern',
-          showVisitors: true,
-          showTrophies: true,
-          showStats: true,
-          showStreak: true,
-        });
-        const readme = generateMarkdown(formData);
-        setGeneratedREADME(readme);
+        // Generate README using AI from GitHub profile data
+        setIsGeneratingREADME(true);
+        try {
+          // Generate devcard share URL
+          const devcardShareUrl = typeof window !== 'undefined' 
+            ? `${window.location.origin}/card/${profileData.login}?variant=${selectedCard}`
+            : '';
+          
+          const aiReadme = await generateReadmeWithAI({
+            profile: {
+              login: profileData.login,
+              name: profileData.name,
+              bio: profileData.bio,
+              location: profileData.location,
+              company: profileData.company,
+              blog: profileData.blog,
+              twitterUsername: profileData.twitter_username,
+            },
+            stats: {
+              repos: finalCardData.stats.repos,
+              stars: finalCardData.stats.stars,
+              forks: finalCardData.stats.forks,
+              contributions: finalCardData.stats.contributions,
+              followers: profileData.followers,
+            },
+            languages: finalCardData.languages,
+            topRepo: finalCardData.topRepo,
+            repositories: repositories?.map((repo) => ({
+              name: repo.name,
+              description: repo.description,
+              stars: repo.stargazers_count,
+              language: repo.language,
+            })),
+            devcardUrl: devcardShareUrl,
+          });
+          setGeneratedREADME(aiReadme);
+        } catch (error) {
+          console.error("Failed to generate README with AI, using fallback:", error);
+          // Fallback to template-based generation
+          const formData = convertCardDataToFormData(finalCardData, {
+            templateStyle: 'modern',
+            showVisitors: true,
+            showTrophies: true,
+            showStats: true,
+            showStreak: true,
+          });
+          const readme = generateMarkdown(formData);
+          setGeneratedREADME(readme);
+        } finally {
+          setIsGeneratingREADME(false);
+        }
       } catch (error) {
         if (!isMounted) return;
         setProfileError(error instanceof Error ? error.message : "Failed to load your dev card.");
@@ -821,18 +909,92 @@ export function ModernDashboard() {
                     <div className="flex items-center justify-center gap-4 w-full max-w-md">
                       <button
                         onClick={async () => {
-                          // Find the card element and download it
-                          const wrapper = document.querySelector('[data-card-wrapper]') as HTMLElement;
-                          if (!wrapper) return;
-                          
-                          // Find the actual card element inside
-                          const cardElement = wrapper.querySelector('.card, [class*="card"], [class*="Card"]') as HTMLElement || wrapper.firstElementChild as HTMLElement;
-                          if (!cardElement) return;
-                          
                           try {
-                            const { default: htmlToImage } = await import('html-to-image');
+                            // Find the card wrapper
+                            const wrapper = document.querySelector('[data-card-wrapper]') as HTMLElement;
+                            if (!wrapper) {
+                              alert('Card not found. Please try again.');
+                              return;
+                            }
                             
-                            // Wait for images to load
+                            // Find the variant wrapper to get variant name
+                            const variantWrapper = wrapper.querySelector('[data-card-variant]') as HTMLElement;
+                            const variant = variantWrapper?.getAttribute('data-card-variant') || selectedCard;
+                            
+                            // Find the capture container - this is consistent across all card variants
+                            const captureContainer = wrapper.querySelector('[class*="captureContainer"]') as HTMLElement;
+                            
+                            // The card element is the first child of captureContainer (or captureContainer itself)
+                            let cardElement: HTMLElement | null = null;
+                            
+                            if (captureContainer) {
+                              // Try to find the actual card element inside captureContainer
+                              // DevCard uses 'neonDevcard', DevCard2 uses 'card', DevCard3/4 use 'neonDevcard'
+                              cardElement = captureContainer.querySelector('[class*="neonDevcard"]') as HTMLElement;
+                              
+                              // If not found, try finding 'card' class (DevCard2)
+                              if (!cardElement) {
+                                const cardElements = captureContainer.querySelectorAll('[class*="card"]');
+                                for (const el of Array.from(cardElements)) {
+                                  const className = (el as HTMLElement).className?.toString() || '';
+                                  if (className.includes('card') && 
+                                      !className.includes('cardWrapper') && 
+                                      !className.includes('cardContent') &&
+                                      !className.includes('captureContainer')) {
+                                    cardElement = el as HTMLElement;
+                                    break;
+                                  }
+                                }
+                              }
+                              
+                              // If still not found, use the first child of captureContainer
+                              if (!cardElement && captureContainer.firstElementChild) {
+                                cardElement = captureContainer.firstElementChild as HTMLElement;
+                              }
+                              
+                              // Last resort: use captureContainer itself
+                              if (!cardElement) {
+                                cardElement = captureContainer;
+                              }
+                            } else {
+                              // Fallback: search for card element directly
+                              const allElements = wrapper.querySelectorAll('*');
+                              for (const el of Array.from(allElements)) {
+                                const className = (el as HTMLElement).className?.toString() || '';
+                                // Look for the actual card element (not wrapper or content)
+                                if ((className.includes('neonDevcard') || 
+                                    (className.includes('card') && 
+                                     !className.includes('cardWrapper') && 
+                                     !className.includes('cardContent') &&
+                                     !className.includes('captureContainer'))) &&
+                                    el.parentElement?.className?.toString().includes('captureContainer')) {
+                                  cardElement = el as HTMLElement;
+                                  break;
+                                }
+                              }
+                              
+                              // Last resort: find any element with card classes
+                              if (!cardElement) {
+                                for (const el of Array.from(allElements)) {
+                                  const className = (el as HTMLElement).className?.toString() || '';
+                                  if (className.includes('neonDevcard') || 
+                                      (className.includes('card') && 
+                                       !className.includes('cardWrapper') && 
+                                       !className.includes('cardContent') &&
+                                       !className.includes('captureContainer'))) {
+                                    cardElement = el as HTMLElement;
+                                    break;
+                                  }
+                                }
+                              }
+                            }
+                            
+                            if (!cardElement) {
+                              alert('Could not find card element. Please try again.');
+                              return;
+                            }
+                            
+                            // Wait for images to load first
                             const imgs = cardElement.querySelectorAll("img");
                             await Promise.all(Array.from(imgs).map(img => {
                               if ((img as HTMLImageElement).complete) return Promise.resolve();
@@ -843,13 +1005,25 @@ export function ModernDashboard() {
                               });
                             }));
                             
+                            // Get variant name for filename
+                            const variantNames: Record<CardVariant, string> = {
+                              'card1': 'classic-neon',
+                              'card2': 'vertical-flow',
+                              'card3': 'compact-modern',
+                              'card4': 'minimalist'
+                            };
+                            const variantName = variantNames[variant as CardVariant] || variant;
+                            
                             const dataUrl = await htmlToImage.toPng(cardElement, {
-                              pixelRatio: 2,
+                              pixelRatio: 3,
                               backgroundColor: '#0A0A0A',
                               cacheBust: true,
+                              quality: 1,
+                              skipFonts: false,
                             });
+                            
                             const link = document.createElement('a');
-                            link.download = `devcard-${cardData?.profile?.login || 'card'}.png`;
+                            link.download = `devcard-${cardData?.profile?.login || 'card'}-${variantName}.png`;
                             link.href = dataUrl;
                             link.click();
                           } catch (error) {
@@ -883,7 +1057,9 @@ export function ModernDashboard() {
             ) : (
               <div className="space-y-6">
                 {profileLoading && !cardData ? (
-                  <READMESkeleton />
+                  <ReadmeLoader />
+                ) : isGeneratingREADME && !generatedREADME ? (
+                  <ReadmeLoader />
                 ) : profileError ? (
                   <div className="w-full max-w-4xl mx-auto rounded-2xl border border-red-500/30 bg-red-500/10 p-8 text-center">
                     <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
@@ -900,14 +1076,19 @@ export function ModernDashboard() {
                       Retry
                     </button>
                   </div>
-                ) : (
+                ) : generatedREADME ? (
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
                   >
-                    <READMEPreview readmeContent={generatedREADME} />
+                    <READMEPreview 
+                      readmeContent={generatedREADME} 
+                      onContentChange={setGeneratedREADME}
+                    />
                   </motion.div>
+                ) : (
+                  <ReadmeLoader />
                 )}
               </div>
             )}

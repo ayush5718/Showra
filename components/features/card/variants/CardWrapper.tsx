@@ -147,15 +147,15 @@ export function CardWrapper(props: CardWrapperProps) {
 
   switch (variant) {
     case 'card1':
-      return <DevCard {...cardProps} />;
+      return <div data-card-variant={variant}><DevCard {...cardProps} /></div>;
     case 'card2':
-      return <DevCard2 {...cardProps} />;
+      return <div data-card-variant={variant}><DevCard2 {...cardProps} /></div>;
     case 'card3':
-      return <DevCard3 {...cardProps} />;
+      return <div data-card-variant={variant}><DevCard3 {...cardProps} /></div>;
     case 'card4':
-      return <DevCard4 {...cardProps} />;
+      return <div data-card-variant={variant}><DevCard4 {...cardProps} /></div>;
     default:
-      return <DevCard {...cardProps} />;
+      return <div data-card-variant={variant}><DevCard {...cardProps} /></div>;
   }
 }
 

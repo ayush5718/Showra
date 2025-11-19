@@ -1,10 +1,11 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, Copy, Check, Code, Eye } from "lucide-react";
-import { useState } from "react";
+import { FileText, Copy, Check, Code, Eye, Edit2 } from "lucide-react";
+import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 
 // Demo README content
 const demoREADME = `# Hi there, I'm John Doe 👋
@@ -31,17 +32,36 @@ Full-stack developer passionate about building beautiful and functional applicat
 
 ⭐️ From [@johndoe](https://github.com/johndoe)`;
 
-type TabType = "markdown" | "preview";
+type TabType = "markdown" | "preview" | "edit";
 
 interface READMEPreviewProps {
   readmeContent?: string;
+  onContentChange?: (content: string) => void;
 }
 
-export function READMEPreview({ readmeContent }: READMEPreviewProps) {
+export function READMEPreview({ readmeContent, onContentChange }: READMEPreviewProps) {
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("preview");
+  const [editableContent, setEditableContent] = useState<string>("");
 
-  const content = readmeContent || demoREADME;
+  // Initialize and update editable content from prop
+  useEffect(() => {
+    if (readmeContent !== undefined) {
+      setEditableContent(readmeContent);
+    } else if (!editableContent) {
+      setEditableContent(demoREADME);
+    }
+  }, [readmeContent]);
+
+  // Handle content changes
+  const handleContentChange = (newContent: string) => {
+    setEditableContent(newContent);
+    if (onContentChange) {
+      onContentChange(newContent);
+    }
+  };
+
+  const content = editableContent || demoREADME;
 
   const handleCopy = async () => {
     try {
@@ -114,6 +134,25 @@ export function READMEPreview({ readmeContent }: READMEPreviewProps) {
           )}
         </button>
         <button
+          onClick={() => setActiveTab("edit")}
+          className={`relative flex flex-1 items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2.5 sm:py-3.5 text-xs sm:text-sm font-medium transition-all ${
+            activeTab === "edit"
+              ? "text-white"
+              : "text-white/50 hover:text-white/70"
+          }`}
+        >
+          <Edit2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+          <span>Edit</span>
+          {activeTab === "edit" && (
+            <motion.div
+              layoutId="activeTab"
+              className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500"
+              initial={false}
+              transition={{ type: "spring", stiffness: 500, damping: 30 }}
+            />
+          )}
+        </button>
+        <button
           onClick={() => setActiveTab("markdown")}
           className={`relative flex flex-1 items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2.5 sm:py-3.5 text-xs sm:text-sm font-medium transition-all ${
             activeTab === "markdown"
@@ -135,7 +174,7 @@ export function READMEPreview({ readmeContent }: READMEPreviewProps) {
       </div>
 
       {/* Tab Content */}
-      <div className="relative min-h-[250px] sm:min-h-[300px] max-h-[400px] sm:max-h-[450px] overflow-auto">
+      <div className="relative min-h-[250px] sm:min-h-[300px] max-h-[400px] sm:max-h-[800px] lg:max-h-[900px] overflow-auto">
         <AnimatePresence mode="wait">
           {activeTab === "preview" ? (
             <motion.div
@@ -147,10 +186,30 @@ export function READMEPreview({ readmeContent }: READMEPreviewProps) {
               className="p-4 sm:p-6"
             >
               <div className="markdown-preview">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                <ReactMarkdown 
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeRaw]}
+                >
                   {content}
                 </ReactMarkdown>
               </div>
+            </motion.div>
+          ) : activeTab === "edit" ? (
+            <motion.div
+              key="edit"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="p-4 sm:p-6 h-full"
+            >
+              <textarea
+                value={content}
+                onChange={(e) => handleContentChange(e.target.value)}
+                className="w-full h-full min-h-[300px] font-mono text-xs sm:text-sm leading-relaxed text-white/90 bg-black/30 border border-white/10 rounded-lg p-4 resize-none focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
+                placeholder="Edit your README markdown here..."
+                spellCheck={false}
+              />
             </motion.div>
           ) : (
             <motion.div
@@ -332,6 +391,142 @@ export function READMEPreview({ readmeContent }: READMEPreviewProps) {
             .markdown-preview img {
               margin: 16px 0;
             }
+          }
+
+          /* HTML elements support */
+          .markdown-preview h1[align],
+          .markdown-preview h2[align],
+          .markdown-preview h3[align],
+          .markdown-preview p[align] {
+            text-align: inherit;
+          }
+
+          .markdown-preview h1[align="center"],
+          .markdown-preview h2[align="center"],
+          .markdown-preview h3[align="center"],
+          .markdown-preview p[align="center"] {
+            text-align: center;
+          }
+
+          .markdown-preview h1[align="left"],
+          .markdown-preview h2[align="left"],
+          .markdown-preview h3[align="left"],
+          .markdown-preview p[align="left"] {
+            text-align: left;
+          }
+
+          .markdown-preview h1[align="right"],
+          .markdown-preview h2[align="right"],
+          .markdown-preview h3[align="right"],
+          .markdown-preview p[align="right"] {
+            text-align: right;
+          }
+
+          .markdown-preview img[align="right"] {
+            float: right;
+            margin-left: 16px;
+            margin-bottom: 16px;
+          }
+
+          .markdown-preview img[align="left"] {
+            float: left;
+            margin-right: 16px;
+            margin-bottom: 16px;
+          }
+
+          .markdown-preview img[align="center"] {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+          }
+
+          .markdown-preview iframe {
+            width: 100%;
+            max-width: 100%;
+            border: none;
+            border-radius: 8px;
+            margin: 16px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+          }
+
+          .markdown-preview div[align="center"] {
+            text-align: center;
+            margin: 16px 0;
+          }
+
+          .markdown-preview table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+          }
+
+          .markdown-preview table {
+            border-spacing: 12px;
+            border-collapse: separate;
+          }
+
+          .markdown-preview table td {
+            padding: 16px;
+            vertical-align: top;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+          }
+
+          .markdown-preview table td h3 {
+            color: #ffffff !important;
+            margin-top: 0 !important;
+            margin-bottom: 12px !important;
+          }
+
+          .markdown-preview table td h3 a {
+            color: #58A6FF !important;
+            text-decoration: none;
+            font-weight: 600;
+          }
+
+          .markdown-preview table td h3 a:hover {
+            text-decoration: underline;
+          }
+
+          .markdown-preview table td p {
+            color: rgba(255, 255, 255, 0.95) !important;
+            margin: 12px 0 !important;
+          }
+
+          .markdown-preview div[style*="background-color"] {
+            margin: 12px 0 !important;
+          }
+
+          .markdown-preview div[style*="background-color"] p {
+            margin: 0 !important;
+          }
+
+          .markdown-preview div[style*="display: flex"],
+          .markdown-preview div[style*="display:inline-flex"] {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            gap: 12px !important;
+            align-items: center !important;
+          }
+
+          .markdown-preview div[style*="display: flex"] > div,
+          .markdown-preview div[style*="display:inline-flex"] > div {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+          }
+
+          .markdown-preview div[style*="display: flex"] img,
+          .markdown-preview div[style*="display:inline-flex"] img {
+            margin: 0 !important;
+            vertical-align: middle !important;
+          }
+
+
+          .markdown-preview table td img {
+            margin: 4px;
+            vertical-align: middle;
           }
 
           .markdown-preview hr {
