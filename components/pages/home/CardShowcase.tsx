@@ -13,8 +13,10 @@ export function CardShowcase() {
     >
       {/* Subtle background effects */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-[20%] top-[30%] h-96 w-96 rounded-full bg-[#9D4BFF]/5 blur-[120px]" />
-        <div className="absolute right-[20%] bottom-[30%] h-96 w-96 rounded-full bg-[#00E5FF]/5 blur-[120px]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#00E5FF]/5 via-transparent to-[#9D4BFF]/5" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-[#FF00CC]/5 via-transparent to-[#00E5FF]/5" />
+        <div className="absolute left-[20%] top-[30%] h-96 w-96 rounded-full bg-[#9D4BFF]/6 blur-[120px]" />
+        <div className="absolute right-[20%] bottom-[30%] h-96 w-96 rounded-full bg-[#00E5FF]/6 blur-[120px]" />
       </div>
 
       {/* Grid pattern */}

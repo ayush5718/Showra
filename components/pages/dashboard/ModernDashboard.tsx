@@ -130,6 +130,8 @@ export function ModernDashboard() {
         twitter_username: stored.profile.twitterUsername,
         created_at: stored.profile.createdAt,
       });
+      // Clear any existing errors if we have cached data
+      setProfileError(null);
     }
   }, [user]);
 
@@ -163,40 +165,45 @@ export function ModernDashboard() {
     if (!user) return;
 
     // Use cached data if available and not forcing refresh
-    if (!forceRefresh && cardData) {
+    if (!forceRefresh) {
       const stored = loadCardData();
-      if (stored) {
+      if (stored && cardData) {
+        // We already have data loaded, don't fetch again
         return;
       }
     }
 
     // Check session - try to refresh if needed
     let currentSession = session;
-    if (!currentSession || !currentSession.providerToken) {
-      const refreshed = await refreshSession();
-      if (refreshed) {
-        currentSession = useAuthStore.getState().session;
-      } else {
-        // If we have cached data, use it instead of showing error
-        const stored = loadCardData();
-        if (stored) {
-          return;
+    let providerToken = currentSession?.providerToken;
+
+    // If no token, try to refresh session
+    if (!providerToken) {
+      try {
+        const refreshed = await refreshSession();
+        if (refreshed) {
+          currentSession = useAuthStore.getState().session;
+          providerToken = currentSession?.providerToken;
         }
-        // Only show error if no cached data and can't authenticate
+      } catch (error) {
+        console.error('Session refresh failed:', error);
+      }
+    }
+
+    // If still no token after refresh, check for cached data
+    if (!providerToken) {
+      const stored = loadCardData();
+      if (stored && !forceRefresh) {
+        // Use cached data, don't show error
+        return;
+      }
+      // Only show error if forcing refresh or no cached data
+      if (forceRefresh) {
         setProfileError("Unable to authenticate. Please sign in again.");
         setProfileLoading(false);
         return;
       }
-    }
-
-    if (!currentSession || !currentSession.providerToken) {
-      // Final check - if still no session, try one more time
-      const stored = loadCardData();
-      if (stored) {
-        return;
-      }
-      setProfileError("Unable to authenticate. Please sign in again.");
-      setProfileLoading(false);
+      // For non-forced refresh, silently fail and use cached data if available
       return;
     }
 
@@ -207,26 +214,43 @@ export function ModernDashboard() {
 
     (async () => {
       try {
+        // Validate session
         const isValid = await validateSession();
         
         if (!isMounted) return;
         
         if (!isValid) {
-          throw new Error("Session expired. Please refresh the page.");
-        }
-
-        const providerToken = currentSession?.providerToken;
-
-        if (!providerToken) {
+          // Try to refresh one more time
           const refreshed = await refreshSession();
           if (!refreshed) {
-            throw new Error("Unable to authenticate. Please sign in again.");
+            // Check for cached data before throwing error
+            const stored = loadCardData();
+            if (stored && !forceRefresh) {
+              // Use cached data instead of error
+              if (isMounted) {
+                setProfileLoading(false);
+                setIsRefreshing(false);
+              }
+              return;
+            }
+            throw new Error("Session expired. Please refresh the page.");
           }
-          const refreshedSession = useAuthStore.getState().session;
-          if (!refreshedSession?.providerToken) {
-            throw new Error("Unable to authenticate. Please sign in again.");
+          // Update session after refresh
+          currentSession = useAuthStore.getState().session;
+          providerToken = currentSession?.providerToken;
+        }
+
+        // Final check for provider token
+        if (!providerToken) {
+          const stored = loadCardData();
+          if (stored && !forceRefresh) {
+            if (isMounted) {
+              setProfileLoading(false);
+              setIsRefreshing(false);
+            }
+            return;
           }
-          return;
+          throw new Error("Unable to authenticate. Please sign in again.");
         }
 
         const headers = {
@@ -458,10 +482,14 @@ export function ModernDashboard() {
 
   // Fetch data on mount if no cached data
   useEffect(() => {
-    if (!cardData && user && !authLoading) {
-      fetchGitHubData(false);
+    if (!cardData && user && !authLoading && !profileLoading) {
+      // Small delay to ensure session is ready
+      const timer = setTimeout(() => {
+        fetchGitHubData(false);
+      }, 100);
+      return () => clearTimeout(timer);
     }
-  }, [user, authLoading, cardData, fetchGitHubData]);
+  }, [user, authLoading, cardData, profileLoading, fetchGitHubData]);
 
   const fallbackProfileData = useMemo(() => {
     const safeUser = user ?? {
@@ -530,13 +558,17 @@ export function ModernDashboard() {
 
       {/* Grid Background */}
       <div className="pointer-events-none fixed inset-0 -z-10">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#9D4BFF]/5 via-transparent to-[#00E5FF]/5" />
+        <div className="absolute inset-0 bg-gradient-to-tl from-[#FF00CC]/5 via-transparent to-[#9D4BFF]/5" />
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-20" />
-        <div className="absolute left-[10%] top-[20%] h-96 w-96 rounded-full bg-[#9D4BFF]/10 blur-[120px]" />
-        <div className="absolute right-[15%] bottom-[25%] h-96 w-96 rounded-full bg-[#00E5FF]/10 blur-[120px]" />
+        <div className="absolute left-[10%] top-[20%] h-96 w-96 rounded-full bg-[#9D4BFF]/8 blur-[120px]" />
+        <div className="absolute right-[15%] bottom-[25%] h-96 w-96 rounded-full bg-[#00E5FF]/8 blur-[120px]" />
       </div>
 
       {/* Hero Section */}
       <section className="relative flex min-h-screen items-center justify-center py-20">
+        {/* Section gradient overlay */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#00E5FF]/5 via-transparent to-[#FF00CC]/5" />
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
             {/* Heading */}
@@ -597,7 +629,7 @@ export function ModernDashboard() {
             <div className="flex items-center justify-center gap-3 mb-8">
               <button
                 onClick={() => setActiveTab('card')}
-                className={`px-8 py-4 rounded-2xl text-base font-bold transition-all ${
+                className={`px-6 py-3 rounded-xl text-sm font-bold transition-all ${
                   activeTab === 'card'
                     ? 'bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] text-white shadow-lg shadow-[#00E5FF]/30'
                     : 'bg-white/5 backdrop-blur-md border border-white/10 text-white/60 hover:bg-white/10'
@@ -607,7 +639,7 @@ export function ModernDashboard() {
               </button>
               <button
                 onClick={() => setActiveTab('readme')}
-                className={`px-8 py-4 rounded-2xl text-base font-bold transition-all ${
+                className={`px-6 py-3 rounded-xl text-sm font-bold transition-all ${
                   activeTab === 'readme'
                     ? 'bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] text-white shadow-lg shadow-[#00E5FF]/30'
                     : 'bg-white/5 backdrop-blur-md border border-white/10 text-white/60 hover:bg-white/10'
@@ -619,16 +651,16 @@ export function ModernDashboard() {
               <button
                 onClick={() => fetchGitHubData(true)}
                 disabled={isRefreshing || profileLoading}
-                className="px-4 py-4 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 text-white/60 hover:bg-white/10 transition-all disabled:opacity-50"
+                className="px-3 py-3 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 text-white/60 hover:bg-white/10 transition-all disabled:opacity-50"
                 title="Refresh Data"
               >
-                <RefreshCw className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
               </button>
             </div>
 
             {/* Tab Content */}
             {activeTab === 'card' ? (
-              <div className="space-y-8">
+              <div className="space-y-6">
                 {profileLoading && !cardData ? (
                   <CardSkeleton />
                 ) : profileError ? (
@@ -671,7 +703,7 @@ export function ModernDashboard() {
                 )}
               </div>
             ) : (
-              <div className="space-y-8">
+              <div className="space-y-6">
                 {profileLoading && !cardData ? (
                   <READMESkeleton />
                 ) : profileError ? (

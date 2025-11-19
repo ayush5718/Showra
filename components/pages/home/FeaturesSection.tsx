@@ -74,8 +74,10 @@ export function FeaturesSection() {
 
       {/* Background effects */}
       <div className="pointer-events-none absolute inset-0 z-[1]">
-        <div className="absolute left-[20%] top-[20%] h-96 w-96 rounded-full bg-[#9D4BFF]/10 blur-[120px]" />
-        <div className="absolute right-[20%] bottom-[20%] h-96 w-96 rounded-full bg-[#00E5FF]/10 blur-[120px]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#FF00CC]/5 via-transparent to-[#9D4BFF]/5" />
+        <div className="absolute inset-0 bg-gradient-to-tl from-[#00E5FF]/5 via-transparent to-[#FF00CC]/5" />
+        <div className="absolute left-[20%] top-[20%] h-96 w-96 rounded-full bg-[#9D4BFF]/8 blur-[120px]" />
+        <div className="absolute right-[20%] bottom-[20%] h-96 w-96 rounded-full bg-[#00E5FF]/8 blur-[120px]" />
       </div>
 
       {/* Grid pattern */}

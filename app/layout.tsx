@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="bg-[--background] text-[--text-primary]">
-      <body className={`${montserrat.variable} font-sans antialiased`} style={{ '--font-technor': "'Technor Variable', sans-serif" } as React.CSSProperties}>
+      <body className={`${montserrat.variable} font-sans antialiased`}>
         <div className="relative flex min-h-screen flex-col overflow-hidden bg-[#0A0A0A]">
           <ModernNavbar />
           <main className="flex-1">{children}</main>
