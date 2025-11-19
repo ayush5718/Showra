@@ -77,17 +77,20 @@
 
 .header {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  text-align: center;
-  gap: 8px;
+  gap: 10px;
   margin-bottom: 0;
+}
+
+.profileInfo {
+  flex: 1;
+  min-width: 0;
 }
 
 .avatarContainer {
   position: relative;
-  width: 72px;
-  height: 72px;
+  width: 64px;
+  height: 64px;
   margin-bottom: 0;
 }
 
@@ -109,8 +112,8 @@
 .avatar {
   position: relative;
   z-index: 1;
-  width: 72px;
-  height: 72px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid #0A0A0A;
@@ -118,7 +121,7 @@
 
 .name {
   margin: 0 0 4px 0;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 800;
   color: #FFFFFF;
   letter-spacing: -0.5px;
@@ -128,15 +131,15 @@
 .handle {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
+  gap: 4px;
+  font-size: 11px;
   font-weight: 600;
   color: #00E5FF;
 }
 
 .handle svg {
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
 }
 
 .bio {
@@ -361,30 +364,101 @@
   color: #8A8A8A;
 }
 
-.mostStarredContent {
+.developmentScoreContent {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.scoreLeft {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.circularProgress {
+  transform: rotate(-90deg);
+}
+
+.circularProgressBg {
+  stroke: #1A1A1A;
+}
+
+.circularProgressFill {
+  stroke: #00E5FF;
+  transition: stroke-dashoffset 0.3s ease;
+}
+
+.scoreValue {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.scoreNumber {
+  font-size: 20px;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1;
+}
+
+.scoreMax {
+  font-size: 10px;
+  font-weight: 500;
+  color: #8A8A8A;
+  line-height: 1;
+}
+
+.scoreRight {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.scoreMetric {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.mostStarredName {
+.scoreMetricHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.scoreMetricLabel {
   font-size: 10px;
   font-weight: 600;
   color: #FFFFFF;
-  display: flex;
-  align-items: center;
-  gap: 4px;
 }
 
-.starIcon {
+.scoreMetricValue {
   font-size: 10px;
+  font-weight: 600;
+  color: #8A8A8A;
 }
 
-.mostStarredDescription {
-  font-size: 9px;
-  font-weight: 500;
-  color: #8A8A8A;
-  line-height: 1.3;
+.progressBar {
+  width: 100%;
+  height: 6px;
+  background: #1A1A1A;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressBarFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
 }
 
 .footer {

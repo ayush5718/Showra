@@ -177,33 +177,36 @@ function truncateText(text: string, maxLength: number): string {
   return text.substring(0, maxLength).trim() + '...';
 }
 
-function getMostStarredOrActiveRepo(
+function calculateDevelopmentScore(
+  stats: DevCardStats,
+  topLanguages: Array<{ name: string; percentage: number }>,
   repositories?: Array<{ name: string; description: string | null; stars: number; language: string | null }>
-): { name: string; description: string | null; stars: number } | null {
-  if (!repositories || repositories.length === 0) return null;
-  
-  const mostStarred = repositories.reduce((best, repo) => {
-    if (!best || repo.stars > best.stars) return repo;
-    return best;
-  }, null as { name: string; description: string | null; stars: number; language: string | null } | null);
-  
-  if (mostStarred && mostStarred.stars > 0) {
-    return {
-      name: mostStarred.name,
-      description: mostStarred.description,
-      stars: mostStarred.stars
-    };
-  }
-  
-  if (repositories.length > 0) {
-    return {
-      name: repositories[0].name,
-      description: repositories[0].description,
-      stars: repositories[0].stars
-    };
-  }
-  
-  return null;
+): {
+  overall: number; // 0-100
+  codeQuality: number; // 0-50
+  activity: number; // 0-50
+} {
+  // Calculate Activity Score (0-50)
+  // Based on contributions, repos, and stars
+  const contributionScore = Math.min((stats.contributions / 1000) * 25, 25); // Max 25 points for contributions
+  const repoScore = Math.min((stats.repos / 50) * 15, 15); // Max 15 points for repos
+  const starScore = Math.min((stats.stars / 100) * 10, 10); // Max 10 points for stars
+  const activity = Math.round(contributionScore + repoScore + starScore);
+
+  // Calculate Code Quality Score (0-50)
+  // Based on language diversity, repo count, and activity
+  const languageDiversity = Math.min(topLanguages.length * 5, 20); // Max 20 points for diversity
+  const repoQuality = Math.min((stats.repos / 30) * 15, 15); // Max 15 points
+  const codeQuality = Math.round(languageDiversity + repoQuality);
+
+  // Overall Score (0-100) = Activity + Code Quality
+  const overall = Math.min(activity + codeQuality, 100);
+
+  return {
+    overall: Math.max(0, overall),
+    codeQuality: Math.max(0, Math.min(codeQuality, 50)),
+    activity: Math.max(0, Math.min(activity, 50))
+  };
 }
 
 function generateStrengthAreasFallback(
@@ -715,27 +718,76 @@ export function DevCard3({
       </div>
 
               <div className={styles.starsCard}>
-                <h3 className={styles.cardTitle}>MOST STARRED</h3>
+                <h3 className={styles.cardTitle}>DEVELOPMENT SCORE</h3>
                 {(() => {
-                  const repo = getMostStarredOrActiveRepo(repositories);
-                  if (!repo) {
-                    return (
-                      <div className={styles.mostStarredContent}>
-                        <div className={styles.mostStarredName}>No repositories</div>
-    </div>
-  );
-}
+                  const scores = calculateDevelopmentScore(stats, topLanguages, repositories);
+                  const overallPercentage = scores.overall;
+                  const codeQualityPercentage = (scores.codeQuality / 50) * 100;
+                  const activityPercentage = (scores.activity / 50) * 100;
+                  
+                  // Calculate circular progress (SVG)
+                  const radius = 35;
+                  const circumference = 2 * Math.PI * radius;
+                  const offset = circumference - (overallPercentage / 100) * circumference;
+                  
                   return (
-                    <div className={styles.mostStarredContent}>
-                      <div className={styles.mostStarredName}>
-                        <span className={styles.starIcon}>⭐</span>
-                        {repo.name}
-                      </div>
-                      {repo.description && (
-                        <div className={styles.mostStarredDescription}>
-                          {truncateText(repo.description, 60)}
+                    <div className={styles.developmentScoreContent}>
+                      <div className={styles.scoreLeft}>
+                        <svg className={styles.circularProgress} width="80" height="80">
+                          <circle
+                            className={styles.circularProgressBg}
+                            cx="40"
+                            cy="40"
+                            r={radius}
+                            fill="none"
+                            stroke="#1A1A1A"
+                            strokeWidth="6"
+                          />
+                          <circle
+                            className={styles.circularProgressFill}
+                            cx="40"
+                            cy="40"
+                            r={radius}
+                            fill="none"
+                            stroke="#00E5FF"
+                            strokeWidth="6"
+                            strokeLinecap="round"
+                            strokeDasharray={circumference}
+                            strokeDashoffset={offset}
+                            transform="rotate(-90 40 40)"
+                          />
+                        </svg>
+                        <div className={styles.scoreValue}>
+                          <span className={styles.scoreNumber}>{scores.overall}</span>
+                          <span className={styles.scoreMax}>/100</span>
                         </div>
-                      )}
+                      </div>
+                      <div className={styles.scoreRight}>
+                        <div className={styles.scoreMetric}>
+                          <div className={styles.scoreMetricHeader}>
+                            <span className={styles.scoreMetricLabel}>Code Quality</span>
+                            <span className={styles.scoreMetricValue}>{scores.codeQuality}/50</span>
+                          </div>
+                          <div className={styles.progressBar}>
+                            <div 
+                              className={styles.progressBarFill}
+                              style={{ width: `${codeQualityPercentage}%`, backgroundColor: '#10B981' }}
+                            />
+                          </div>
+                        </div>
+                        <div className={styles.scoreMetric}>
+                          <div className={styles.scoreMetricHeader}>
+                            <span className={styles.scoreMetricLabel}>Activity</span>
+                            <span className={styles.scoreMetricValue}>{scores.activity}/50</span>
+                          </div>
+                          <div className={styles.progressBar}>
+                            <div 
+                              className={styles.progressBarFill}
+                              style={{ width: `${activityPercentage}%`, backgroundColor: '#F59E0B' }}
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   );
                 })()}
