@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import type { CSSProperties, HTMLAttributes } from "react";
-import { cn } from "../../lib/utils/cn";
+import { cn } from "@/lib/utils/cn";
 
 interface SpotlightProps extends HTMLAttributes<HTMLDivElement> {
   size?: number;

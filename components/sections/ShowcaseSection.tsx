@@ -1,8 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { RepoCard, type RepoCardProps } from "./RepoCard";
-import { useParallax } from "../lib/hooks/useParallax";
+import { RepoCard, type RepoCardProps } from "@/components/common/RepoCard";
+import { useParallax } from "@/lib/hooks/useParallax";
 
 interface ShowcaseSectionProps {
   repo: RepoCardProps;

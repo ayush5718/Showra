@@ -1,7 +1,7 @@
 "use client";
 
-import { GridBackdrop } from "./ui/GridBackdrop";
-import { Spotlight } from "./ui/Spotlight";
+import { GridBackdrop } from "@/components/ui/GridBackdrop";
+import { Spotlight } from "@/components/ui/Spotlight";
 
 export function BackgroundScene() {
   return (

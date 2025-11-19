@@ -1,4 +1,4 @@
-import { GridBackdrop } from "./ui/GridBackdrop";
+import { GridBackdrop } from "@/components/ui/GridBackdrop";
 
 const year = new Date().getFullYear();
 

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-import { ModernNavbar } from "../components/ModernNavbar";
-import { ModernFooter } from "../components/ModernFooter";
+import { ModernNavbar } from "../components/layout/ModernNavbar";
+import { ModernFooter } from "../components/layout/ModernFooter";
 
 const plusJakarta = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta",

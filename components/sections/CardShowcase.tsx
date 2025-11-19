@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { DevCard } from "./dashboard/DevCard";
+import { DevCard } from "@/components/dashboard/DevCard";
 import { Download, Share2, Image } from "lucide-react";
 
 // Demo data for John Doe

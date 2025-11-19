@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useAuthStore } from "@/lib/auth/store";
 import { supabase } from "@/lib/supabaseClient";
 import Hyperspeed from "@/components/react-bits/Hyperspeed/Hyperspeed";
-import SplitText from "@/components/SplitText";
+import SplitText from "@/components/common/SplitText";
 
 export function ModernHero() {
   const { user, isAuthenticating, setAuthenticating } = useAuthStore();

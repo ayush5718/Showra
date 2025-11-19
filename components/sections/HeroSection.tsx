@@ -1,8 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { InputBox } from "./InputBox";
-import { HeroHighlight, Highlight } from "./ui/HeroHighlight";
+import { InputBox } from "@/components/common/InputBox";
+import { HeroHighlight, Highlight } from "@/components/ui/HeroHighlight";
 import { Sparkles, BarChart3, Share2, Coffee } from "lucide-react";
 
 interface HeroSectionProps {
