@@ -244,8 +244,11 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 4px;
-  height: 45px;
+  gap: 3px;
+  height: 50px;
+  min-height: 50px;
+  width: 100%;
+  padding: 0 2px;
 }
 
 .barContainer {
@@ -258,11 +261,15 @@
 
 .bar {
   width: 100%;
+  max-width: 100%;
   position: relative;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 4px 4px 0 0;
-  min-height: 8px;
-  overflow: hidden;
+  min-height: 10px;
+  height: 100%;
+  overflow: visible;
+  display: flex;
+  align-items: flex-end;
 }
 
 .barFill {
@@ -270,10 +277,12 @@
   bottom: 0;
   left: 0;
   right: 0;
+  width: 100%;
   background: linear-gradient(180deg, #00E5FF 0%, #FF00CC 50%, #9D4BFF 100%);
   border-radius: 4px 4px 0 0;
-  height: 100%;
+  min-height: 10px;
   transition: height 0.3s ease;
+  box-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
 }
 
 .barLabel {
@@ -487,7 +496,12 @@
 }
 
 .actions {
-  display: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+  width: 100%;
 }
 
 .actionBtn {

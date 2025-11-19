@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Download, RefreshCw, Code, AlertCircle } from "lucide-react";
+import { Download, RefreshCw, Code, AlertCircle, Share2 } from "lucide-react";
 import { useAuthStore } from "@/lib/auth/store";
 import { supabase } from "@/lib/supabaseClient";
 import { CardWrapper } from "@/components/features/card/variants/CardWrapper";
@@ -796,24 +796,87 @@ export function ModernDashboard() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
-                    className="flex justify-center"
+                    className="flex flex-col items-center gap-6"
                   >
-                    <CardWrapper
-                      key={cardData?.profile?.login || 'default'} // Stable key based on profile to prevent remounting on variant change
-                      variant={selectedCard}
-                      profile={cardData?.profile ?? fallbackProfileData}
-                      stats={cardData?.stats ?? fallbackStats}
-                      topRepo={cardData?.topRepo ?? null}
-                      topLanguages={cardData?.languages ?? []}
-                      technologies={cardData?.technologies}
-                      heatmap={cardData?.heatmap ?? []}
-                      repositories={repositories?.map((repo) => ({
-                        name: repo.name,
-                        description: repo.description,
-                        stars: repo.stargazers_count,
-                        language: repo.language,
-                      }))}
-                    />
+                    <div data-card-wrapper className="w-full flex justify-center">
+                      <CardWrapper
+                        key={cardData?.profile?.login || 'default'} // Stable key based on profile to prevent remounting on variant change
+                        variant={selectedCard}
+                        profile={cardData?.profile ?? fallbackProfileData}
+                        stats={cardData?.stats ?? fallbackStats}
+                        topRepo={cardData?.topRepo ?? null}
+                        topLanguages={cardData?.languages ?? []}
+                        technologies={cardData?.technologies}
+                        heatmap={cardData?.heatmap ?? []}
+                        repositories={repositories?.map((repo) => ({
+                          name: repo.name,
+                          description: repo.description,
+                          stars: repo.stargazers_count,
+                          language: repo.language,
+                        }))}
+                      />
+                    </div>
+                    
+                    {/* Download and Share Buttons */}
+                    <div className="flex items-center justify-center gap-4 w-full max-w-md">
+                      <button
+                        onClick={async () => {
+                          // Find the card element and download it
+                          const wrapper = document.querySelector('[data-card-wrapper]') as HTMLElement;
+                          if (!wrapper) return;
+                          
+                          // Find the actual card element inside
+                          const cardElement = wrapper.querySelector('.card, [class*="card"], [class*="Card"]') as HTMLElement || wrapper.firstElementChild as HTMLElement;
+                          if (!cardElement) return;
+                          
+                          try {
+                            const { default: htmlToImage } = await import('html-to-image');
+                            
+                            // Wait for images to load
+                            const imgs = cardElement.querySelectorAll("img");
+                            await Promise.all(Array.from(imgs).map(img => {
+                              if ((img as HTMLImageElement).complete) return Promise.resolve();
+                              return new Promise(res => {
+                                (img as HTMLImageElement).onload = res;
+                                (img as HTMLImageElement).onerror = res;
+                                setTimeout(res, 3000);
+                              });
+                            }));
+                            
+                            const dataUrl = await htmlToImage.toPng(cardElement, {
+                              pixelRatio: 2,
+                              backgroundColor: '#0A0A0A',
+                              cacheBust: true,
+                            });
+                            const link = document.createElement('a');
+                            link.download = `devcard-${cardData?.profile?.login || 'card'}.png`;
+                            link.href = dataUrl;
+                            link.click();
+                          } catch (error) {
+                            console.error('Download failed:', error);
+                            alert('Failed to download card. Please try again.');
+                          }
+                        }}
+                        className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#00E5FF]/20 to-[#00E5FF]/10 backdrop-blur-xl border-2 border-[#00E5FF]/30 text-sm font-bold text-white shadow-lg shadow-[#00E5FF]/20 transition-all hover:from-[#00E5FF]/30 hover:to-[#00E5FF]/20 hover:scale-105"
+                      >
+                        <Download className="h-4 w-4" />
+                        Download
+                      </button>
+                      <button
+                        onClick={async () => {
+                          try {
+                            await navigator.clipboard.writeText(window.location.href);
+                            alert('Link copied to clipboard!');
+                          } catch (err) {
+                            console.error('Failed to copy:', err);
+                          }
+                        }}
+                        className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#FF00CC]/20 to-[#FF00CC]/10 backdrop-blur-xl border-2 border-[#FF00CC]/30 text-sm font-bold text-white shadow-lg shadow-[#FF00CC]/20 transition-all hover:from-[#FF00CC]/30 hover:to-[#FF00CC]/20 hover:scale-105"
+                      >
+                        <Share2 className="h-4 w-4" />
+                        Share
+                      </button>
+                    </div>
                   </motion.div>
                 )}
               </div>

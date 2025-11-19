@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
+import { Sparkles, TrendingUp, Palette, Share2, Settings, Gift } from "lucide-react";
 import SplitText from "@/components/common/SplitText";
 import LightRays from "@/components/react-bits/LigthRays/LightRays";
 
@@ -15,38 +16,44 @@ const features = [
   {
     title: "Auto-Generated",
     description: "Your developer card is automatically created from your GitHub profile data",
-    icon: "✨",
+    icon: Sparkles,
     color: "rgba(0, 229, 255, 0.25)",
+    gradient: "from-[#00E5FF] to-[#00E5FF]/50",
   },
   {
     title: "Real-Time Stats",
     description: "Always up-to-date with your latest contributions, stars, and repositories",
-    icon: "📊",
+    icon: TrendingUp,
     color: "rgba(255, 0, 204, 0.25)",
+    gradient: "from-[#FF00CC] to-[#FF00CC]/50",
   },
   {
     title: "Beautiful Design",
     description: "Stunning visual design that showcases your coding journey in style",
-    icon: "🎨",
+    icon: Palette,
     color: "rgba(157, 75, 255, 0.25)",
+    gradient: "from-[#9D4BFF] to-[#9D4BFF]/50",
   },
   {
     title: "Easy Sharing",
     description: "Download as image or embed directly in your GitHub README",
-    icon: "🚀",
+    icon: Share2,
     color: "rgba(0, 229, 255, 0.25)",
+    gradient: "from-[#00E5FF] to-[#00E5FF]/50",
   },
   {
     title: "Customizable",
     description: "Multiple layouts and styles to match your personal brand",
-    icon: "⚡",
+    icon: Settings,
     color: "rgba(255, 0, 204, 0.25)",
+    gradient: "from-[#FF00CC] to-[#FF00CC]/50",
   },
   {
     title: "Free Forever",
     description: "Completely free to use with no limits or hidden costs",
-    icon: "💎",
+    icon: Gift,
     color: "rgba(157, 75, 255, 0.25)",
+    gradient: "from-[#9D4BFF] to-[#9D4BFF]/50",
   },
 ];
 
@@ -115,26 +122,39 @@ export function FeaturesSection() {
 
           {/* Features Grid with SpotlightCard */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.6 }}
-              >
-                <SpotlightCard
-                  spotlightColor={feature.color}
-                  className="h-full rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-xl p-6 transition-all"
+            {features.map((feature, index) => {
+              const IconComponent = feature.icon;
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1, duration: 0.6 }}
                 >
-                  <div className="flex flex-col h-full">
-                    <div className="text-4xl mb-4">{feature.icon}</div>
-                    <h3 className="text-xl font-bold text-white mb-2">{feature.title}</h3>
-                    <p className="text-sm text-white/60 leading-relaxed">{feature.description}</p>
-                  </div>
-                </SpotlightCard>
-              </motion.div>
-            ))}
+                  <SpotlightCard
+                    spotlightColor={feature.color}
+                    className="h-full rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-xl p-6 transition-all hover:border-white/20"
+                  >
+                    <div className="flex flex-col h-full">
+                      {/* Icon with glass effect */}
+                      <div className="relative mb-4">
+                        <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-20 blur-xl rounded-2xl`} />
+                        <div className={`relative rounded-xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm border border-white/20 p-4 w-fit group`}>
+                          <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-10 rounded-xl transition-opacity`} />
+                          <IconComponent className={`h-6 w-6 relative z-10`} style={{ 
+                            color: feature.gradient.includes('00E5FF') ? '#00E5FF' : feature.gradient.includes('FF00CC') ? '#FF00CC' : '#9D4BFF',
+                            filter: `drop-shadow(0 0 8px ${feature.gradient.includes('00E5FF') ? 'rgba(0, 229, 255, 0.6)' : feature.gradient.includes('FF00CC') ? 'rgba(255, 0, 204, 0.6)' : 'rgba(157, 75, 255, 0.6)'})`
+                          }} />
+                        </div>
+                      </div>
+                      <h3 className="text-xl font-bold text-white mb-2">{feature.title}</h3>
+                      <p className="text-sm text-white/60 leading-relaxed">{feature.description}</p>
+                    </div>
+                  </SpotlightCard>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </div>
