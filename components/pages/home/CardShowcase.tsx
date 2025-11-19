@@ -3,8 +3,8 @@
 import { motion } from "framer-motion";
 import { Download, Share2, Image } from "lucide-react";
 import SplitText from "@/components/common/SplitText";
-import { DevCardPreview } from "@/components/common/DevCardPreview";
-import { SimpleTooltip } from "@/components/common/SimpleTooltip";
+import { DevCardPreview } from "@/components/features/card/DevCardPreview";
+import { SimpleTooltip } from "@/components/ui/SimpleTooltip";
 
 export function CardShowcase() {
   return (

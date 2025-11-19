@@ -1,6 +1,6 @@
 "use client";
 
-import { DevCard } from "@/components/dashboard/DevCard";
+import { DevCard } from "@/components/features/card/DevCard";
 
 // Demo data for preview
 const demoProfile = {

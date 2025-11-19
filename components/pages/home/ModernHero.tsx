@@ -8,7 +8,7 @@ import { useAuthStore } from "@/lib/auth/store";
 import { supabase } from "@/lib/supabaseClient";
 import LightRays from "@/components/react-bits/LigthRays/LightRays";
 import SplitText from "@/components/common/SplitText";
-import { DevCardPreview } from "@/components/common/DevCardPreview";
+import { DevCardPreview } from "@/components/features/card/DevCardPreview";
 
 export function ModernHero() {
   const { user, isAuthenticating, setAuthenticating } = useAuthStore();

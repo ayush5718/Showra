@@ -1,7 +1,7 @@
 "use client";
 
 import type { HTMLAttributes } from "react";
-import { cn } from "@/lib/utils/cn";
+import { cn } from "@/lib/utils";
 
 interface GridBackdropProps extends HTMLAttributes<HTMLDivElement> {
   variant?: "bright" | "muted";

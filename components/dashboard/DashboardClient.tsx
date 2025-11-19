@@ -7,7 +7,7 @@ import { Copy, Sparkles } from "lucide-react";
 
 import { useAuthStore } from "@/lib/auth/store";
 import { supabase } from "@/lib/supabaseClient";
-import { DevCard } from "./DevCard";
+import { DevCard } from "@/components/features/card/DevCard";
 
 interface GitHubProfile {
   login: string;
