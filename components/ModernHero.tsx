@@ -5,7 +5,7 @@ import { ArrowRight, Sparkles, Download, Share2 } from "lucide-react";
 import Link from "next/link";
 import { useAuthStore } from "@/lib/auth/store";
 import { supabase } from "@/lib/supabaseClient";
-import Hyperspeed from "@/components/Hyperspeed";
+import Hyperspeed from "@/components/react-bits/Hyperspeed/Hyperspeed";
 import SplitText from "@/components/SplitText";
 
 export function ModernHero() {
