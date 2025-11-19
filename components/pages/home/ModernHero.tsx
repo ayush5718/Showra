@@ -75,10 +75,10 @@ export function ModernHero() {
                 </span>
               </motion.div>
 
-              {/* Main Heading - Redesigned */}
-              <div className="mb-8">
-                <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-[1.05] tracking-tight">
-                  <div className="mb-2 text-white">
+              {/* Main Heading - COMPLETELY REDESIGNED */}
+              <div className="mb-10">
+                <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black leading-[1.05] tracking-tight">
+                  <div className="mb-3 text-white">
                     <SplitText
                       text="Showcase Your"
                       tag="span"
@@ -88,7 +88,7 @@ export function ModernHero() {
                       textAlign="left"
                     />
                   </div>
-                  <div className="mb-2 inline-block [&_.split-char]:bg-gradient-to-r [&_.split-char]:from-[#00E5FF] [&_.split-char]:via-[#FF00CC] [&_.split-char]:to-[#9D4BFF] [&_.split-char]:bg-clip-text [&_.split-char]:text-transparent">
+                  <div className="mb-3 inline-block [&_.split-char]:bg-gradient-to-r [&_.split-char]:from-[#00E5FF] [&_.split-char]:via-[#FF00CC] [&_.split-char]:to-[#9D4BFF] [&_.split-char]:bg-clip-text [&_.split-char]:text-transparent">
                     <SplitText
                       text="GitHub Profile"
                       tag="span"
@@ -98,7 +98,7 @@ export function ModernHero() {
                       textAlign="left"
                     />
                   </div>
-                  <div className="text-white/90 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium">
+                  <div className="text-white/90 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black">
                     <SplitText
                       text="As Beautiful Cards"
                       tag="span"
@@ -111,9 +111,9 @@ export function ModernHero() {
                 </h1>
               </div>
 
-              {/* Description */}
+              {/* Description - BIGGER */}
               <motion.p
-                className="mb-10 text-lg sm:text-xl leading-relaxed text-white/60 max-w-xl mx-auto lg:mx-0"
+                className="mb-12 text-xl sm:text-2xl md:text-3xl leading-relaxed text-white/70 max-w-2xl mx-auto lg:mx-0 font-semibold"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
@@ -122,20 +122,20 @@ export function ModernHero() {
                 Download as an image and showcase your coding journey on social media.
               </motion.p>
 
-              {/* Feature Pills - Simplified */}
+              {/* Feature Pills - REDESIGNED BIGGER */}
               <motion.div
-                className="mb-10 flex flex-wrap items-center justify-center lg:justify-start gap-3"
+                className="mb-12 flex flex-wrap items-center justify-center lg:justify-start gap-4"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
               >
-                <div className="rounded-full bg-white/5 backdrop-blur-md border border-white/10 px-4 py-2 text-sm font-medium text-white/70">
+                <div className="rounded-2xl bg-gradient-to-r from-[#00E5FF]/20 to-[#00E5FF]/10 backdrop-blur-xl border-2 border-[#00E5FF]/30 px-6 py-3 text-base font-bold text-white shadow-lg shadow-[#00E5FF]/20">
                   ✨ Auto-Generated
                 </div>
-                <div className="rounded-full bg-white/5 backdrop-blur-md border border-white/10 px-4 py-2 text-sm font-medium text-white/70">
+                <div className="rounded-2xl bg-gradient-to-r from-[#FF00CC]/20 to-[#FF00CC]/10 backdrop-blur-xl border-2 border-[#FF00CC]/30 px-6 py-3 text-base font-bold text-white shadow-lg shadow-[#FF00CC]/20">
                   📊 Real-Time Stats
                 </div>
-                <div className="rounded-full bg-white/5 backdrop-blur-md border border-white/10 px-4 py-2 text-sm font-medium text-white/70">
+                <div className="rounded-2xl bg-gradient-to-r from-[#9D4BFF]/20 to-[#9D4BFF]/10 backdrop-blur-xl border-2 border-[#9D4BFF]/30 px-6 py-3 text-base font-bold text-white shadow-lg shadow-[#9D4BFF]/20">
                   🎨 Beautiful Design
                 </div>
               </motion.div>
@@ -150,7 +150,7 @@ export function ModernHero() {
                 {user ? (
                   <Link
                     href="/dashboard"
-                    className="group inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-[#00E5FF]/20 via-[#FF00CC]/20 to-[#9D4BFF]/20 backdrop-blur-md border border-white/20 px-10 py-5 text-base font-semibold text-white transition-all hover:from-[#00E5FF]/30 hover:via-[#FF00CC]/30 hover:to-[#9D4BFF]/30 hover:border-white/30"
+                    className="group relative inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] px-12 py-6 text-lg font-black text-white shadow-2xl shadow-[#00E5FF]/30 transition-all hover:scale-105 hover:shadow-3xl hover:shadow-[#00E5FF]/50 overflow-hidden"
                   >
                     Go to Dashboard
                     <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
@@ -160,7 +160,7 @@ export function ModernHero() {
                     type="button"
                     onClick={handleGetStarted}
                     disabled={isAuthenticating}
-                    className="group inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-[#00E5FF]/20 via-[#FF00CC]/20 to-[#9D4BFF]/20 backdrop-blur-md border border-white/20 px-10 py-5 text-base font-semibold text-white transition-all hover:from-[#00E5FF]/30 hover:via-[#FF00CC]/30 hover:to-[#9D4BFF]/30 hover:border-white/30 disabled:cursor-not-allowed disabled:opacity-70"
+                    className="group relative inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] px-12 py-6 text-lg font-black text-white shadow-2xl shadow-[#00E5FF]/30 transition-all hover:scale-105 hover:shadow-3xl hover:shadow-[#00E5FF]/50 disabled:cursor-not-allowed disabled:opacity-70 overflow-hidden"
                   >
                     {isAuthenticating ? (
                       <>

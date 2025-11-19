@@ -485,46 +485,48 @@ export function ModernDashboard() {
         <div className="absolute right-[15%] bottom-[25%] h-96 w-96 rounded-full bg-[#00E5FF]/10 blur-[120px]" />
       </div>
 
-      {/* Hero Section */}
+      {/* Hero Section - COMPLETELY REDESIGNED */}
       <section
         id="hero-section"
-        className="relative flex min-h-screen items-center justify-center py-20"
+        className="relative flex min-h-screen items-center justify-center py-32"
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-4xl mx-auto">
-            {/* Avatar */}
+          <div className="max-w-5xl mx-auto">
+            {/* Avatar - BIGGER */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6 }}
-              className="mb-8"
+              transition={{ duration: 0.8, type: "spring" }}
+              className="mb-12 flex justify-center"
             >
-              <div className="relative mx-auto w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-white/20 bg-white/5 overflow-hidden">
-                {user.avatarUrl ? (
-                  <Image
-                    src={user.avatarUrl}
-                    alt={user.name}
-                    width={160}
-                    height={160}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <span className="text-4xl font-semibold text-white/70 flex items-center justify-center h-full">
-                    {user.name.slice(0, 1)}
-                  </span>
-                )}
-                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#00E5FF]/20 via-[#FF00CC]/20 to-[#9D4BFF]/20 blur-xl" />
+              <div className="relative">
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] blur-2xl opacity-50 animate-pulse" />
+                <div className="relative w-48 h-48 sm:w-56 sm:h-56 rounded-full border-4 border-white/30 bg-gradient-to-br from-[#00E5FF]/20 via-[#FF00CC]/20 to-[#9D4BFF]/20 overflow-hidden shadow-2xl">
+                  {user.avatarUrl ? (
+                    <Image
+                      src={user.avatarUrl}
+                      alt={user.name}
+                      width={224}
+                      height={224}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-6xl font-black text-white flex items-center justify-center h-full">
+                      {user.name.slice(0, 1).toUpperCase()}
+                    </span>
+                  )}
+                </div>
               </div>
             </motion.div>
 
-            {/* Heading */}
+            {/* Heading - MUCH BIGGER */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
-              className="mb-6"
+              transition={{ delay: 0.3, duration: 0.8 }}
+              className="mb-8 text-center"
             >
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-3">
+              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white mb-4 leading-tight">
                 <SplitText
                   text={`Welcome, ${profile?.name || user.name}!`}
                   tag="span"
@@ -533,31 +535,36 @@ export function ModernDashboard() {
                   duration={0.6}
                 />
               </h1>
-              <p className="text-lg sm:text-xl text-white/60">
+              <p className="text-xl sm:text-2xl md:text-3xl text-white/70 font-semibold">
                 Your developer card is ready to share
               </p>
             </motion.div>
 
-            {/* Quick Stats */}
+            {/* Quick Stats - REDESIGNED */}
             {cardData && (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.6 }}
-                className="flex flex-wrap items-center justify-center gap-4 mb-8"
+                transition={{ delay: 0.5, duration: 0.8 }}
+                className="grid grid-cols-3 gap-6 max-w-2xl mx-auto"
               >
                 {[
-                  { label: "Repos", value: cardData.stats.repos },
-                  { label: "Stars", value: cardData.stats.stars.toLocaleString() },
-                  { label: "Contribs", value: cardData.stats.contributions.toLocaleString() },
+                  { label: "Repos", value: cardData.stats.repos, color: "from-[#00E5FF]" },
+                  { label: "Stars", value: cardData.stats.stars.toLocaleString(), color: "from-[#FF00CC]" },
+                  { label: "Contribs", value: cardData.stats.contributions.toLocaleString(), color: "from-[#9D4BFF]" },
                 ].map((stat, i) => (
-                  <div
+                  <motion.div
                     key={i}
-                    className="rounded-full bg-white/5 backdrop-blur-md border border-white/10 px-6 py-2"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.6 + i * 0.1 }}
+                    className="rounded-2xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border-2 border-white/20 px-6 py-6 text-center shadow-xl hover:scale-105 transition-transform"
                   >
-                    <div className="text-lg font-bold text-white">{stat.value}</div>
-                    <div className="text-xs text-white/60 uppercase tracking-wider">{stat.label}</div>
-                  </div>
+                    <div className={`text-3xl sm:text-4xl font-black bg-gradient-to-r ${stat.color} to-white bg-clip-text text-transparent mb-2`}>
+                      {stat.value}
+                    </div>
+                    <div className="text-xs sm:text-sm text-white/60 uppercase tracking-widest font-bold">{stat.label}</div>
+                  </motion.div>
                 ))}
               </motion.div>
             )}
@@ -572,27 +579,27 @@ export function ModernDashboard() {
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-6xl mx-auto">
-            {/* Section Header */}
+            {/* Section Header - REDESIGNED */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="text-center mb-12"
+              transition={{ duration: 0.8 }}
+              className="text-center mb-16"
             >
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-md mb-4">
-                <span className="text-xs font-semibold uppercase tracking-[0.15em] text-white/70">Your DevCard</span>
+              <div className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-gradient-to-r from-[#00E5FF]/20 via-[#FF00CC]/20 to-[#9D4BFF]/20 backdrop-blur-xl border-2 border-white/20 mb-6 shadow-lg">
+                <span className="text-sm font-black uppercase tracking-[0.2em] text-white">Your DevCard</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
+              <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight">
                 <SplitText
-                  text={profileLoading ? "Loading..." : cardData ? "Your Card is Ready!" : "Preparing..."}
+                  text={profileLoading ? "Loading..." : cardData ? "Your Card is Ready! 🎉" : "Preparing..."}
                   tag="span"
                   className="block"
                   delay={50}
                   duration={0.6}
                 />
               </h2>
-              <p className="text-lg text-white/60 max-w-2xl mx-auto">
+              <p className="text-xl sm:text-2xl text-white/70 max-w-3xl mx-auto font-semibold">
                 {profileLoading 
                   ? "Fetching your GitHub data..." 
                   : cardData 

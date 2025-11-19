@@ -52,7 +52,7 @@ body {
   min-height: 100vh;
   background: #0A0A0A;
   color: var(--text-primary);
-  font-family: var(--font-plus-jakarta), "Plus Jakarta Sans", sans-serif;
+  font-family: var(--font-montserrat), "Montserrat", sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
