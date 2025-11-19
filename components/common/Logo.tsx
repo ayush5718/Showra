@@ -47,14 +47,14 @@ export function Logo({
       className={`flex items-center ${sizes.gap} group relative ${className}`}
     >
       <div className="relative">
-        <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] opacity-20 blur-md group-hover:opacity-30 transition-opacity z-10" />
-        <div className={`relative ${sizes.icon} z-20`}>
+        <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] opacity-20 blur-md group-hover:opacity-30 transition-opacity -z-10" />
+        <div className={`relative ${sizes.icon} z-10`}>
           <Image
             src="/logo.png"
             alt="Showra logo"
             width={56}
             height={56}
-            className="h-full w-full object-contain"
+            className="h-full w-full object-contain relative z-10"
             priority
           />
         </div>

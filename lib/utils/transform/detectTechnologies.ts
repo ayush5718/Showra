@@ -193,9 +193,3 @@ export function hasTechnology(repositories: Repository[], technology: string): b
   );
 }
 
-
-
-
-
-
-

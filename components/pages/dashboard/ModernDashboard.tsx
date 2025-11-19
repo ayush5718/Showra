@@ -8,7 +8,7 @@ import { useAuthStore } from "@/lib/auth/store";
 import { supabase } from "@/lib/supabaseClient";
 import { DevCard } from "@/components/features/card/DevCard";
 import { READMEPreview } from "@/components/features/card/READMEPreview";
-import { getTopTechnologies } from "@/lib/detectTechnologies";
+import { getTopTechnologies } from "@/lib/utils/transform/detectTechnologies";
 import LightRays from "@/components/react-bits/LigthRays/LightRays";
 import SplitText from "@/components/common/SplitText";
 import { CardSkeleton } from "@/components/ui/CardSkeleton";

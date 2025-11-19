@@ -2,6 +2,8 @@
 // Note: API key is stored server-side in app/api/analyze-profile/route.ts
 // This client-side file only calls the API route, never uses the key directly
 
+import { transformGitHubProfile } from "@/lib/utils/transform/githubTransform";
+
 interface GitHubProfileData {
   profile: {
     name: string | null;
@@ -51,29 +53,62 @@ export async function analyzeDeveloperProfile(data: GitHubProfileData): Promise<
       if (response.status === 429 || response.status === 503 || 
           errorMessage.includes('RATE_LIMIT') || errorMessage.includes('SERVICE_UNAVAILABLE') ||
           errorMessage.includes('overloaded') || errorMessage.includes('UNAVAILABLE')) {
-        // Silently use fallback - these are expected errors
-        return generateFallbackAnalysis(data);
+        // Silently use custom transformation - these are expected errors
+        return useCustomTransformation(data);
       }
       
-      // For other errors (500, etc.), still use fallback but log for debugging
-      console.warn('AI analysis API error (using fallback):', errorMessage);
-      return generateFallbackAnalysis(data);
+      // For other errors (500, etc.), still use custom transformation but log for debugging
+      console.warn('AI analysis API error (using custom transformation):', errorMessage);
+      return useCustomTransformation(data);
     }
 
     const analysis: AISkillAnalysis = await response.json();
     
     // Validate and fallback
     if (!analysis.expertise || !Array.isArray(analysis.expertise)) {
-      return generateFallbackAnalysis(data);
+      return useCustomTransformation(data);
     }
     
     return analysis;
   } catch (error) {
-    // Silently return fallback - don't log errors for expected failures
-    return generateFallbackAnalysis(data);
+    // Silently return custom transformation - don't log errors for expected failures
+    return useCustomTransformation(data);
   }
 }
 
+/**
+ * Use custom GitHub transformation when AI fails
+ * This provides comprehensive analysis without AI
+ */
+function useCustomTransformation(data: GitHubProfileData): AISkillAnalysis {
+  return transformGitHubProfile(
+    {
+      name: data.profile.name,
+      login: data.profile.login,
+      bio: data.profile.bio,
+      location: data.profile.location,
+      avatar_url: '',
+      public_repos: data.stats.repos,
+      followers: 0,
+      following: 0,
+    },
+    data.stats,
+    data.languages,
+    (data.repositories || []).map(repo => ({
+      name: repo.name,
+      description: repo.description,
+      language: repo.language,
+      stargazers_count: repo.stars,
+      forks_count: 0,
+      topics: [],
+    }))
+  );
+}
+
+/**
+ * @deprecated Use useCustomTransformation instead
+ * Kept for backward compatibility
+ */
 function generateFallbackAnalysis(data: GitHubProfileData): AISkillAnalysis {
   // Fallback analysis based on languages
   const expertise: Array<{ category: string; level: number; technologies: string[]; description: string }> = [];

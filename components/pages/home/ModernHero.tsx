@@ -27,12 +27,12 @@ export function ModernHero() {
   };
 
   return (
-    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0A0A0A] before:absolute before:w-full before:h-full before:bg-gradient-to-r before:from-[#00E5FF]/10 before:via-[#FF00CC]/5 before:to-[#9D4BFF]/10 before:rounded-full before:top-0 before:blur-3xl before:-z-10">
+    <section className="relative flex items-center justify-center overflow-hidden bg-[#0A0A0A] max-h-[900px] md:pt-16 min-h-[600px] before:absolute before:w-full before:h-full before:bg-gradient-to-r before:from-[#00E5FF]/10 before:via-[#FF00CC]/5 before:to-[#9D4BFF]/10 before:rounded-full before:top-0 before:blur-3xl before:-z-10">
       {/* LightRays Background Effect */}
       <div className="absolute inset-0 z-0">
         <LightRays
           raysOrigin="top-center"
-          raysColor="#00E5FF"
+          raysColor="#9D4BFF"
           raysSpeed={1.5}
           lightSpread={1.2}
           rayLength={2.5}
@@ -57,7 +57,7 @@ export function ModernHero() {
       {/* Main Container */}
       <div className="relative z-10 w-full">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 min-h-screen py-20">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 py-20">
             {/* Left Content - 70% */}
             <div className="flex-[0.7] w-full text-center lg:text-left">
               {/* Badge */}
@@ -130,27 +130,27 @@ export function ModernHero() {
                 {user ? (
                   <Link
                     href="/dashboard"
-                    className="group relative inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] px-12 py-6 text-lg font-black text-white shadow-2xl shadow-[#00E5FF]/30 transition-all hover:shadow-3xl hover:shadow-[#00E5FF]/50 overflow-hidden"
+                    className="group relative inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] px-8 py-4 text-base font-bold text-white shadow-xl shadow-[#00E5FF]/30 transition-all hover:shadow-2xl hover:shadow-[#00E5FF]/50 overflow-hidden"
                   >
                     Go to Dashboard
-                    <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </Link>
                 ) : (
                   <button
                     type="button"
                     onClick={handleGetStarted}
                     disabled={isAuthenticating}
-                    className="group relative inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] px-12 py-6 text-lg font-black text-white shadow-2xl shadow-[#00E5FF]/30 transition-all hover:shadow-3xl hover:shadow-[#00E5FF]/50 disabled:cursor-not-allowed disabled:opacity-70 overflow-hidden"
+                    className="group relative inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] px-8 py-4 text-base font-bold text-white shadow-xl shadow-[#00E5FF]/30 transition-all hover:shadow-2xl hover:shadow-[#00E5FF]/50 disabled:cursor-not-allowed disabled:opacity-70 overflow-hidden"
                   >
                     {isAuthenticating ? (
                       <>
-                        <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                        <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                         Getting Started...
                       </>
                     ) : (
                       <>
                         Get Started
-                        <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                       </>
                     )}
                   </button>
