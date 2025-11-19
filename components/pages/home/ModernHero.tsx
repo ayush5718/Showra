@@ -75,10 +75,10 @@ export function ModernHero() {
                 </span>
               </motion.div>
 
-              {/* Main Heading - COMPLETELY REDESIGNED */}
-              <div className="mb-10">
-                <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black leading-[1.05] tracking-tight">
-                  <div className="mb-3 text-white">
+              {/* Main Heading - REDESIGNED with smaller text */}
+              <div className="mb-8">
+                <h1 className="leading-[1.05] tracking-tight">
+                  <div className="mb-2 text-white">
                     <SplitText
                       text="Showcase Your"
                       tag="span"
@@ -88,7 +88,7 @@ export function ModernHero() {
                       textAlign="left"
                     />
                   </div>
-                  <div className="mb-3 inline-block [&_.split-char]:bg-gradient-to-r [&_.split-char]:from-[#00E5FF] [&_.split-char]:via-[#FF00CC] [&_.split-char]:to-[#9D4BFF] [&_.split-char]:bg-clip-text [&_.split-char]:text-transparent">
+                  <div className="mb-2 inline-block [&_.split-char]:bg-gradient-to-r [&_.split-char]:from-[#00E5FF] [&_.split-char]:via-[#FF00CC] [&_.split-char]:to-[#9D4BFF] [&_.split-char]:bg-clip-text [&_.split-char]:text-transparent">
                     <SplitText
                       text="GitHub Profile"
                       tag="span"
@@ -98,7 +98,7 @@ export function ModernHero() {
                       textAlign="left"
                     />
                   </div>
-                  <div className="text-white/90 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black">
+                  <div className="text-white/90">
                     <SplitText
                       text="As Beautiful Cards"
                       tag="span"
@@ -111,9 +111,9 @@ export function ModernHero() {
                 </h1>
               </div>
 
-              {/* Description - BIGGER */}
+              {/* Description - Smaller */}
               <motion.p
-                className="mb-12 text-xl sm:text-2xl md:text-3xl leading-relaxed text-white/70 max-w-2xl mx-auto lg:mx-0 font-semibold"
+                className="mb-10 text-base sm:text-lg md:text-xl leading-relaxed text-white/70 max-w-2xl mx-auto lg:mx-0 font-medium"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}

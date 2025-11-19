@@ -1,5 +1,6 @@
 "use client";
 
+import { Download, Share2 } from "lucide-react";
 import { DevCard } from "@/components/features/card/DevCard";
 
 // Demo data for preview
@@ -109,6 +110,18 @@ export function DevCardPreview({ scale = 1, className = "" }: DevCardPreviewProp
         repositories={demoRepositories}
         skipAI={true}
       />
+      
+      {/* Download and Share Buttons at Bottom */}
+      <div className="flex items-center justify-center gap-3 mt-6">
+        <button className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#00E5FF]/20 to-[#00E5FF]/10 backdrop-blur-xl border-2 border-[#00E5FF]/30 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-[#00E5FF]/20 transition-all hover:from-[#00E5FF]/30 hover:to-[#00E5FF]/20">
+          <Download className="h-4 w-4" />
+          Download
+        </button>
+        <button className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#FF00CC]/20 to-[#FF00CC]/10 backdrop-blur-xl border-2 border-[#FF00CC]/30 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-[#FF00CC]/20 transition-all hover:from-[#FF00CC]/30 hover:to-[#FF00CC]/20">
+          <Share2 className="h-4 w-4" />
+          Share
+        </button>
+      </div>
     </div>
   );
 }
