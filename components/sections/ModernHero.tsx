@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles, Download, Share2 } from "lucide-react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useAuthStore } from "@/lib/auth/store";
 import { supabase } from "@/lib/supabaseClient";
 import Hyperspeed from "@/components/react-bits/Hyperspeed/Hyperspeed";
@@ -27,7 +28,7 @@ export function ModernHero() {
 
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0A0A0A] px-4 py-20 sm:px-8">
-      {/* Hyperspeed Background Effect - Old Pattern Restored */}
+      {/* Hyperspeed Background Effect */}
       <div className="absolute inset-0 z-0 opacity-70">
         <Hyperspeed
           effectOptions={{
@@ -70,13 +71,9 @@ export function ModernHero() {
         />
       </div>
 
-      {/* Gradient overlay for text readability */}
+      {/* Gradient overlay */}
       <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-black/50 via-black/30 to-black/50" />
-      
-      {/* Vertical gradient fade at bottom */}
       <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-48 z-[2] bg-gradient-to-t from-black via-black/60 to-transparent" />
-      
-      {/* Animated grid pattern */}
       <div className="pointer-events-none absolute inset-0 z-[1] opacity-30 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
 
       <div className="relative z-10 mx-auto w-full max-w-5xl text-center">
@@ -93,7 +90,7 @@ export function ModernHero() {
           </span>
         </motion.div>
 
-        {/* Main Heading */}
+        {/* Main Heading with SplitText */}
         <div className="mb-12">
           <h1 className="text-5xl font-bold leading-[1.1] tracking-tight text-white sm:text-6xl md:text-7xl lg:text-8xl">
             <SplitText

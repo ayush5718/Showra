@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { DevCard } from "@/components/dashboard/DevCard";
 import { Download, Share2, Image } from "lucide-react";
+import Shuffle from "@/components/react-bits/Shuffle/Shuffle";
 
 // Demo data for John Doe
 const demoProfile = {
@@ -125,19 +126,26 @@ export function CardShowcase() {
             <div className="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-white/30" />
           </div>
 
-          <motion.h2
-            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-5 sm:mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1, duration: 0.6 }}
-          >
-            Your Developer Card
-            <br />
-            <span className="bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] bg-clip-text text-transparent">
-              In Action
-            </span>
-          </motion.h2>
+          <div className="mb-5 sm:mb-6">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white">
+              <Shuffle
+                text="Your Developer Card"
+                tag="span"
+                className="block mb-2"
+                duration={0.4}
+                delay={30}
+              />
+              <span className="bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] bg-clip-text text-transparent">
+                <Shuffle
+                  text="In Action"
+                  tag="span"
+                  className="block"
+                  duration={0.4}
+                  delay={30}
+                />
+              </span>
+            </h2>
+          </div>
 
           <motion.p
             className="mx-auto max-w-2xl text-sm sm:text-base md:text-lg leading-relaxed text-white/60 mb-8 sm:mb-10"
