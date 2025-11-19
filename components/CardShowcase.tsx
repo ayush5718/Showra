@@ -164,7 +164,7 @@ export function CardShowcase() {
             ].map((feature, i) => (
               <div
                 key={i}
-                className="flex items-center gap-2.5 sm:gap-3 rounded-xl border border-white/10 bg-white/5 px-3.5 sm:px-4 md:px-5 py-2.5 sm:py-3 backdrop-blur-sm w-full sm:flex-1 sm:max-w-[220px] md:max-w-[240px] lg:max-w-[260px] transition-all hover:border-white/20 hover:bg-white/10"
+                className="flex items-center gap-2.5 sm:gap-3 rounded-xl bg-white/5 backdrop-blur-md px-3.5 sm:px-4 md:px-5 py-2.5 sm:py-3 w-full sm:flex-1 sm:max-w-[220px] md:max-w-[240px] lg:max-w-[260px] transition-all hover:bg-white/10"
               >
                 <div className="rounded-lg bg-gradient-to-br from-[#00E5FF]/20 to-[#FF00CC]/20 p-1.5 sm:p-2 flex-shrink-0">
                   <feature.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#00E5FF]" />

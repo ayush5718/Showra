@@ -560,14 +560,14 @@ export function ModernDashboard() {
               contributions, and coding journey. Your personalized dev card is automatically generated 
               from your GitHub profile and ready to share with the world.
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
-              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2">
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
+              <div className="flex items-center gap-2 rounded-full bg-white/5 backdrop-blur-md px-5 py-2.5">
                 <span className="text-sm font-medium text-white/70">✨ Auto-generated</span>
               </div>
-              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2">
+              <div className="flex items-center gap-2 rounded-full bg-white/5 backdrop-blur-md px-5 py-2.5">
                 <span className="text-sm font-medium text-white/70">📊 Real-time stats</span>
               </div>
-              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2">
+              <div className="flex items-center gap-2 rounded-full bg-white/5 backdrop-blur-md px-5 py-2.5">
                 <span className="text-sm font-medium text-white/70">🎨 Beautiful design</span>
               </div>
             </div>
@@ -584,14 +584,14 @@ export function ModernDashboard() {
         className="relative flex min-h-screen flex-col items-center justify-center gap-6 pt-8 pb-16 scroll-mt-24"
       >
         <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-3 w-full mb-8">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5">
-              <span className="text-xs font-semibold text-white/70">STEP 1</span>
+          <div className="text-center space-y-4 w-full mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-md">
+              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-white/70">STEP 1</span>
             </div>
-            <h2 className="text-3xl font-bold text-white sm:text-4xl md:text-5xl">
+            <h2 className="text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl mb-4">
               {profileLoading ? "Loading your DevCard..." : cardData ? "Your DevCard is Ready! 🎉" : "Preparing your DevCard..."}
             </h2>
-            <p className="text-base text-white/60 max-w-2xl mx-auto sm:text-lg">
+            <p className="text-lg leading-relaxed text-white/60 max-w-2xl mx-auto sm:text-xl">
               {profileLoading 
                 ? "Fetching your GitHub data..." 
                 : cardData 
@@ -652,14 +652,14 @@ export function ModernDashboard() {
         className="relative flex min-h-screen flex-col items-center justify-center gap-6 py-16 scroll-mt-24"
       >
         <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-3 mb-8">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5">
-              <span className="text-xs font-semibold text-white/70">STEP 2</span>
+          <div className="text-center space-y-4 mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-md">
+              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-white/70">STEP 2</span>
             </div>
-            <h2 className="text-3xl font-bold text-white sm:text-4xl md:text-5xl">
+            <h2 className="text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl mb-4">
               Generate Your GitHub README
             </h2>
-            <p className="text-base text-white/60 max-w-2xl mx-auto sm:text-lg">
+            <p className="text-lg leading-relaxed text-white/60 max-w-2xl mx-auto sm:text-xl">
               Copy the markdown code below and add it to your GitHub profile README.md file
             </p>
           </div>

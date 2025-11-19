@@ -95,20 +95,19 @@ export function ModernHero() {
 
         {/* Main Heading */}
         <div className="mb-12">
-          <h1 className="mb-4 text-5xl font-bold leading-[1.1] tracking-tight text-white sm:text-6xl md:text-7xl lg:text-8xl">
+          <h1 className="text-5xl font-bold leading-[1.1] tracking-tight text-white sm:text-6xl md:text-7xl lg:text-8xl">
             <SplitText
               text="Create Beautiful"
               tag="span"
-              className="block"
+              className="block mb-2"
               delay={50}
               duration={0.6}
             />
-            <br />
-            <span className="bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] bg-clip-text text-transparent">
               <SplitText
                 text="Developer Cards"
                 tag="span"
-                className="inline-block"
+                className="block"
                 delay={50}
                 duration={0.6}
               />
