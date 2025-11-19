@@ -9,12 +9,10 @@ import { SimpleTooltip } from "@/components/ui/SimpleTooltip";
 export function CardShowcase() {
   return (
     <section
-      className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0A0A0A] pt-12 sm:pt-20 md:pt-28 pb-12 sm:pb-20 md:pb-28"
+      className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0A0A0A] pt-12 sm:pt-20 md:pt-28 pb-12 sm:pb-20 md:pb-28 before:absolute before:w-full before:h-full before:bg-gradient-to-r before:from-[#00E5FF]/10 before:via-[#9D4BFF]/5 before:to-[#FF00CC]/10 before:rounded-full before:top-0 before:blur-3xl before:-z-10"
     >
       {/* Subtle background effects */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#00E5FF]/5 via-transparent to-[#9D4BFF]/5" />
-        <div className="absolute inset-0 bg-gradient-to-tr from-[#FF00CC]/5 via-transparent to-[#00E5FF]/5" />
         <div className="absolute left-[20%] top-[30%] h-96 w-96 rounded-full bg-[#9D4BFF]/6 blur-[120px]" />
         <div className="absolute right-[20%] bottom-[30%] h-96 w-96 rounded-full bg-[#00E5FF]/6 blur-[120px]" />
       </div>

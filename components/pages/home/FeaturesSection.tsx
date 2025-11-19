@@ -52,7 +52,7 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0A0A0A] py-20">
+    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0A0A0A] py-20 before:absolute before:w-full before:h-full before:bg-gradient-to-r before:from-[#FF00CC]/10 before:via-[#9D4BFF]/5 before:to-[#00E5FF]/10 before:rounded-full before:top-0 before:blur-3xl before:-z-10">
       {/* LightRays Background Effect */}
       <div className="absolute inset-0 z-0">
         <LightRays
@@ -74,8 +74,6 @@ export function FeaturesSection() {
 
       {/* Background effects */}
       <div className="pointer-events-none absolute inset-0 z-[1]">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#FF00CC]/5 via-transparent to-[#9D4BFF]/5" />
-        <div className="absolute inset-0 bg-gradient-to-tl from-[#00E5FF]/5 via-transparent to-[#FF00CC]/5" />
         <div className="absolute left-[20%] top-[20%] h-96 w-96 rounded-full bg-[#9D4BFF]/8 blur-[120px]" />
         <div className="absolute right-[20%] bottom-[20%] h-96 w-96 rounded-full bg-[#00E5FF]/8 blur-[120px]" />
       </div>
@@ -102,7 +100,7 @@ export function FeaturesSection() {
 
             <h2 className="text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl mb-4">
               <SplitText
-                text="Why Choose Showg"
+                text="Why Choose Showra"
                 tag="span"
                 className="block"
                 delay={50}

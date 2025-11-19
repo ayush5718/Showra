@@ -12,9 +12,9 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Showg — Shareable GitHub Developer Cards",
+  title: "Showra — Shareable GitHub Developer Cards",
   description:
-    "Transform your GitHub profile into beautiful, shareable developer cards with Showg.",
+    "Transform your GitHub profile into beautiful, shareable developer cards with Showra.",
   icons: {
     icon: "/favicon.ico",
   },

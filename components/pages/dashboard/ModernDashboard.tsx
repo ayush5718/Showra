@@ -494,7 +494,7 @@ export function ModernDashboard() {
   const fallbackProfileData = useMemo(() => {
     const safeUser = user ?? {
       username: "your-github",
-      name: "Showg Maker",
+      name: "Showra Maker",
       avatarUrl: "/logo.png",
     };
     return {
@@ -557,18 +557,14 @@ export function ModernDashboard() {
       </div>
 
       {/* Grid Background */}
-      <div className="pointer-events-none fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#9D4BFF]/5 via-transparent to-[#00E5FF]/5" />
-        <div className="absolute inset-0 bg-gradient-to-tl from-[#FF00CC]/5 via-transparent to-[#9D4BFF]/5" />
+      <div className="pointer-events-none fixed inset-0 -z-10 before:absolute before:w-full before:h-full before:bg-gradient-to-r before:from-[#9D4BFF]/10 before:via-[#00E5FF]/5 before:to-[#FF00CC]/10 before:rounded-full before:top-0 before:blur-3xl before:-z-10">
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-20" />
         <div className="absolute left-[10%] top-[20%] h-96 w-96 rounded-full bg-[#9D4BFF]/8 blur-[120px]" />
         <div className="absolute right-[15%] bottom-[25%] h-96 w-96 rounded-full bg-[#00E5FF]/8 blur-[120px]" />
       </div>
 
       {/* Hero Section */}
-      <section className="relative flex min-h-screen items-center justify-center py-20">
-        {/* Section gradient overlay */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#00E5FF]/5 via-transparent to-[#FF00CC]/5" />
+      <section className="relative flex min-h-screen items-center justify-center py-20 before:absolute before:w-full before:h-full before:bg-gradient-to-r before:from-[#00E5FF]/10 before:via-[#FF00CC]/5 before:to-[#9D4BFF]/10 before:rounded-full before:top-0 before:blur-3xl before:-z-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
             {/* Heading */}
@@ -622,7 +618,7 @@ export function ModernDashboard() {
       </section>
 
       {/* Main Content Section with Tabs */}
-      <section className="relative flex min-h-screen items-start justify-center py-12">
+      <section className="relative flex min-h-screen items-start justify-center py-12 before:absolute before:w-full before:h-full before:bg-gradient-to-r before:from-[#9D4BFF]/10 before:via-[#00E5FF]/5 before:to-[#FF00CC]/10 before:rounded-full before:top-0 before:blur-3xl before:-z-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-6xl mx-auto">
             {/* Tabs */}

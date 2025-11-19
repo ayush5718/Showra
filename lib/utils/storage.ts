@@ -2,8 +2,8 @@
  * Local storage utilities for card data
  */
 
-const STORAGE_KEY = "showg-card-data";
-const STORAGE_TIMESTAMP_KEY = "showg-card-timestamp";
+const STORAGE_KEY = "showra-card-data";
+const STORAGE_TIMESTAMP_KEY = "showra-card-timestamp";
 
 export interface StoredCardData {
   profile: any;

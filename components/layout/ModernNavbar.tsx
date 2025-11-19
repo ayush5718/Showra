@@ -47,11 +47,11 @@ export function ModernNavbar() {
       const metadata = authUser.user_metadata as Record<string, any>;
       setUser({
         id: authUser.id,
-        name: metadata?.name ?? authUser.email ?? "Showg Maker",
+        name: metadata?.name ?? authUser.email ?? "Showra Maker",
         username: metadata?.user_name ?? metadata?.nickname ?? authUser.email ?? "maker",
         avatarUrl:
           metadata?.avatar_url ??
-          `https://api.dicebear.com/7.x/initials/svg?seed=${metadata?.user_name ?? "showg"}`,
+          `https://api.dicebear.com/7.x/initials/svg?seed=${metadata?.user_name ?? "showra"}`,
         email: authUser.email ?? undefined,
       });
     });
@@ -89,30 +89,22 @@ export function ModernNavbar() {
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-20 sm:h-24 items-center justify-between">
-            {/* Logo - BIGGER and BOLDER */}
+            {/* Logo - Using image.png for icon with text */}
             <Link
               href={ROUTES.HOME}
               className="flex items-center gap-3 group relative"
               onClick={closeMobileMenu}
             >
-              <div className="relative w-12 h-12 sm:w-14 sm:h-14">
+              <div className="relative">
                 <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] opacity-20 blur-md group-hover:opacity-30 transition-opacity" />
                 <Image
-                  src="/logo.png"
-                  alt="Showg logo"
-                  width={56}
-                  height={56}
-                  className="h-full w-full object-contain relative z-10"
+                  src="/image.png"
+                  alt="Showra"
+                  width={140}
+                  height={40}
+                  className="h-8 sm:h-10 w-auto object-contain relative z-10"
                   priority
                 />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-2xl sm:text-3xl font-black bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] bg-clip-text text-transparent leading-tight">
-                  Showg
-                </span>
-                <span className="text-[10px] uppercase tracking-[0.2em] text-white/40 font-semibold">
-                  Developer Cards
-                </span>
               </div>
             </Link>
 

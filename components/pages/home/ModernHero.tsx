@@ -28,7 +28,7 @@ export function ModernHero() {
   };
 
   return (
-    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0A0A0A]">
+    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0A0A0A] before:absolute before:w-full before:h-full before:bg-gradient-to-r before:from-[#00E5FF]/10 before:via-[#FF00CC]/5 before:to-[#9D4BFF]/10 before:rounded-full before:top-0 before:blur-3xl before:-z-10">
       {/* LightRays Background Effect */}
       <div className="absolute inset-0 z-0">
         <LightRays
@@ -49,8 +49,6 @@ export function ModernHero() {
       </div>
 
       {/* Gradient overlays */}
-      <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-br from-[#00E5FF]/5 via-transparent to-[#FF00CC]/5" />
-      <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-tl from-[#9D4BFF]/5 via-transparent to-[#00E5FF]/5" />
       <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-black/50 via-black/30 to-black/50" />
       <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-48 z-[2] bg-gradient-to-t from-black via-black/60 to-transparent" />
       
