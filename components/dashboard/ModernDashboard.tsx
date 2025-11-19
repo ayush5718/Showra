@@ -3,12 +3,14 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, Download, Copy, Check } from "lucide-react";
 import { useAuthStore } from "@/lib/auth/store";
 import { supabase } from "@/lib/supabaseClient";
 import { DevCard } from "./DevCard";
 import { READMEPreview } from "./READMEPreview";
 import { getTopTechnologies } from "@/lib/detectTechnologies";
+import LightRays from "@/components/react-bits/LigthRays/LightRays";
+import SplitText from "@/components/common/SplitText";
 
 interface GitHubProfile {
   login: string;
@@ -91,7 +93,6 @@ export function ModernDashboard() {
   const [cardData, setCardData] = useState<DevCardData | null>(null);
   const [repositories, setRepositories] = useState<GitHubRepo[]>([]);
   const [currentSection, setCurrentSection] = useState<'hero' | 'devcard' | 'readme'>('hero');
-  const [orientation, setOrientation] = useState<"vertical" | "horizontal">("vertical");
   const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(() => {
@@ -146,14 +147,9 @@ export function ModernDashboard() {
 
     (async () => {
       try {
-        console.log('🔄 Starting data fetch...');
-        console.log('📊 Current state:', { user: !!user, session: !!session, authLoading });
-        
         const isValid = await validateSession();
         
         if (!isMounted) return;
-        
-        console.log('🔐 Session validation result:', isValid);
         
         if (!isValid) {
           throw new Error("Session expired. Please refresh the page.");
@@ -162,10 +158,7 @@ export function ModernDashboard() {
         const currentSession = useAuthStore.getState().session;
         const providerToken = currentSession?.providerToken || session.providerToken;
 
-        console.log('🎫 Provider token available:', !!providerToken);
-
         if (!providerToken) {
-          console.log('⚠️ No provider token, attempting refresh...');
           const refreshed = await refreshSession();
           if (!refreshed) {
             throw new Error("Unable to authenticate. Please sign in again.");
@@ -174,11 +167,8 @@ export function ModernDashboard() {
           if (!refreshedSession?.providerToken) {
             throw new Error("Unable to authenticate. Please sign in again.");
           }
-          console.log('✅ Session refreshed, token available');
           return;
         }
-        
-        console.log('🚀 Making GitHub API calls...');
 
         const headers = {
           Authorization: `Bearer ${providerToken}`,
@@ -247,17 +237,6 @@ export function ModernDashboard() {
 
         const profileData = (await profileResponse.json()) as GitHubProfile;
         const reposData = (await reposResponse.json()) as GitHubRepo[];
-
-        console.log('🔵 ===== GITHUB API RAW DATA =====');
-        console.log('📊 Profile Data:', profileData);
-        console.log('📦 Repositories Count:', reposData.length);
-        console.log('👥 Followers:', profileData.followers);
-        console.log('⭐ Following:', profileData.following);
-        console.log('📁 Public Repos:', profileData.public_repos);
-        console.log('🔗 Profile URL:', profileData.html_url);
-        console.log('📍 Location:', profileData.location);
-        console.log('💼 Company:', profileData.company);
-        console.log('📝 Bio:', profileData.bio);
 
         if (!isMounted) return;
         setRepositories(reposData);
@@ -386,23 +365,11 @@ export function ModernDashboard() {
           timeline,
         };
 
-        console.log('🟢 ===== PROCESSED CARD DATA =====');
-        console.log('📈 Stats Object:', processedStats);
-        console.log('💻 Top Languages:', languages);
-        console.log('🛠️ Detected Technologies:', detectedTechnologies);
-        console.log('⭐ Total Stars:', starTotal);
-        console.log('🍴 Total Forks:', forkTotal);
-        console.log('📊 Contributions (This Year):', currentYearContributions);
-        console.log('🔝 Top Repository:', topRepo);
-        console.log('📋 Full Card Data:', finalCardData);
-
         if (!isMounted) return;
         
-        console.log('✅ Setting profile and card data...');
         setProfile(profileData);
         setCardData(finalCardData);
         setProfileError(null);
-        console.log('✅ Data set successfully!');
       } catch (error) {
         if (!isMounted) return;
         setCardData(null);
@@ -428,7 +395,7 @@ export function ModernDashboard() {
 
       if (!heroSection || !devCardSection || !readmeSection) return;
 
-      const scrollPosition = window.scrollY + window.innerHeight / 2; // Use middle of viewport
+      const scrollPosition = window.scrollY + window.innerHeight / 2;
       const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
       const devCardBottom = devCardSection.offsetTop + devCardSection.offsetHeight;
 
@@ -441,7 +408,7 @@ export function ModernDashboard() {
       }
     };
 
-    handleScroll(); // Check on mount
+    handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -480,17 +447,37 @@ export function ModernDashboard() {
 
   if (!user) {
     return (
-      <main className="relative flex min-h-screen items-center justify-center bg-[#0A0A0A] px-4">
-        <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-10 text-center text-white/70">
-          <p className="text-sm sm:text-base">Loading your dashboard…</p>
+      <main className="relative flex min-h-screen items-center justify-center bg-[#0A0A0A]">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-10 text-center text-white/70">
+            <p className="text-sm sm:text-base">Loading your dashboard…</p>
+          </div>
         </div>
-
       </main>
     );
   }
 
   return (
     <main className="relative min-h-screen bg-[#0A0A0A]">
+      {/* LightRays Background */}
+      <div className="pointer-events-none fixed inset-0 z-0">
+        <LightRays
+          raysOrigin="top-right"
+          raysColor="#9D4BFF"
+          raysSpeed={1.0}
+          lightSpread={1.3}
+          rayLength={2.0}
+          pulsating={true}
+          fadeDistance={1.0}
+          saturation={1.0}
+          followMouse={true}
+          mouseInfluence={0.1}
+          noiseAmount={0.05}
+          distortion={0.1}
+          className="opacity-25"
+        />
+      </div>
+
       {/* Grid Background */}
       <div className="pointer-events-none fixed inset-0 -z-10">
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-20" />
@@ -498,189 +485,229 @@ export function ModernDashboard() {
         <div className="absolute right-[15%] bottom-[25%] h-96 w-96 rounded-full bg-[#00E5FF]/10 blur-[120px]" />
       </div>
 
-      {/* Hero Section - First View */}
-      <motion.section
+      {/* Hero Section */}
+      <section
         id="hero-section"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        className="relative flex min-h-screen flex-col items-center justify-center gap-8 py-16 pb-8 text-center"
+        className="relative flex min-h-screen items-center justify-center py-20"
       >
-        {/* Content Container - Centered with Max Width */}
-        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
-          {/* User Avatar */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="relative z-10 mb-8"
-          >
-            <div className="relative mx-auto flex h-32 w-32 items-center justify-center overflow-hidden rounded-full border-4 border-white/20 bg-white/5 sm:h-40 sm:w-40">
-              {user.avatarUrl ? (
-                <Image
-                  src={user.avatarUrl}
-                  alt={user.name}
-                  width={160}
-                  height={160}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <span className="text-4xl font-semibold text-white/70">
-                  {user.name.slice(0, 1)}
-                </span>
-              )}
-              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#00E5FF]/20 via-[#FF00CC]/20 to-[#9D4BFF]/20 blur-xl" />
-            </div>
-          </motion.div>
-
-          {/* Greeting */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className="relative z-10 space-y-4 mb-8"
-          >
-            <h1 className="text-4xl font-bold text-white sm:text-5xl md:text-6xl">
-              Hi, {profile?.name || user.name}! 👋
-            </h1>
-            <p className="mx-auto max-w-2xl text-lg text-white/70 sm:text-xl">
-              Welcome to your personalized developer dashboard
-            </p>
-          </motion.div>
-
-          {/* Description */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-            className="relative z-10 mx-auto max-w-3xl space-y-4"
-          >
-            <p className="text-base leading-relaxed text-white/60 sm:text-lg">
-              Showra creates beautiful, interactive developer cards that showcase your GitHub activity, 
-              contributions, and coding journey. Your personalized dev card is automatically generated 
-              from your GitHub profile and ready to share with the world.
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
-              <div className="flex items-center gap-2 rounded-full bg-white/5 backdrop-blur-md px-5 py-2.5">
-                <span className="text-sm font-medium text-white/70">✨ Auto-generated</span>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-4xl mx-auto">
+            {/* Avatar */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6 }}
+              className="mb-8"
+            >
+              <div className="relative mx-auto w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-white/20 bg-white/5 overflow-hidden">
+                {user.avatarUrl ? (
+                  <Image
+                    src={user.avatarUrl}
+                    alt={user.name}
+                    width={160}
+                    height={160}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <span className="text-4xl font-semibold text-white/70 flex items-center justify-center h-full">
+                    {user.name.slice(0, 1)}
+                  </span>
+                )}
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#00E5FF]/20 via-[#FF00CC]/20 to-[#9D4BFF]/20 blur-xl" />
               </div>
-              <div className="flex items-center gap-2 rounded-full bg-white/5 backdrop-blur-md px-5 py-2.5">
-                <span className="text-sm font-medium text-white/70">📊 Real-time stats</span>
-              </div>
-              <div className="flex items-center gap-2 rounded-full bg-white/5 backdrop-blur-md px-5 py-2.5">
-                <span className="text-sm font-medium text-white/70">🎨 Beautiful design</span>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </motion.section>
+            </motion.div>
 
-      {/* DevCard Section - Second View */}
-      <motion.section
-        id="dev-card-section"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.6 }}
-        className="relative flex min-h-screen flex-col items-center justify-center gap-6 pt-8 pb-16 scroll-mt-24"
-      >
-        <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-4 w-full mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-md">
-              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-white/70">STEP 1</span>
-            </div>
-            <h2 className="text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl mb-4">
-              {profileLoading ? "Loading your DevCard..." : cardData ? "Your DevCard is Ready! 🎉" : "Preparing your DevCard..."}
-            </h2>
-            <p className="text-lg leading-relaxed text-white/60 max-w-2xl mx-auto sm:text-xl">
-              {profileLoading 
-                ? "Fetching your GitHub data..." 
-                : cardData 
-                  ? "Download your card or add it to your GitHub README below"
-                  : "Please wait while we load your data..."}
-            </p>
-          </div>
-          
-          {profileLoading ? (
-            <div className="flex flex-col items-center justify-center gap-4 p-12 rounded-2xl border border-white/10 bg-black/50 min-h-[400px]">
-              <div className="animate-spin rounded-full h-12 w-12 border-4 border-cyan-500/30 border-t-cyan-500"></div>
-              <p className="text-sm text-white/60">Loading your GitHub profile...</p>
-            </div>
-          ) : profileError ? (
-            <div className="w-full max-w-md mx-auto rounded-xl border border-red-500/30 bg-red-500/10 p-6 text-center min-h-[400px] flex flex-col items-center justify-center">
-              <p className="text-red-400 font-medium mb-2">⚠️ Error Loading Data</p>
-              <p className="text-sm text-red-300/80 mb-4">{profileError}</p>
-              <button
-                onClick={() => {
-                  setProfileError(null);
-                  const currentSession = useAuthStore.getState().session;
-                  if (currentSession?.providerToken) {
-                    window.location.reload();
-                  }
-                }}
-                className="px-4 py-2 rounded-lg bg-red-500/20 border border-red-500/30 text-red-300 text-sm font-medium hover:bg-red-500/30 transition-colors"
-              >
-                Retry
-              </button>
-            </div>
-          ) : (
-            <div className="flex justify-center items-center min-h-[500px]">
-              <DevCard
-                profile={cardData?.profile ?? fallbackProfileData}
-                stats={cardData?.stats ?? fallbackStats}
-                topRepo={cardData?.topRepo ?? null}
-                topLanguages={cardData?.languages ?? []}
-                technologies={cardData?.technologies}
-                heatmap={cardData?.heatmap ?? []}
-                repositories={repositories?.map((repo) => ({
-                  name: repo.name,
-                  description: repo.description,
-                  stars: repo.stargazers_count,
-                  language: repo.language,
-                }))}
-              />
-            </div>
-          )}
-        </div>
-      </motion.section>
-
-      {/* README Section - Third View */}
-      <motion.section
-        id="readme-section"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4, duration: 0.6 }}
-        className="relative flex min-h-screen flex-col items-center justify-center gap-6 py-16 scroll-mt-24"
-      >
-        <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-4 mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-md">
-              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-white/70">STEP 2</span>
-            </div>
-            <h2 className="text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl mb-4">
-              Generate Your GitHub README
-            </h2>
-            <p className="text-lg leading-relaxed text-white/60 max-w-2xl mx-auto sm:text-xl">
-              Copy the markdown code below and add it to your GitHub profile README.md file
-            </p>
-          </div>
-
-          {profileLoading || profileError ? (
+            {/* Heading */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mt-8 rounded-2xl border border-red-500/30 bg-red-500/10 px-6 py-4 text-sm text-red-100 min-h-[400px] flex items-center justify-center"
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="mb-6"
             >
-              {profileError || "Loading..."}
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-3">
+                <SplitText
+                  text={`Welcome, ${profile?.name || user.name}!`}
+                  tag="span"
+                  className="block"
+                  delay={50}
+                  duration={0.6}
+                />
+              </h1>
+              <p className="text-lg sm:text-xl text-white/60">
+                Your developer card is ready to share
+              </p>
             </motion.div>
-          ) : (
-            <div className="flex justify-center items-center min-h-[500px]">
-              <READMEPreview />
-            </div>
-          )}
-        </div>
-      </motion.section>
 
-      {/* Dynamic Sticky Navigation Button - Right Side */}
+            {/* Quick Stats */}
+            {cardData && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.6 }}
+                className="flex flex-wrap items-center justify-center gap-4 mb-8"
+              >
+                {[
+                  { label: "Repos", value: cardData.stats.repos },
+                  { label: "Stars", value: cardData.stats.stars.toLocaleString() },
+                  { label: "Contribs", value: cardData.stats.contributions.toLocaleString() },
+                ].map((stat, i) => (
+                  <div
+                    key={i}
+                    className="rounded-full bg-white/5 backdrop-blur-md border border-white/10 px-6 py-2"
+                  >
+                    <div className="text-lg font-bold text-white">{stat.value}</div>
+                    <div className="text-xs text-white/60 uppercase tracking-wider">{stat.label}</div>
+                  </div>
+                ))}
+              </motion.div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* DevCard Section */}
+      <section
+        id="dev-card-section"
+        className="relative flex min-h-screen items-center justify-center py-20 scroll-mt-24"
+      >
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
+            {/* Section Header */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-12"
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-md mb-4">
+                <span className="text-xs font-semibold uppercase tracking-[0.15em] text-white/70">Your DevCard</span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
+                <SplitText
+                  text={profileLoading ? "Loading..." : cardData ? "Your Card is Ready!" : "Preparing..."}
+                  tag="span"
+                  className="block"
+                  delay={50}
+                  duration={0.6}
+                />
+              </h2>
+              <p className="text-lg text-white/60 max-w-2xl mx-auto">
+                {profileLoading 
+                  ? "Fetching your GitHub data..." 
+                  : cardData 
+                    ? "Download or add to your GitHub README"
+                    : "Please wait..."}
+              </p>
+            </motion.div>
+
+            {/* DevCard */}
+            {profileLoading ? (
+              <div className="flex flex-col items-center justify-center gap-4 p-12 rounded-2xl border border-white/10 bg-black/50 min-h-[400px]">
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-cyan-500/30 border-t-cyan-500"></div>
+                <p className="text-sm text-white/60">Loading your GitHub profile...</p>
+              </div>
+            ) : profileError ? (
+              <div className="w-full max-w-md mx-auto rounded-xl border border-red-500/30 bg-red-500/10 p-6 text-center min-h-[400px] flex flex-col items-center justify-center">
+                <p className="text-red-400 font-medium mb-2">⚠️ Error Loading Data</p>
+                <p className="text-sm text-red-300/80 mb-4">{profileError}</p>
+                <button
+                  onClick={() => {
+                    setProfileError(null);
+                    const currentSession = useAuthStore.getState().session;
+                    if (currentSession?.providerToken) {
+                      window.location.reload();
+                    }
+                  }}
+                  className="px-4 py-2 rounded-lg bg-red-500/20 border border-red-500/30 text-red-300 text-sm font-medium hover:bg-red-500/30 transition-colors"
+                >
+                  Retry
+                </button>
+              </div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="flex justify-center"
+              >
+                <DevCard
+                  profile={cardData?.profile ?? fallbackProfileData}
+                  stats={cardData?.stats ?? fallbackStats}
+                  topRepo={cardData?.topRepo ?? null}
+                  topLanguages={cardData?.languages ?? []}
+                  technologies={cardData?.technologies}
+                  heatmap={cardData?.heatmap ?? []}
+                  repositories={repositories?.map((repo) => ({
+                    name: repo.name,
+                    description: repo.description,
+                    stars: repo.stargazers_count,
+                    language: repo.language,
+                  }))}
+                />
+              </motion.div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* README Section */}
+      <section
+        id="readme-section"
+        className="relative flex min-h-screen items-center justify-center py-20 scroll-mt-24"
+      >
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
+            {/* Section Header */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-12"
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-md mb-4">
+                <span className="text-xs font-semibold uppercase tracking-[0.15em] text-white/70">GitHub README</span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
+                <SplitText
+                  text="Add to Your Profile"
+                  tag="span"
+                  className="block"
+                  delay={50}
+                  duration={0.6}
+                />
+              </h2>
+              <p className="text-lg text-white/60 max-w-2xl mx-auto">
+                Copy the markdown code and add it to your GitHub profile README.md
+              </p>
+            </motion.div>
+
+            {/* README Preview */}
+            {profileLoading || profileError ? (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-8 rounded-2xl border border-red-500/30 bg-red-500/10 px-6 py-4 text-sm text-red-100 min-h-[400px] flex items-center justify-center"
+              >
+                {profileError || "Loading..."}
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+              >
+                <READMEPreview />
+              </motion.div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Navigation Button */}
       <motion.div
         className="fixed right-6 bottom-6 z-50"
         initial={{ opacity: 0 }}
@@ -706,14 +733,14 @@ export function ModernDashboard() {
               }
             }
           }}
-          className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-6 py-4 text-sm font-bold text-white backdrop-blur-sm transition-all hover:border-white/30 hover:bg-white/20"
+          className="flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 px-6 py-4 text-sm font-semibold text-white transition-all hover:bg-white/15 hover:border-white/30"
         >
           <ArrowDown className="h-5 w-5" />
           <span>
             {currentSection === 'hero' 
-              ? 'View Dev Card' 
+              ? 'View Card' 
               : currentSection === 'devcard' 
-              ? 'Go to README' 
+              ? 'View README' 
               : 'Back to Card'}
           </span>
         </button>

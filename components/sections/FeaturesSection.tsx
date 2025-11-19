@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import SplitText from "@/components/common/SplitText";
+import LightRays from "@/components/react-bits/LigthRays/LightRays";
 
 // Dynamically import MagicBento to avoid SSR issues
 const MagicBento = dynamic(
@@ -12,17 +13,37 @@ const MagicBento = dynamic(
 
 export function FeaturesSection() {
   return (
-    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0A0A0A] px-4 py-20 sm:px-8">
+    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0A0A0A]">
+      {/* LightRays Background Effect */}
+      <div className="absolute inset-0 z-0">
+        <LightRays
+          raysOrigin="top-left"
+          raysColor="#FF00CC"
+          raysSpeed={1.2}
+          lightSpread={1.5}
+          rayLength={2.0}
+          pulsating={true}
+          fadeDistance={1.0}
+          saturation={1.0}
+          followMouse={true}
+          mouseInfluence={0.1}
+          noiseAmount={0.05}
+          distortion={0.15}
+          className="opacity-30"
+        />
+      </div>
+
       {/* Background effects */}
-      <div className="pointer-events-none absolute inset-0">
+      <div className="pointer-events-none absolute inset-0 z-[1]">
         <div className="absolute left-[20%] top-[20%] h-96 w-96 rounded-full bg-[#9D4BFF]/10 blur-[120px]" />
         <div className="absolute right-[20%] bottom-[20%] h-96 w-96 rounded-full bg-[#00E5FF]/10 blur-[120px]" />
       </div>
 
       {/* Grid pattern */}
-      <div className="pointer-events-none absolute inset-0 opacity-20 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+      <div className="pointer-events-none absolute inset-0 z-[1] opacity-20 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem]" />
 
-      <div className="relative z-10 mx-auto w-full max-w-7xl">
+      <div className="relative z-10 w-full">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <motion.div
           className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
@@ -68,6 +89,7 @@ export function FeaturesSection() {
             clickEffect={true}
           />
         </motion.div>
+        </div>
       </div>
     </section>
   );
