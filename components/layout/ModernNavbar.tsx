@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { Menu, X, Loader2, LogOut, Github, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuthStore } from "@/lib/auth/store";
 import { ROUTES } from "@/lib/utils/constants";
+import { Logo } from "@/components/common/Logo";
 
 export function ModernNavbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -77,11 +77,10 @@ export function ModernNavbar() {
   return (
     <>
       <motion.header
-        className={`fixed top-0 left-0 z-50 w-full transition-all duration-500 ${
-          scrolled
+        className={`fixed top-0 left-0 z-50 w-full transition-all duration-500 ${scrolled
             ? "bg-gradient-to-b from-[#0A0A0A] via-[#0A0A0A]/98 to-[#0A0A0A]/95 backdrop-blur-2xl shadow-2xl"
             : "bg-transparent"
-        }`}
+          }`}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -89,24 +88,12 @@ export function ModernNavbar() {
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-20 sm:h-24 items-center justify-between">
-            {/* Logo - Using image.png for icon with text */}
-            <Link
-              href={ROUTES.HOME}
-              className="flex items-center gap-3 group relative"
+            {/* Logo */}
+            <Logo
+              showText={true}
+              size="md"
               onClick={closeMobileMenu}
-            >
-              <div className="relative">
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] opacity-20 blur-md group-hover:opacity-30 transition-opacity" />
-                <Image
-                  src="/image.png"
-                  alt="Showra"
-                  width={140}
-                  height={40}
-                  className="h-8 sm:h-10 w-auto object-contain relative z-10"
-                  priority
-                />
-              </div>
-            </Link>
+            />
 
             {/* Desktop Navigation - REDESIGNED */}
             <nav className="hidden md:flex items-center gap-3">

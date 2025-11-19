@@ -1,9 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles, Download, Share2, Code } from "lucide-react";
+import { ArrowRight, Sparkles, ArrowDown } from "lucide-react";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import { useAuthStore } from "@/lib/auth/store";
 import { supabase } from "@/lib/supabaseClient";
 import LightRays from "@/components/react-bits/LigthRays/LightRays";
@@ -51,23 +50,22 @@ export function ModernHero() {
       {/* Gradient overlays */}
       <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-black/50 via-black/30 to-black/50" />
       <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-48 z-[2] bg-gradient-to-t from-black via-black/60 to-transparent" />
-      
+
       {/* Grid pattern */}
       <div className="pointer-events-none absolute inset-0 z-[1] opacity-30 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
 
       {/* Main Container */}
       <div className="relative z-10 w-full">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-16 min-h-screen py-20">
-            
-            {/* Left Content */}
-            <div className="flex-1 w-full lg:max-w-2xl text-center lg:text-left">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 min-h-screen py-20">
+            {/* Left Content - 70% */}
+            <div className="flex-[0.7] w-full text-center lg:text-left">
               {/* Badge */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="mb-8 flex justify-center lg:justify-start"
+                className="mb-6 flex justify-center lg:justify-start"
               >
                 <span className="inline-flex items-center gap-2 rounded-full bg-white/5 backdrop-blur-md border border-white/10 px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.15em] text-white/70">
                   <Sparkles className="h-3.5 w-3.5 text-[#00E5FF]" />
@@ -76,11 +74,11 @@ export function ModernHero() {
               </motion.div>
 
               {/* Main Heading - REDESIGNED with smaller text */}
-              <div className="mb-8">
+              <div className="mb-6">
                 <h1 className="leading-[1.05] tracking-tight">
-                  <div className="mb-2 text-white">
+                  <div className="text-white">
                     <SplitText
-                      text="Showcase Your"
+                      text="Showcase"
                       tag="span"
                       className="block"
                       delay={50}
@@ -88,7 +86,7 @@ export function ModernHero() {
                       textAlign="left"
                     />
                   </div>
-                  <div className="mb-2 inline-block [&_.split-char]:bg-gradient-to-r [&_.split-char]:from-[#00E5FF] [&_.split-char]:via-[#FF00CC] [&_.split-char]:to-[#9D4BFF] [&_.split-char]:bg-clip-text [&_.split-char]:text-transparent">
+                  <div className="inline-block [&_.split-char]:bg-gradient-to-r [&_.split-char]:from-[#00E5FF] [&_.split-char]:via-[#FF00CC] [&_.split-char]:to-[#9D4BFF] [&_.split-char]:bg-clip-text [&_.split-char]:text-transparent">
                     <SplitText
                       text="GitHub Profile"
                       tag="span"
@@ -113,12 +111,12 @@ export function ModernHero() {
 
               {/* Description - Smaller */}
               <motion.p
-                className="mb-8 text-base sm:text-lg md:text-xl leading-relaxed text-white/70 max-w-2xl mx-auto lg:mx-0 font-medium"
+                className="mb-6 text-base sm:text-lg md:text-xl leading-relaxed text-white/70 max-w-xl mx-auto lg:mx-0 font-medium"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
               >
-                Transform your GitHub profile into a stunning, shareable developer card. 
+                Transform your GitHub profile into a stunning, shareable developer card.
                 Download as an image and showcase your coding journey on social media.
               </motion.p>
 
@@ -160,16 +158,16 @@ export function ModernHero() {
               </motion.div>
             </div>
 
-            {/* Right Preview Section - Actual DevCard */}
-            <div className="flex-1 w-full lg:max-w-xl">
+            {/* Right Preview Section - Actual DevCard - 30% */}
+            <div className="flex-[0.3] w-full flex items-center justify-center">
               <motion.div
                 initial={{ opacity: 0, scale: 0.9, x: 20 }}
                 animate={{ opacity: 1, scale: 1, x: 0 }}
                 transition={{ delay: 0.5, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                className="relative flex items-center justify-center"
+                className="relative flex items-center justify-center w-full"
               >
                 {/* DevCard Preview Container */}
-                <div className="w-full max-w-[420px] mx-auto scale-90 lg:scale-100 origin-center">
+                <div className="w-full max-w-[380px] mx-auto scale-90 lg:scale-100 origin-center">
                   <DevCardPreview />
                 </div>
 
@@ -204,6 +202,34 @@ export function ModernHero() {
           </div>
         </div>
       </div>
+
+      {/* Scroll Indicator */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1, duration: 0.6 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20"
+      >
+        <button
+          onClick={() => {
+            const nextSection = document.getElementById('features-section');
+            if (nextSection) {
+              nextSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }}
+          className="flex flex-col items-center gap-2 text-white/60 hover:text-white/90 transition-colors group"
+          aria-label="Scroll to features"
+        >
+          <span className="text-xs uppercase tracking-wider font-semibold">Scroll</span>
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            className="rounded-full bg-white/10 backdrop-blur-md border border-white/20 p-2 group-hover:bg-white/20 transition-colors"
+          >
+            <ArrowDown className="h-5 w-5" />
+          </motion.div>
+        </button>
+      </motion.div>
     </section>
   );
 }
