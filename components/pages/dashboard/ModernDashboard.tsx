@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { Download, RefreshCw, Code, AlertCircle } from "lucide-react";
 import { useAuthStore } from "@/lib/auth/store";
 import { supabase } from "@/lib/supabaseClient";
-import { DevCard } from "@/components/features/card/DevCard";
+import { CardWrapper } from "@/components/features/card/variants/CardWrapper";
 import { READMEPreview } from "@/components/features/card/READMEPreview";
 import { getTopTechnologies } from "@/lib/utils/transform/detectTechnologies";
 import LightRays from "@/components/react-bits/LigthRays/LightRays";
@@ -14,6 +14,8 @@ import SplitText from "@/components/common/SplitText";
 import { CardSkeleton } from "@/components/ui/CardSkeleton";
 import { READMESkeleton } from "@/components/ui/READMESkeleton";
 import { saveCardData, loadCardData, clearCardData } from "@/lib/utils/storage";
+import { CardSelector, CardVariant } from "@/components/features/card/variants/CardSelector";
+import { saveUserPreferences, getUserPreferences, saveGitHubDataToMetadata } from "@/lib/utils/supabase/userMetadata";
 
 interface GitHubProfile {
   login: string;
@@ -97,10 +99,18 @@ export function ModernDashboard() {
   const [repositories, setRepositories] = useState<GitHubRepo[]>([]);
   const [activeTab, setActiveTab] = useState<'card' | 'readme'>('card');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [selectedCard, setSelectedCard] = useState<CardVariant>('card1');
 
-  // Load from localStorage on mount
+  // Load preferences and card data on mount
   useEffect(() => {
     if (!user) return;
+    
+    // Load user preferences from Supabase
+    getUserPreferences().then(prefs => {
+      if (prefs?.selectedCardDesign) {
+        setSelectedCard(prefs.selectedCardDesign);
+      }
+    });
     
     const stored = loadCardData();
     if (stored) {
@@ -461,6 +471,24 @@ export function ModernDashboard() {
           })),
         });
         
+        // Save to Supabase metadata
+        saveGitHubDataToMetadata({
+          lastFetched: new Date().toISOString(),
+          profile: finalCardData.profile,
+          stats: finalCardData.stats,
+          languages: finalCardData.languages,
+          repositories: reposData.map((repo) => ({
+            name: repo.name,
+            description: repo.description,
+            stars: repo.stargazers_count,
+            language: repo.language,
+          })),
+          technologies: detectedTechnologies,
+          topRepo: finalCardData.topRepo,
+          heatmap: finalCardData.heatmap,
+          timeline: finalCardData.timeline,
+        });
+        
         setProfile(profileData);
         setCardData(finalCardData);
         setProfileError(null);
@@ -567,6 +595,39 @@ export function ModernDashboard() {
       <section className="relative flex min-h-screen items-center justify-center py-20 before:absolute before:w-full before:h-full before:bg-gradient-to-r before:from-[#00E5FF]/10 before:via-[#FF00CC]/5 before:to-[#9D4BFF]/10 before:rounded-full before:top-0 before:blur-3xl before:-z-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
+            {/* Profile Avatar */}
+            {(profile?.avatar_url || user.avatarUrl) && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.1, duration: 0.6, type: "spring" }}
+                className="mb-8 flex justify-center"
+              >
+                <div className="relative">
+                  {/* Glow effect */}
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] opacity-40 blur-2xl animate-pulse" />
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] opacity-20 blur-xl" />
+                  
+                  {/* Rotating border */}
+                  <div className="absolute inset-[-4px] rounded-full bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] animate-spin" style={{ animationDuration: '3s' }}>
+                    <div className="absolute inset-[2px] rounded-full bg-[#0A0A0A]" />
+                  </div>
+                  
+                  {/* Avatar image */}
+                  <div className="relative z-10">
+                    <Image
+                      src={profile?.avatar_url || user.avatarUrl || '/logo.png'}
+                      alt={profile?.name || user.name || 'Profile'}
+                      width={120}
+                      height={120}
+                      className="rounded-full border-4 border-[#0A0A0A] object-cover shadow-2xl"
+                      priority
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
             {/* Heading */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -586,6 +647,11 @@ export function ModernDashboard() {
               <p className="text-lg sm:text-xl text-white/70 font-medium">
                 Your developer card is ready to share
               </p>
+              {profile?.login && (
+                <p className="mt-2 text-sm text-white/50">
+                  @{profile.login}
+                </p>
+              )}
             </motion.div>
 
             {/* Quick Stats */}
@@ -657,6 +723,29 @@ export function ModernDashboard() {
             {/* Tab Content */}
             {activeTab === 'card' ? (
               <div className="space-y-6">
+                {/* Card Selector - Always visible when card data exists */}
+                {cardData && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="w-full mb-6"
+                  >
+                    <div className="mb-3 text-center">
+                      <h3 className="text-sm font-semibold text-white/70 mb-2">Choose Your Card Design</h3>
+                    </div>
+                    <div className="flex justify-center">
+                      <CardSelector
+                        selectedCard={selectedCard}
+                        onSelectCard={async (variant) => {
+                          setSelectedCard(variant);
+                          await saveUserPreferences({ selectedCardDesign: variant });
+                        }}
+                      />
+                    </div>
+                  </motion.div>
+                )}
+                
                 {profileLoading && !cardData ? (
                   <CardSkeleton />
                 ) : profileError ? (
@@ -681,7 +770,8 @@ export function ModernDashboard() {
                     transition={{ duration: 0.6 }}
                     className="flex justify-center"
                   >
-                    <DevCard
+                    <CardWrapper
+                      variant={selectedCard}
                       profile={cardData?.profile ?? fallbackProfileData}
                       stats={cardData?.stats ?? fallbackStats}
                       topRepo={cardData?.topRepo ?? null}

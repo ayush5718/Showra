@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { Download, Share2 } from "lucide-react";
-import { DevCard } from "@/components/features/card/DevCard";
+import { CardWrapper } from "@/components/features/card/variants/CardWrapper";
+import { CardVariant } from "@/components/features/card/variants/CardSelector";
 
 // Demo data for preview
 const demoProfile = {
@@ -99,17 +101,47 @@ interface DevCardPreviewProps {
 }
 
 export function DevCardPreview({ scale = 1, className = "" }: DevCardPreviewProps) {
+  const [selectedCard, setSelectedCard] = useState<CardVariant>('card1');
+
   return (
-    <div className={`relative ${className}`} style={{ transform: `scale(${scale})`, transformOrigin: 'center' }}>
-      <DevCard
-        profile={demoProfile}
-        stats={demoStats}
-        topRepo={demoTopRepo}
-        topLanguages={demoLanguages}
-        heatmap={demoHeatmap}
-        repositories={demoRepositories}
-        skipAI={true}
-      />
+    <div className={`relative ${className}`}>
+      {/* Card Preview */}
+      <div style={{ transform: `scale(${scale})`, transformOrigin: 'center' }}>
+        <CardWrapper
+          variant={selectedCard}
+          profile={demoProfile}
+          stats={demoStats}
+          topRepo={demoTopRepo}
+          topLanguages={demoLanguages}
+          heatmap={demoHeatmap}
+          repositories={demoRepositories}
+          skipAI={true}
+        />
+      </div>
+
+      {/* Card Selector - Compact Square Options at Bottom */}
+      <div className="mt-4 flex justify-center">
+        <div className="flex gap-1.5">
+          {(['card1', 'card2', 'card3', 'card4'] as CardVariant[]).map((variant) => (
+            <button
+              key={variant}
+              onClick={() => setSelectedCard(variant)}
+              className={`w-8 h-8 rounded-md border transition-all duration-300 ${
+                selectedCard === variant
+                  ? 'border-transparent bg-gradient-to-br from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] shadow-md shadow-[#00E5FF]/30 scale-105'
+                  : 'border-white/15 bg-white/5 hover:border-white/30 hover:bg-white/8'
+              }`}
+              title={`Card ${variant.slice(-1)}`}
+            >
+              <div className={`w-full h-full rounded-sm ${
+                selectedCard === variant 
+                  ? 'bg-gradient-to-br from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] opacity-25' 
+                  : 'bg-white/5'
+              }`} />
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* Download and Share Buttons at Bottom */}
       <div className="flex items-center justify-center w-full gap-3 mt-6">

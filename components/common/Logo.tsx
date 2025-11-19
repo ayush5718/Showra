@@ -47,24 +47,28 @@ export function Logo({
       className={`flex items-center ${sizes.gap} group relative ${className}`}
     >
       <div className="relative">
-        <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] opacity-20 blur-md group-hover:opacity-30 transition-opacity -z-10" />
-        <div className={`relative ${sizes.icon} z-10`}>
+        {/* Enhanced glow effect */}
+        <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] opacity-25 blur-lg group-hover:opacity-40 transition-all duration-300 -z-10 scale-110" />
+        <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] opacity-15 blur-md group-hover:opacity-25 transition-all duration-300 -z-10" />
+        
+        {/* Logo image with better positioning */}
+        <div className={`relative ${sizes.icon} z-10 transform group-hover:scale-105 transition-transform duration-300`}>
           <Image
             src="/logo.png"
             alt="Showra logo"
             width={56}
             height={56}
-            className="h-full w-full object-contain relative z-10"
+            className="h-full w-full object-contain relative z-10 drop-shadow-lg"
             priority
           />
         </div>
       </div>
       {showText && (
         <div className="flex flex-col">
-          <span className={`${sizes.text} font-black bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] bg-clip-text text-transparent leading-tight`}>
+          <span className={`${sizes.text} font-black bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] bg-clip-text text-transparent leading-tight group-hover:from-[#00E5FF] group-hover:via-[#FF00CC] group-hover:to-[#9D4BFF] transition-all duration-300`}>
             Showra
           </span>
-          <span className="text-[10px] uppercase tracking-[0.2em] text-white/40 font-semibold">
+          <span className="text-[10px] uppercase tracking-[0.2em] text-white/50 group-hover:text-white/70 font-semibold transition-colors duration-300">
             Developer Cards
           </span>
         </div>

@@ -185,11 +185,18 @@ function generateSummary(
   const topLangs = languages.slice(0, 3).map(l => l.name).join(', ');
   const name = profile.name || profile.login;
   
-  if (topLangs) {
-    return `${name} - ${stats.repos} repositories, proficient in ${topLangs}`;
+  // More sophisticated summary generation
+  if (stats.contributions > 1000) {
+    return `${name} - Highly active developer with ${stats.repos} repositories, expert in ${topLangs || 'multiple technologies'}`;
+  } else if (stats.contributions > 500) {
+    return `${name} - Active developer with ${stats.repos} repositories, proficient in ${topLangs || 'various technologies'}`;
+  } else if (stats.repos > 20) {
+    return `${name} - Developer with ${stats.repos} repositories, skilled in ${topLangs || 'multiple technologies'}`;
+  } else if (topLangs) {
+    return `${name} - Developer specializing in ${topLangs}`;
   }
   
-  return `${name} - Active developer with ${stats.repos} repositories`;
+  return `${name} - Developer building and maintaining ${stats.repos} repositories`;
 }
 
 /**
@@ -340,19 +347,40 @@ export function transformGitHubProfile(
   const strengthAreas = generateStrengthAreas(languages, repositories, stats);
   const commitsDescription = generateCommitsDescription(stats);
   
-  // Generate tags from top languages and technologies
-  const topTechs = getTopTechnologies(repositories, 6);
-  const langTags = languages.slice(0, 6).map(l => l.name);
-  const tags = [...new Set([...topTechs, ...langTags])].slice(0, 6);
+  // Generate tags from top languages and technologies with better deduplication
+  const topTechs = getTopTechnologies(repositories, 8);
+  const langTags = languages.slice(0, 8).map(l => l.name);
+  
+  // Smart tag merging - prefer technologies over base languages
+  const allTags = [...topTechs, ...langTags];
+  const uniqueTags = Array.from(new Set(allTags.map(tag => tag.toLowerCase())))
+    .map(lowerTag => {
+      // Find original case from either techs or langs
+      return topTechs.find(t => t.toLowerCase() === lowerTag) || 
+             langTags.find(l => l.toLowerCase() === lowerTag) || 
+             lowerTag;
+    })
+    .slice(0, 6);
   
   return {
-    expertise,
+    expertise: expertise.length > 0 ? expertise : [{
+      category: 'Development',
+      level: 50,
+      technologies: languages.slice(0, 3).map(l => l.name),
+      description: 'Software development expertise'
+    }],
     summary,
-    strengths,
-    tags,
+    strengths: strengths.length > 0 ? strengths : [`${stats.repos} repositories`, 'Active on GitHub'],
+    tags: uniqueTags.length > 0 ? uniqueTags : languages.slice(0, 3).map(l => l.name),
     commitsDescription,
-    techStack,
-    strengthAreas
+    techStack: techStack.length > 0 ? techStack : languages.slice(0, 3).map(l => ({
+      name: l.name,
+      percentage: l.percentage
+    })),
+    strengthAreas: strengthAreas.length > 0 ? strengthAreas : [{
+      category: 'Development',
+      rating: Math.min(Math.max(Math.round(stats.contributions / 100), 1), 10)
+    }]
   };
 }
 

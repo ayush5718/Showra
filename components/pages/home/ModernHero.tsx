@@ -67,9 +67,17 @@ export function ModernHero() {
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 className="mb-6 flex justify-center lg:justify-start"
               >
-                <span className="inline-flex items-center gap-2 rounded-full bg-white/5 backdrop-blur-md border border-white/10 px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.15em] text-white/70">
-                  <Sparkles className="h-3.5 w-3.5 text-[#00E5FF]" />
-                  Showcase Your GitHub Profile
+                <span className="group relative inline-flex items-center gap-2 rounded-full px-5 py-2 text-xs font-semibold uppercase tracking-[0.15em]">
+                  {/* Gradient border using pseudo-element technique */}
+                  <span className="absolute inset-0 rounded-full bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] p-[1px] opacity-60 group-hover:opacity-100 transition-opacity">
+                    <span className="block h-full w-full rounded-full bg-[#0A0A0A]" />
+                  </span>
+                  
+                  {/* Content with gradient text */}
+                  <span className="relative z-10 flex items-center gap-2 bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] bg-clip-text text-transparent">
+                    <Sparkles className="h-3.5 w-3.5 text-[#00E5FF] group-hover:text-[#FF00CC] transition-colors" />
+                    Showcase Your GitHub Profile
+                  </span>
                 </span>
               </motion.div>
 
