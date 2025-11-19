@@ -416,7 +416,7 @@ export function ModernDashboard() {
   const fallbackProfileData = useMemo(() => {
     const safeUser = user ?? {
       username: "your-github",
-      name: "Showra Maker",
+      name: "Showg Maker",
       avatarUrl: "/logo.png",
     };
     return {
@@ -558,7 +558,7 @@ export function ModernDashboard() {
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.6 + i * 0.1 }}
-                    className="rounded-2xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border-2 border-white/20 px-6 py-6 text-center shadow-xl hover:scale-105 transition-transform"
+                    className="rounded-2xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border-2 border-white/20 px-6 py-6 text-center shadow-xl transition-all"
                   >
                     <div className={`text-3xl sm:text-4xl font-black bg-gradient-to-r ${stat.color} to-white bg-clip-text text-transparent mb-2`}>
                       {stat.value}

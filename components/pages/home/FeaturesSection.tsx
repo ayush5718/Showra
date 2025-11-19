@@ -61,7 +61,7 @@ export function FeaturesSection() {
 
           <h2 className="text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl mb-4">
             <SplitText
-              text="Why Choose Showra"
+              text="Why Choose Showg"
               tag="span"
               className="block"
               delay={50}

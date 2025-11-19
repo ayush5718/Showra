@@ -9,7 +9,7 @@ export function ModernFooter() {
         <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
           <div className="text-center sm:text-left">
             <p className="text-sm text-white/60">
-              © {year} Showra. All rights reserved.
+              © {year} Showg. All rights reserved.
             </p>
           </div>
           <div className="flex items-center gap-6 text-sm">

@@ -47,11 +47,11 @@ export function ModernNavbar() {
       const metadata = authUser.user_metadata as Record<string, any>;
       setUser({
         id: authUser.id,
-        name: metadata?.name ?? authUser.email ?? "Showra Maker",
+        name: metadata?.name ?? authUser.email ?? "Showg Maker",
         username: metadata?.user_name ?? metadata?.nickname ?? authUser.email ?? "maker",
         avatarUrl:
           metadata?.avatar_url ??
-          `https://api.dicebear.com/7.x/initials/svg?seed=${metadata?.user_name ?? "showra"}`,
+          `https://api.dicebear.com/7.x/initials/svg?seed=${metadata?.user_name ?? "showg"}`,
         email: authUser.email ?? undefined,
       });
     });
@@ -79,17 +79,13 @@ export function ModernNavbar() {
       <motion.header
         className={`fixed top-0 left-0 z-50 w-full transition-all duration-500 ${
           scrolled
-            ? "bg-gradient-to-b from-[#0A0A0A] via-[#0A0A0A]/98 to-[#0A0A0A]/95 backdrop-blur-2xl border-b-2 border-white/20 shadow-2xl"
+            ? "bg-gradient-to-b from-[#0A0A0A] via-[#0A0A0A]/98 to-[#0A0A0A]/95 backdrop-blur-2xl shadow-2xl"
             : "bg-transparent"
         }`}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Animated gradient line */}
-        {scrolled && (
-          <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#00E5FF] via-[#FF00CC] via-[#9D4BFF] to-transparent opacity-60" />
-        )}
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-20 sm:h-24 items-center justify-between">
@@ -103,16 +99,16 @@ export function ModernNavbar() {
                 <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] opacity-20 blur-md group-hover:opacity-30 transition-opacity" />
                 <Image
                   src="/logo.png"
-                  alt="Showra logo"
+                  alt="Showg logo"
                   width={56}
                   height={56}
-                  className="h-full w-full object-contain transition-transform group-hover:scale-110 relative z-10"
+                  className="h-full w-full object-contain relative z-10"
                   priority
                 />
               </div>
               <div className="flex flex-col">
                 <span className="text-2xl sm:text-3xl font-black bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] bg-clip-text text-transparent leading-tight">
-                  Showra
+                  Showg
                 </span>
                 <span className="text-[10px] uppercase tracking-[0.2em] text-white/40 font-semibold">
                   Developer Cards
@@ -126,14 +122,14 @@ export function ModernNavbar() {
                 <>
                   <Link
                     href={ROUTES.DASHBOARD}
-                    className="group relative rounded-xl bg-gradient-to-r from-[#00E5FF]/10 via-[#FF00CC]/10 to-[#9D4BFF]/10 backdrop-blur-md border border-white/20 px-6 py-3 text-sm font-bold text-white transition-all hover:from-[#00E5FF]/20 hover:via-[#FF00CC]/20 hover:to-[#9D4BFF]/20 hover:border-white/30 hover:scale-105"
+                    className="group relative rounded-xl bg-gradient-to-r from-[#00E5FF]/10 via-[#FF00CC]/10 to-[#9D4BFF]/10 backdrop-blur-md border border-white/20 px-6 py-3 text-sm font-bold text-white transition-all hover:from-[#00E5FF]/20 hover:via-[#FF00CC]/20 hover:to-[#9D4BFF]/20 hover:border-white/30"
                   >
                     <Sparkles className="inline-block h-4 w-4 mr-2 text-[#00E5FF]" />
                     Dashboard
                   </Link>
                   <button
                     onClick={logout}
-                    className="flex items-center gap-2 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 px-4 py-3 text-sm font-bold text-white transition-all hover:bg-white/10 hover:border-white/20 hover:scale-105"
+                    className="flex items-center gap-2 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 px-4 py-3 text-sm font-bold text-white transition-all hover:bg-white/10 hover:border-white/20"
                     title="Logout"
                   >
                     <LogOut className="h-4 w-4" />
@@ -145,7 +141,7 @@ export function ModernNavbar() {
                   type="button"
                   onClick={handleGetStarted}
                   disabled={authLoading}
-                  className={`group relative flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] px-8 py-3.5 text-sm font-black text-white shadow-lg shadow-[#00E5FF]/30 transition-all hover:scale-105 hover:shadow-xl hover:shadow-[#00E5FF]/50 disabled:cursor-not-allowed disabled:opacity-70 overflow-hidden`}
+                  className={`group relative flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] px-8 py-3.5 text-sm font-black text-white shadow-lg shadow-[#00E5FF]/30 transition-all hover:shadow-xl hover:shadow-[#00E5FF]/50 disabled:cursor-not-allowed disabled:opacity-70 overflow-hidden`}
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
                   {authLoading ? (
@@ -216,7 +212,7 @@ export function ModernNavbar() {
                     closeMobileMenu();
                   }}
                   disabled={authLoading}
-                  className={`group relative flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] px-6 py-4 text-base font-black text-white shadow-lg shadow-[#00E5FF]/30 transition-all hover:scale-105 hover:shadow-xl hover:shadow-[#00E5FF]/50 disabled:cursor-not-allowed disabled:opacity-70 overflow-hidden`}
+                  className={`group relative flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] px-6 py-4 text-base font-black text-white shadow-lg shadow-[#00E5FF]/30 transition-all hover:shadow-xl hover:shadow-[#00E5FF]/50 disabled:cursor-not-allowed disabled:opacity-70 overflow-hidden`}
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
                   {authLoading ? (

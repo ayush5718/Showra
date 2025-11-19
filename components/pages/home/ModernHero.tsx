@@ -150,7 +150,7 @@ export function ModernHero() {
                 {user ? (
                   <Link
                     href="/dashboard"
-                    className="group relative inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] px-12 py-6 text-lg font-black text-white shadow-2xl shadow-[#00E5FF]/30 transition-all hover:scale-105 hover:shadow-3xl hover:shadow-[#00E5FF]/50 overflow-hidden"
+                    className="group relative inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] px-12 py-6 text-lg font-black text-white shadow-2xl shadow-[#00E5FF]/30 transition-all hover:shadow-3xl hover:shadow-[#00E5FF]/50 overflow-hidden"
                   >
                     Go to Dashboard
                     <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
@@ -160,7 +160,7 @@ export function ModernHero() {
                     type="button"
                     onClick={handleGetStarted}
                     disabled={isAuthenticating}
-                    className="group relative inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] px-12 py-6 text-lg font-black text-white shadow-2xl shadow-[#00E5FF]/30 transition-all hover:scale-105 hover:shadow-3xl hover:shadow-[#00E5FF]/50 disabled:cursor-not-allowed disabled:opacity-70 overflow-hidden"
+                    className="group relative inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] px-12 py-6 text-lg font-black text-white shadow-2xl shadow-[#00E5FF]/30 transition-all hover:shadow-3xl hover:shadow-[#00E5FF]/50 disabled:cursor-not-allowed disabled:opacity-70 overflow-hidden"
                   >
                     {isAuthenticating ? (
                       <>

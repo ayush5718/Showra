@@ -2,7 +2,7 @@
  * Application constants
  */
 
-export const APP_NAME = "Showra";
+export const APP_NAME = "Showg";
 export const APP_DESCRIPTION = "Transform your GitHub profile into beautiful, shareable developer cards";
 
 export const COLORS = {
