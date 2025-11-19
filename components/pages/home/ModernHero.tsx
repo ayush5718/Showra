@@ -113,7 +113,7 @@ export function ModernHero() {
 
               {/* Description - Smaller */}
               <motion.p
-                className="mb-10 text-base sm:text-lg md:text-xl leading-relaxed text-white/70 max-w-2xl mx-auto lg:mx-0 font-medium"
+                className="mb-8 text-base sm:text-lg md:text-xl leading-relaxed text-white/70 max-w-2xl mx-auto lg:mx-0 font-medium"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
@@ -121,24 +121,6 @@ export function ModernHero() {
                 Transform your GitHub profile into a stunning, shareable developer card. 
                 Download as an image and showcase your coding journey on social media.
               </motion.p>
-
-              {/* Feature Pills - REDESIGNED BIGGER */}
-              <motion.div
-                className="mb-12 flex flex-wrap items-center justify-center lg:justify-start gap-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <div className="rounded-2xl bg-gradient-to-r from-[#00E5FF]/20 to-[#00E5FF]/10 backdrop-blur-xl border-2 border-[#00E5FF]/30 px-6 py-3 text-base font-bold text-white shadow-lg shadow-[#00E5FF]/20">
-                  ✨ Auto-Generated
-                </div>
-                <div className="rounded-2xl bg-gradient-to-r from-[#FF00CC]/20 to-[#FF00CC]/10 backdrop-blur-xl border-2 border-[#FF00CC]/30 px-6 py-3 text-base font-bold text-white shadow-lg shadow-[#FF00CC]/20">
-                  📊 Real-Time Stats
-                </div>
-                <div className="rounded-2xl bg-gradient-to-r from-[#9D4BFF]/20 to-[#9D4BFF]/10 backdrop-blur-xl border-2 border-[#9D4BFF]/30 px-6 py-3 text-base font-bold text-white shadow-lg shadow-[#9D4BFF]/20">
-                  🎨 Beautiful Design
-                </div>
-              </motion.div>
 
               {/* CTA Button */}
               <motion.div

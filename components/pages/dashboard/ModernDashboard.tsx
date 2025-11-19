@@ -170,15 +170,33 @@ export function ModernDashboard() {
       }
     }
 
-    if (!session || !session.providerToken) {
-      const refreshAndRetry = async () => {
-        const refreshed = await refreshSession();
-        if (!refreshed) {
-          setProfileError("Unable to authenticate. Please sign in again.");
-          setProfileLoading(false);
+    // Check session - try to refresh if needed
+    let currentSession = session;
+    if (!currentSession || !currentSession.providerToken) {
+      const refreshed = await refreshSession();
+      if (refreshed) {
+        currentSession = useAuthStore.getState().session;
+      } else {
+        // If we have cached data, use it instead of showing error
+        const stored = loadCardData();
+        if (stored) {
+          return;
         }
-      };
-      refreshAndRetry();
+        // Only show error if no cached data and can't authenticate
+        setProfileError("Unable to authenticate. Please sign in again.");
+        setProfileLoading(false);
+        return;
+      }
+    }
+
+    if (!currentSession || !currentSession.providerToken) {
+      // Final check - if still no session, try one more time
+      const stored = loadCardData();
+      if (stored) {
+        return;
+      }
+      setProfileError("Unable to authenticate. Please sign in again.");
+      setProfileLoading(false);
       return;
     }
 
@@ -197,8 +215,7 @@ export function ModernDashboard() {
           throw new Error("Session expired. Please refresh the page.");
         }
 
-        const currentSession = useAuthStore.getState().session;
-        const providerToken = currentSession?.providerToken || session.providerToken;
+        const providerToken = currentSession?.providerToken;
 
         if (!providerToken) {
           const refreshed = await refreshSession();
@@ -519,44 +536,17 @@ export function ModernDashboard() {
       </div>
 
       {/* Hero Section */}
-      <section className="relative flex min-h-screen items-center justify-center py-32">
+      <section className="relative flex min-h-screen items-center justify-center py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-5xl mx-auto">
-            {/* Avatar */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, type: "spring" }}
-              className="mb-12 flex justify-center"
-            >
-              <div className="relative">
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] blur-2xl opacity-50 animate-pulse" />
-                <div className="relative w-48 h-48 sm:w-56 sm:h-56 rounded-full border-4 border-white/30 bg-gradient-to-br from-[#00E5FF]/20 via-[#FF00CC]/20 to-[#9D4BFF]/20 overflow-hidden shadow-2xl">
-                  {user.avatarUrl ? (
-                    <Image
-                      src={user.avatarUrl}
-                      alt={user.name}
-                      width={224}
-                      height={224}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-6xl font-black text-white flex items-center justify-center h-full">
-                      {user.name.slice(0, 1).toUpperCase()}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-
+          <div className="max-w-4xl mx-auto">
             {/* Heading */}
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.8 }}
-              className="mb-8 text-center"
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="mb-12 text-center"
             >
-              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white mb-4 leading-tight">
+              <h1 className="mb-4 leading-tight">
                 <SplitText
                   text={`Welcome, ${profile?.name || user.name}!`}
                   tag="span"
@@ -565,7 +555,7 @@ export function ModernDashboard() {
                   duration={0.6}
                 />
               </h1>
-              <p className="text-xl sm:text-2xl md:text-3xl text-white/70 font-semibold">
+              <p className="text-lg sm:text-xl text-white/70 font-medium">
                 Your developer card is ready to share
               </p>
             </motion.div>
@@ -573,28 +563,25 @@ export function ModernDashboard() {
             {/* Quick Stats */}
             {cardData && (
               <motion.div
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, duration: 0.8 }}
-                className="grid grid-cols-3 gap-6 max-w-2xl mx-auto"
+                transition={{ delay: 0.4, duration: 0.6 }}
+                className="grid grid-cols-3 gap-4 max-w-xl mx-auto mb-12"
               >
                 {[
                   { label: "Repos", value: cardData.stats.repos, color: "from-[#00E5FF]" },
                   { label: "Stars", value: cardData.stats.stars.toLocaleString(), color: "from-[#FF00CC]" },
                   { label: "Contribs", value: cardData.stats.contributions.toLocaleString(), color: "from-[#9D4BFF]" },
                 ].map((stat, i) => (
-                  <motion.div
+                  <div
                     key={i}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.6 + i * 0.1 }}
-                    className="rounded-2xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border-2 border-white/20 px-6 py-6 text-center shadow-xl"
+                    className="rounded-xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/20 px-4 py-4 text-center"
                   >
-                    <div className={`text-3xl sm:text-4xl font-black bg-gradient-to-r ${stat.color} to-white bg-clip-text text-transparent mb-2`}>
+                    <div className={`text-2xl sm:text-3xl font-black bg-gradient-to-r ${stat.color} to-white bg-clip-text text-transparent mb-1`}>
                       {stat.value}
                     </div>
-                    <div className="text-xs sm:text-sm text-white/60 uppercase tracking-widest font-bold">{stat.label}</div>
-                  </motion.div>
+                    <div className="text-xs text-white/60 uppercase tracking-wider font-semibold">{stat.label}</div>
+                  </div>
                 ))}
               </motion.div>
             )}
@@ -603,11 +590,11 @@ export function ModernDashboard() {
       </section>
 
       {/* Main Content Section with Tabs */}
-      <section className="relative flex min-h-screen items-start justify-center py-20">
+      <section className="relative flex min-h-screen items-start justify-center py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-6xl mx-auto">
             {/* Tabs */}
-            <div className="flex items-center justify-center gap-4 mb-12">
+            <div className="flex items-center justify-center gap-3 mb-8">
               <button
                 onClick={() => setActiveTab('card')}
                 className={`px-8 py-4 rounded-2xl text-base font-bold transition-all ${
