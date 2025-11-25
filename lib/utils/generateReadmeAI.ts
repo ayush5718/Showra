@@ -176,7 +176,7 @@ function generateFallbackReadme(data: GitHubProfileData): string {
   readme += `</p>\n\n`;
 
   // Tech Stack Section with Icon APIs
-  readme += `<h3><b><samp>Skills</samp></b></h3>\n\n`;
+  readme += `## 💻 Tech Stack\n\n`;
   
   if (languages && languages.length > 0) {
     // Map languages to skill icon API format
@@ -232,7 +232,7 @@ function generateFallbackReadme(data: GitHubProfileData): string {
         return mapped;
       }).join(',');
       if (langIcons) {
-        readme += `<h4><b><samp>Languages</samp></b></h4>\n\n`;
+        readme += `### Languages\n\n`;
         readme += `![](https://skills.syvixor.com/api/icons?i=${langIcons}&perline=18)\n\n`;
       }
     }
@@ -244,7 +244,7 @@ function generateFallbackReadme(data: GitHubProfileData): string {
         return mapped;
       }).join(',');
       if (frontendIcons) {
-        readme += `<h4><b><samp>Frontend</samp></b></h4>\n\n`;
+        readme += `### Frontend\n\n`;
         readme += `![](https://skills.syvixor.com/api/icons?i=${frontendIcons}&perline=18)\n\n`;
       }
     }
@@ -256,7 +256,7 @@ function generateFallbackReadme(data: GitHubProfileData): string {
         return mapped;
       }).join(',');
       if (backendIcons) {
-        readme += `<h4><b><samp>Backend</samp></b></h4>\n\n`;
+        readme += `### Backend\n\n`;
         readme += `![](https://skillicons.dev/icons?i=${backendIcons}&perline=18)\n\n`;
       }
     }
@@ -268,7 +268,7 @@ function generateFallbackReadme(data: GitHubProfileData): string {
         return mapped;
       }).join(',');
       if (toolsIcons) {
-        readme += `<h4><b><samp>DevOps</samp></b></h4>\n\n`;
+        readme += `### DevOps\n\n`;
         readme += `![](https://skills.syvixor.com/api/icons?i=${toolsIcons}&perline=18)\n\n`;
       }
     }
@@ -280,7 +280,7 @@ function generateFallbackReadme(data: GitHubProfileData): string {
         return mapped;
       }).join(',');
       if (dbIcons) {
-        readme += `<h4><b><samp>Database</samp></b></h4>\n\n`;
+        readme += `### Database\n\n`;
         readme += `![](https://skills.syvixor.com/api/icons?i=${dbIcons}&perline=18)\n\n`;
       }
     }

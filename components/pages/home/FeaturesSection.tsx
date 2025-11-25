@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
-import { Sparkles, TrendingUp, Palette, Share2, Settings, Gift } from "lucide-react";
+import { Sparkles, TrendingUp, Palette, Share2, Settings, Gift, FileText } from "lucide-react";
 import SplitText from "@/components/common/SplitText";
 import LightRays from "@/components/react-bits/LigthRays/LightRays";
 
@@ -121,7 +121,7 @@ export function FeaturesSection() {
           </motion.div>
 
           {/* Features Grid with SpotlightCard */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
             {features.map((feature, index) => {
               const IconComponent = feature.icon;
               return (
@@ -156,6 +156,65 @@ export function FeaturesSection() {
               );
             })}
           </div>
+
+          {/* README Generator - Separate Full Width Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="w-full"
+          >
+            <div className="relative overflow-hidden rounded-3xl border border-white/20 bg-gradient-to-br from-[#00E5FF]/10 via-[#FF00CC]/10 to-[#9D4BFF]/10 backdrop-blur-2xl p-8 md:p-12 lg:p-16">
+              {/* Animated gradient background */}
+              <div className="absolute inset-0 bg-gradient-to-r from-[#00E5FF]/5 via-[#FF00CC]/5 to-[#9D4BFF]/5 animate-pulse" />
+              
+              {/* Glowing orb effects */}
+              <div className="absolute top-0 left-0 w-72 h-72 bg-[#00E5FF]/20 rounded-full blur-[120px] animate-pulse" />
+              <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#FF00CC]/20 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
+              
+              {/* Content */}
+              <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+                {/* Left side - Icon and Title */}
+                <div className="flex flex-col md:flex-row items-center gap-6">
+                  {/* Icon with glow effect */}
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#00E5FF] to-[#FF00CC] opacity-30 blur-2xl rounded-3xl animate-pulse" />
+                    <div className="relative rounded-2xl bg-gradient-to-br from-[#00E5FF]/20 to-[#FF00CC]/20 backdrop-blur-xl border border-white/30 p-6">
+                      <FileText className="h-12 w-12 text-[#00E5FF] drop-shadow-[0_0_20px_rgba(0,229,255,0.6)]" />
+                    </div>
+                  </div>
+                  
+                  {/* Text content */}
+                  <div className="text-center md:text-left">
+                    <div className="flex items-center justify-center md:justify-start gap-3 mb-3">
+                      <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] bg-clip-text text-transparent">
+                        README Generator
+                      </h3>
+                      <span className="px-3 py-1 text-sm font-bold rounded-full bg-gradient-to-r from-[#00E5FF]/30 to-[#FF00CC]/30 border border-[#00E5FF]/50 text-[#00E5FF] animate-pulse">
+                        Coming Soon
+                      </span>
+                    </div>
+                    <p className="text-lg md:text-xl text-white/70 max-w-2xl">
+                      AI-powered GitHub profile README generation with beautiful templates and automatic content creation
+                    </p>
+                  </div>
+                </div>
+
+                {/* Right side - Visual elements */}
+                <div className="flex items-center gap-4">
+                  <div className="hidden md:flex flex-col gap-2">
+                    <div className="flex gap-2">
+                      <div className="w-3 h-3 rounded-full bg-[#00E5FF] animate-pulse" />
+                      <div className="w-3 h-3 rounded-full bg-[#FF00CC] animate-pulse" style={{ animationDelay: '0.3s' }} />
+                      <div className="w-3 h-3 rounded-full bg-[#9D4BFF] animate-pulse" style={{ animationDelay: '0.5s' }} />
+                    </div>
+                    <div className="text-xs text-white/50 font-mono">AI Powered</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>

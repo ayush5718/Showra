@@ -843,7 +843,8 @@ export function ModernDashboard() {
               >
                 Your DevCard
               </button>
-              <button
+              {/* README Tab - Commented out temporarily */}
+              {/* <button
                 onClick={() => setActiveTab('readme')}
                 className={`px-6 py-3 rounded-xl text-sm font-bold transition-all ${
                   activeTab === 'readme'
@@ -853,7 +854,7 @@ export function ModernDashboard() {
               >
                 <Code className="inline-block h-4 w-4 mr-2" />
                 README Code
-              </button>
+              </button> */}
               <button
                 onClick={() => {
                   clearAIAnalysis(); // Clear AI analysis cache on refresh
@@ -1087,7 +1088,8 @@ export function ModernDashboard() {
                 )}
               </div>
             ) : (
-              <div className="space-y-6">
+              /* README Tab Content - Commented out temporarily */
+              /* <div className="space-y-6">
                 {profileLoading && !cardData ? (
                   <ReadmeLoader />
                 ) : isGeneratingREADME && !generatedREADME ? (
@@ -1122,6 +1124,12 @@ export function ModernDashboard() {
                 ) : (
                   <ReadmeLoader />
                 )}
+              </div> */
+              <div className="flex min-h-[400px] items-center justify-center">
+                <div className="text-center">
+                  <h3 className="text-2xl font-bold text-white mb-2">README Generator</h3>
+                  <p className="text-white/60">Coming soon!</p>
+                </div>
               </div>
             )}
           </div>
