@@ -224,6 +224,7 @@ export const useAuthStore = create<AuthState>()(
       partialize: (state) => ({
         session: state.session,
         user: state.user,
+        // Don't persist isLoading or isAuthenticating - they should reset on mount
       }),
     }
   )

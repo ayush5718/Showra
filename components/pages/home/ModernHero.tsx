@@ -12,16 +12,38 @@ import { DevCardPreview } from "@/components/features/card/DevCardPreview";
 export function ModernHero() {
   const { user, isAuthenticating, setAuthenticating } = useAuthStore();
 
-  const handleGetStarted = async () => {
+  const handleGetStarted = async (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
     if (isAuthenticating || user) return;
     try {
       setAuthenticating(true);
-      await supabase.auth.signInWithOAuth({
+      // Build the full callback URL with next parameter
+      const callbackUrl = `${window.location.origin}/auth/callback?next=${encodeURIComponent('/dashboard')}`;
+      console.log('🔐 Starting OAuth with redirectTo:', callbackUrl);
+      
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "github",
-        options: { redirectTo: `${window.location.origin}/auth/callback?next=/dashboard` },
+        options: { 
+          redirectTo: callbackUrl,
+        },
       });
+      
+      if (error) {
+        console.error('❌ OAuth error:', error);
+        setAuthenticating(false);
+        return;
+      }
+      
+      if (data?.url) {
+        console.log('✅ OAuth URL generated, redirecting to:', data.url);
+        window.location.replace(data.url);
+      }
     } catch (error) {
-      console.error("GitHub login failed", error);
+      console.error("❌ GitHub login failed", error);
       setAuthenticating(false);
     }
   };
@@ -146,7 +168,7 @@ export function ModernHero() {
                 ) : (
                   <button
                     type="button"
-                    onClick={handleGetStarted}
+                    onClick={(e) => handleGetStarted(e)}
                     disabled={isAuthenticating}
                     className="group relative inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] px-8 py-4 text-base font-bold text-white shadow-xl shadow-[#00E5FF]/30 transition-all hover:shadow-2xl hover:shadow-[#00E5FF]/50 disabled:cursor-not-allowed disabled:opacity-70 overflow-hidden"
                   >

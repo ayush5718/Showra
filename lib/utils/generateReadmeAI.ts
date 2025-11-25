@@ -90,35 +90,58 @@ function generateFallbackReadme(data: GitHubProfileData): string {
 
   let readme = '';
 
-  // Modern Hero Section - Name Centered, Description Left-Aligned
-  readme += `<div align="center">\n\n`;
+  // Social Media Badges Section (Top)
+  readme += `# Hey Everyone! I'm [${name} a.k.a ${username}!](https://github.com/${username})\n\n`;
+  readme += `<br><br>\n\n`;
   
-  // Name with animated typing effect - Centered
-  readme += `<h1 align="center" style="margin-bottom: 10px;">\n`;
-  readme += `  <img src="https://readme-typing-svg.herokuapp.com/?lines=Hi+👋,+I'm+${encodeURIComponent(name)};&color=00E5FF&center=true&width=500&height=45&size=32&fontSize=32" alt="Typing SVG" />\n`;
-  readme += `</h1>\n\n`;
+  readme += `<p align="left">\n`;
+  readme += `  <a href="https://github.com/${username}">\n`;
+  readme += `    <img align="left" alt="${username}'s Github" width="100px" src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white" />\n`;
+  readme += `  </a>\n`;
   
-  readme += `</div>\n\n`;
+  if (profile.blog) {
+    const blogUrl = profile.blog.startsWith('http') ? profile.blog : `https://${profile.blog}`;
+    readme += `  <a href="${blogUrl}">\n`;
+    readme += `    <img align="left" alt="${username}'s Portfolio" width="100px" src="https://img.shields.io/badge/Portfolio-000000?style=for-the-badge&logo=About.me&logoColor=white" />\n`;
+    readme += `  </a>\n`;
+  }
   
-  // Tagline/Bio - Left Aligned
-  readme += `<h3 align="left" style="margin-top: 10px; margin-bottom: 20px; color: rgba(255, 255, 255, 0.9); font-weight: 400;">\n`;
-  readme += `  ${tagline}\n`;
-  readme += `</h3>\n\n`;
+  if (profile.twitterUsername) {
+    readme += `  <a href="https://twitter.com/${profile.twitterUsername}">\n`;
+    readme += `    <img align="left" alt="${username}'s Twitter" width="100px" src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" />\n`;
+    readme += `  </a>\n`;
+  }
   
-  // Coding animation with reliable source
-  readme += `<div align="center" style="margin: 20px 0;">\n`;
-  readme += `  <img src="https://i.imgur.com/mChG9re.gif" alt="Coding Animation" width="400" style="max-width: 100%; height: auto; border-radius: 10px;" />\n`;
-  readme += `</div>\n\n`;
-  
-  // Profile views badge - Left Aligned
-  readme += `<p align="left" style="margin: 10px 0;">\n`;
-  readme += `  <img src="https://komarev.com/ghpvc/?username=${username}&label=Profile%20views&color=0e75b6&style=flat" alt="${username}" />\n`;
   readme += `</p>\n\n`;
+  readme += `<br><br>\n\n`;
 
-  // GitHub trophy - Left Aligned
-  readme += `<p align="left" style="margin: 10px 0;">\n`;
-  readme += `  <a href="https://github.com/ryo-ma/github-profile-trophy"><img src="https://github-profile-trophy.vercel.app/?username=${username}&theme=radical&no-frame=true&no-bg=true&margin-w=4&margin-h=4" alt="${username}" /></a>\n`;
-  readme += `</p>\n\n`;
+  // Hero Section with Two-Column Layout
+  readme += `<div>\n\n`;
+  readme += `<img align="right" src="https://i.imgur.com/mChG9re.gif" width="40%"/>\n\n`;
+  readme += `<br>\n\n`;
+  
+  // Profile views badge
+  readme += `![](https://komarev.com/ghpvc/?username=${username}&color=00a0a0&style=plastic)\n\n`;
+  
+  // Tagline
+  readme += `<h4 align="center"><samp>${tagline}</samp></h4>\n\n`;
+  
+  // Key information bullets
+  if (profile.company) {
+    readme += `- 👷 <samp><b>${profile.company}</b></samp>\n\n`;
+  }
+  if (profile.location) {
+    readme += `- 📍 <samp><b>${profile.location}</b></samp>\n\n`;
+  }
+  if (stats.contributions > 0) {
+    readme += `- 💻 <samp>I've made **${stats.contributions} contributions** this year</samp>\n\n`;
+  }
+  if (stats.repos > 0) {
+    readme += `- 📦 <samp>Maintaining **${stats.repos} repositories**</samp>\n\n`;
+  }
+  
+  readme += `</div>\n\n`;
+  readme += `##\n\n`;
 
   readme += `---\n\n`;
 
@@ -152,101 +175,114 @@ function generateFallbackReadme(data: GitHubProfileData): string {
   }
   readme += `</p>\n\n`;
 
-  // Tech Stack Section
-  readme += `## 💻 Tech Stack\n\n`;
+  // Tech Stack Section with Icon APIs
+  readme += `<h3><b><samp>Skills</samp></b></h3>\n\n`;
   
   if (languages && languages.length > 0) {
+    // Map languages to skill icon API format
+    const langMap: Record<string, string> = {
+      'JavaScript': 'js',
+      'TypeScript': 'ts',
+      'Python': 'python',
+      'Java': 'java',
+      'C++': 'cpp',
+      'C': 'c',
+      'HTML': 'html',
+      'CSS': 'css',
+      'React': 'react',
+      'Vue': 'vue',
+      'Angular': 'angular',
+      'Node.js': 'nodejs',
+      'Go': 'go',
+      'Rust': 'rust',
+      'PHP': 'php',
+      'Ruby': 'ruby',
+      'Docker': 'docker',
+      'Kubernetes': 'kubernetes',
+      'Git': 'git',
+      'Linux': 'linux',
+      'AWS': 'aws',
+      'Azure': 'azure',
+      'GCP': 'googlecloud',
+      'PostgreSQL': 'postgresql',
+      'MySQL': 'mysql',
+      'MongoDB': 'mongodb',
+      'Redis': 'redis',
+    };
+    
     // Group languages by category
-    const frontendLangs = ['javascript', 'typescript', 'html', 'css', 'react', 'vue', 'angular', 'svelte'];
+    const frontendLangs = ['javascript', 'typescript', 'html', 'css', 'react', 'vue', 'angular', 'svelte', 'tailwind'];
     const backendLangs = ['python', 'java', 'go', 'rust', 'php', 'ruby', 'node', 'c++', 'c#', 'django', 'flask', 'express'];
-    const toolsLangs = ['docker', 'kubernetes', 'git', 'linux', 'aws', 'azure', 'gcp'];
+    const toolsLangs = ['docker', 'kubernetes', 'git', 'linux', 'aws', 'azure', 'gcp', 'terraform', 'jenkins'];
+    const dbLangs = ['postgresql', 'mysql', 'mongodb', 'redis', 'sqlite', 'firebase'];
     
     const frontend = languages.filter(l => frontendLangs.some(fl => l.name.toLowerCase().includes(fl)));
     const backend = languages.filter(l => backendLangs.some(bl => l.name.toLowerCase().includes(bl)));
     const tools = languages.filter(l => toolsLangs.some(tl => l.name.toLowerCase().includes(tl)));
+    const databases = languages.filter(l => dbLangs.some(dl => l.name.toLowerCase().includes(dl)));
     const others = languages.filter(l => !frontendLangs.some(fl => l.name.toLowerCase().includes(fl)) && 
                                          !backendLangs.some(bl => l.name.toLowerCase().includes(bl)) &&
-                                         !toolsLangs.some(tl => l.name.toLowerCase().includes(tl)));
+                                         !toolsLangs.some(tl => l.name.toLowerCase().includes(tl)) &&
+                                         !dbLangs.some(dl => l.name.toLowerCase().includes(dl)));
 
-    // Tech Stack with badges in a grid layout
-    const techColors: Record<string, string> = {
-      'JavaScript': 'F7DF1E',
-      'TypeScript': '3178C6',
-      'Python': '3776AB',
-      'React': '61DAFB',
-      'Node.js': '339933',
-      'Java': 'ED8B00',
-      'Go': '00ADD8',
-      'Rust': '000000',
-      'HTML': 'E34F26',
-      'CSS': '1572B6',
-      'Vue': '4FC08D',
-      'Angular': 'DD0031',
-      'Docker': '2496ED',
-      'Kubernetes': '326CE5',
-      'AWS': '232F3E',
-      'Git': 'F05032',
-    };
+    // Languages section
+    if (languages.length > 0) {
+      const langIcons = languages.slice(0, 8).map(l => {
+        const mapped = langMap[l.name] || l.name.toLowerCase();
+        return mapped;
+      }).join(',');
+      if (langIcons) {
+        readme += `<h4><b><samp>Languages</samp></b></h4>\n\n`;
+        readme += `![](https://skills.syvixor.com/api/icons?i=${langIcons}&perline=18)\n\n`;
+      }
+    }
 
-    // Tech Stack with modern, clean design
+    // Frontend section
     if (frontend.length > 0) {
-      readme += `### Frontend\n`;
-      readme += `<div style="background: linear-gradient(135deg, rgba(0, 229, 255, 0.1) 0%, rgba(0, 0, 0, 0.5) 100%); border: 2px solid rgba(0, 229, 255, 0.4); border-radius: 12px; padding: 24px; margin: 16px 0; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; box-shadow: 0 4px 6px rgba(0, 229, 255, 0.1);">\n`;
-      frontend.slice(0, 10).forEach((lang) => {
-        const langLower = lang.name.toLowerCase().replace(/\s+/g, '-');
-        const langName = lang.name.replace(/\s+/g, '%20');
-        const color = techColors[lang.name] || '00E5FF';
-        readme += `<div style="display: inline-flex; align-items: center; gap: 10px; background: rgba(0, 0, 0, 0.6); padding: 12px 16px; border-radius: 10px; border: 1px solid rgba(0, 229, 255, 0.3); transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">\n`;
-        readme += `  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/${langLower}/${langLower}-original.svg" alt="${lang.name}" width="36" height="36" style="object-fit: contain; filter: drop-shadow(0 0 4px rgba(0, 229, 255, 0.5));" />\n`;
-        readme += `  <span style="color: #ffffff; font-weight: 600; font-size: 14px;">${lang.name}</span>\n`;
-        readme += `</div>\n`;
-      });
-      readme += `</div>\n\n`;
+      const frontendIcons = frontend.slice(0, 8).map(l => {
+        const mapped = langMap[l.name] || l.name.toLowerCase();
+        return mapped;
+      }).join(',');
+      if (frontendIcons) {
+        readme += `<h4><b><samp>Frontend</samp></b></h4>\n\n`;
+        readme += `![](https://skills.syvixor.com/api/icons?i=${frontendIcons}&perline=18)\n\n`;
+      }
     }
 
+    // Backend section
     if (backend.length > 0) {
-      readme += `### Backend\n`;
-      readme += `<div style="background: linear-gradient(135deg, rgba(255, 0, 204, 0.1) 0%, rgba(0, 0, 0, 0.5) 100%); border: 2px solid rgba(255, 0, 204, 0.4); border-radius: 12px; padding: 24px; margin: 16px 0; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; box-shadow: 0 4px 6px rgba(255, 0, 204, 0.1);">\n`;
-      backend.slice(0, 10).forEach((lang) => {
-        const langLower = lang.name.toLowerCase().replace(/\s+/g, '-');
-        const langName = lang.name.replace(/\s+/g, '%20');
-        const color = techColors[lang.name] || 'FF00CC';
-        readme += `<div style="display: inline-flex; align-items: center; gap: 10px; background: rgba(0, 0, 0, 0.6); padding: 12px 16px; border-radius: 10px; border: 1px solid rgba(255, 0, 204, 0.3); transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">\n`;
-        readme += `  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/${langLower}/${langLower}-original.svg" alt="${lang.name}" width="36" height="36" style="object-fit: contain; filter: drop-shadow(0 0 4px rgba(255, 0, 204, 0.5));" />\n`;
-        readme += `  <span style="color: #ffffff; font-weight: 600; font-size: 14px;">${lang.name}</span>\n`;
-        readme += `</div>\n`;
-      });
-      readme += `</div>\n\n`;
+      const backendIcons = backend.slice(0, 8).map(l => {
+        const mapped = langMap[l.name] || l.name.toLowerCase();
+        return mapped;
+      }).join(',');
+      if (backendIcons) {
+        readme += `<h4><b><samp>Backend</samp></b></h4>\n\n`;
+        readme += `![](https://skillicons.dev/icons?i=${backendIcons}&perline=18)\n\n`;
+      }
     }
 
+    // DevOps section
     if (tools.length > 0) {
-      readme += `### Tools & DevOps\n`;
-      readme += `<div style="background: linear-gradient(135deg, rgba(157, 75, 255, 0.1) 0%, rgba(0, 0, 0, 0.5) 100%); border: 2px solid rgba(157, 75, 255, 0.4); border-radius: 12px; padding: 24px; margin: 16px 0; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; box-shadow: 0 4px 6px rgba(157, 75, 255, 0.1);">\n`;
-      tools.slice(0, 10).forEach((lang) => {
-        const langLower = lang.name.toLowerCase().replace(/\s+/g, '-');
-        const langName = lang.name.replace(/\s+/g, '%20');
-        const color = techColors[lang.name] || '9D4BFF';
-        readme += `<div style="display: inline-flex; align-items: center; gap: 10px; background: rgba(0, 0, 0, 0.6); padding: 12px 16px; border-radius: 10px; border: 1px solid rgba(157, 75, 255, 0.3); transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">\n`;
-        readme += `  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/${langLower}/${langLower}-original.svg" alt="${lang.name}" width="36" height="36" style="object-fit: contain; filter: drop-shadow(0 0 4px rgba(157, 75, 255, 0.5));" />\n`;
-        readme += `  <span style="color: #ffffff; font-weight: 600; font-size: 14px;">${lang.name}</span>\n`;
-        readme += `</div>\n`;
-      });
-      readme += `</div>\n\n`;
+      const toolsIcons = tools.slice(0, 8).map(l => {
+        const mapped = langMap[l.name] || l.name.toLowerCase();
+        return mapped;
+      }).join(',');
+      if (toolsIcons) {
+        readme += `<h4><b><samp>DevOps</samp></b></h4>\n\n`;
+        readme += `![](https://skills.syvixor.com/api/icons?i=${toolsIcons}&perline=18)\n\n`;
+      }
     }
 
-    if (others.length > 0) {
-      readme += `### Other Technologies\n`;
-      readme += `<div style="background: linear-gradient(135deg, rgba(0, 229, 255, 0.1) 0%, rgba(0, 0, 0, 0.5) 100%); border: 2px solid rgba(0, 229, 255, 0.4); border-radius: 12px; padding: 24px; margin: 16px 0; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; box-shadow: 0 4px 6px rgba(0, 229, 255, 0.1);">\n`;
-      others.slice(0, 10).forEach((lang) => {
-        const langLower = lang.name.toLowerCase().replace(/\s+/g, '-');
-        const langName = lang.name.replace(/\s+/g, '%20');
-        const color = techColors[lang.name] || '00E5FF';
-        readme += `<div style="display: inline-flex; align-items: center; gap: 10px; background: rgba(0, 0, 0, 0.6); padding: 12px 16px; border-radius: 10px; border: 1px solid rgba(0, 229, 255, 0.3); transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">\n`;
-        readme += `  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/${langLower}/${langLower}-original.svg" alt="${lang.name}" width="36" height="36" style="object-fit: contain; filter: drop-shadow(0 0 4px rgba(0, 229, 255, 0.5));" />\n`;
-        readme += `  <span style="color: #ffffff; font-weight: 600; font-size: 14px;">${lang.name}</span>\n`;
-        readme += `</div>\n`;
-      });
-      readme += `</div>\n\n`;
+    // Database section
+    if (databases.length > 0) {
+      const dbIcons = databases.slice(0, 8).map(l => {
+        const mapped = langMap[l.name] || l.name.toLowerCase();
+        return mapped;
+      }).join(',');
+      if (dbIcons) {
+        readme += `<h4><b><samp>Database</samp></b></h4>\n\n`;
+        readme += `![](https://skills.syvixor.com/api/icons?i=${dbIcons}&perline=18)\n\n`;
+      }
     }
   }
 
@@ -300,72 +336,33 @@ function generateFallbackReadme(data: GitHubProfileData): string {
 
   readme += `---\n\n`;
 
-  // Featured Projects - Creative Card Layout
-  readme += `## 🚀 Featured Projects\n\n`;
+  // Featured Repositories using GitHub Stats API
+  readme += `<h3><b><samp>Check out my Repositories</samp></b></h3>\n\n`;
+  readme += `<span>\n\n`;
   
   if (repositories && repositories.length > 0) {
-    const featuredRepos = repositories.slice(0, 6);
+    const featuredRepos = repositories.slice(0, 4);
     
-    // Create 2-column grid layout
-    readme += `<table>\n`;
-    for (let i = 0; i < featuredRepos.length; i += 2) {
-      readme += `<tr>\n`;
-      
-      // First project in row
-      const repo1 = featuredRepos[i];
-      const repo1NameDisplay = repo1.name.length > 28 ? repo1.name.substring(0, 28) + '...' : repo1.name;
-      readme += `<td width="50%" style="background-color: rgba(0, 0, 0, 0.5); border: 2px solid rgba(88, 166, 255, 0.4); border-radius: 12px; padding: 20px; vertical-align: top; margin: 8px;">\n`;
-      readme += `  <h3 style="margin-top: 0; margin-bottom: 12px; color: #58A6FF; font-size: 1.2em; font-weight: 600; line-height: 1.3;"><a href="https://github.com/${username}/${repo1.name}" style="color: #58A6FF; text-decoration: none; border-bottom: 1px solid transparent;" onmouseover="this.style.borderBottomColor='#58A6FF'" onmouseout="this.style.borderBottomColor='transparent'">${repo1NameDisplay}</a></h3>\n`;
-      readme += `  <p style="color: rgba(255, 255, 255, 0.95); margin: 12px 0; line-height: 1.6; font-size: 0.95em;">${repo1.description || "A project I'm working on"}</p>\n`;
-      readme += `  <div style="margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px;">\n`;
-      readme += `    <img src="https://img.shields.io/github/stars/${username}/${repo1.name}?style=flat-square&logo=github&logoColor=white&labelColor=0D1117&color=58A6FF&label=" alt="Stars" />\n`;
-      if (repo1.language) {
-        const langColor = repo1.language === 'JavaScript' ? 'F7DF1E' : repo1.language === 'TypeScript' ? '3178C6' : repo1.language === 'Python' ? '3776AB' : repo1.language === 'Java' ? 'ED8B00' : repo1.language === 'Go' ? '00ADD8' : '00E5FF';
-        readme += `    <img src="https://img.shields.io/badge/${encodeURIComponent(repo1.language)}-${langColor}?style=flat-square&logo=${repo1.language.toLowerCase()}&logoColor=white&labelColor=0D1117" alt="Language" />\n`;
-      }
-      readme += `    <a href="https://github.com/${username}/${repo1.name}"><img src="https://img.shields.io/badge/View-Repository-9D4BFF?style=flat-square&logo=github&logoColor=white&labelColor=0D1117" alt="View" /></a>\n`;
-      readme += `  </div>\n`;
-      readme += `</td>\n`;
-      
-      // Second project in row (if exists)
-      if (i + 1 < featuredRepos.length) {
-        const repo2 = featuredRepos[i + 1];
-        const repo2NameDisplay = repo2.name.length > 28 ? repo2.name.substring(0, 28) + '...' : repo2.name;
-        readme += `<td width="50%" style="background-color: rgba(0, 0, 0, 0.5); border: 2px solid rgba(88, 166, 255, 0.4); border-radius: 12px; padding: 20px; vertical-align: top; margin: 8px;">\n`;
-        readme += `  <h3 style="margin-top: 0; margin-bottom: 12px; color: #58A6FF; font-size: 1.2em; font-weight: 600; line-height: 1.3;"><a href="https://github.com/${username}/${repo2.name}" style="color: #58A6FF; text-decoration: none; border-bottom: 1px solid transparent;" onmouseover="this.style.borderBottomColor='#58A6FF'" onmouseout="this.style.borderBottomColor='transparent'">${repo2NameDisplay}</a></h3>\n`;
-        readme += `  <p style="color: rgba(255, 255, 255, 0.95); margin: 12px 0; line-height: 1.6; font-size: 0.95em;">${repo2.description || "A project I'm working on"}</p>\n`;
-        readme += `  <div style="margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px;">\n`;
-        readme += `    <img src="https://img.shields.io/github/stars/${username}/${repo2.name}?style=flat-square&logo=github&logoColor=white&labelColor=0D1117&color=58A6FF&label=" alt="Stars" />\n`;
-        if (repo2.language) {
-          const langColor = repo2.language === 'JavaScript' ? 'F7DF1E' : repo2.language === 'TypeScript' ? '3178C6' : repo2.language === 'Python' ? '3776AB' : repo2.language === 'Java' ? 'ED8B00' : repo2.language === 'Go' ? '00ADD8' : '00E5FF';
-          readme += `    <img src="https://img.shields.io/badge/${encodeURIComponent(repo2.language)}-${langColor}?style=flat-square&logo=${repo2.language.toLowerCase()}&logoColor=white&labelColor=0D1117" alt="Language" />\n`;
-        }
-        readme += `    <a href="https://github.com/${username}/${repo2.name}"><img src="https://img.shields.io/badge/View-Repository-9D4BFF?style=flat-square&logo=github&logoColor=white&labelColor=0D1117" alt="View" /></a>\n`;
-        readme += `  </div>\n`;
-        readme += `</td>\n`;
-      } else {
-        readme += `<td width="50%"></td>\n`;
-      }
-      
-      readme += `</tr>\n`;
-    }
-    readme += `</table>\n\n`;
-  } else if (topRepo) {
-    readme += `<table>\n`;
-    readme += `<tr>\n`;
-    readme += `<td width="100%">\n`;
-    readme += `  <h3><a href="https://github.com/${username}/${topRepo.name}">${topRepo.name}</a></h3>\n`;
-    readme += `  <p>${topRepo.description || "A project I'm working on"}</p>\n`;
-    readme += `  <p>\n`;
-    readme += `    <img src="https://img.shields.io/github/stars/${username}/${topRepo.name}?style=flat-square&logo=github" alt="Stars" />\n`;
-    readme += `    <img src="https://img.shields.io/badge/View-Repository-9D4BFF?style=flat-square&logo=github" alt="View" />\n`;
-    readme += `  </p>\n`;
-    readme += `</td>\n`;
-    readme += `</tr>\n`;
-    readme += `</table>\n\n`;
+    // Use GitHub Stats API for repository pins
+    featuredRepos.forEach((repo, index) => {
+      const align = index % 2 === 0 ? 'right' : 'center';
+      readme += `<a href="https://github.com/${username}/${repo.name}">\n`;
+      readme += `  <img align="${align}" src="https://github-readme-stats.vercel.app/api/pin/?username=${username}&repo=${repo.name}" />\n`;
+      readme += `</a>\n\n`;
+    });
   }
+  readme += `</span>\n\n`;
+  readme += `<hr>\n\n`;
 
-  readme += `---\n\n`;
+  // GitHub Trophy
+  readme += `### 🏆 GitHub Profile Trophy:\n\n`;
+  readme += `<p align="center">\n`;
+  readme += `  <a href="https://github.com/ryo-ma/github-profile-trophy">\n`;
+  readme += `    <img width=800 src="https://github-profile-trophy.vercel.app/?username=${username}&column=8&theme=onedark&no-frame=true&no-bg=true"/>\n`;
+  readme += `  </a>\n`;
+  readme += `</p>\n\n`;
+
+  readme += `<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">\n\n`;
 
   // GitHub Stats
   readme += `## 📊 GitHub Stats\n\n`;
@@ -380,10 +377,12 @@ function generateFallbackReadme(data: GitHubProfileData): string {
   readme += `<p align="center">\n`;
   readme += `  <img src="https://github-readme-streak-stats.herokuapp.com/?user=${username}&theme=radical&hide_border=true&background=0D1117&ring=58A6FF&fire=58A6FF&currStreakLabel=58A6FF" alt="${username}" />\n`;
   readme += `</p>\n\n`;
-
+  
   readme += `<p align="center">\n`;
   readme += `  <img src="https://github-readme-activity-graph.vercel.app/graph?username=${username}&theme=radical&hide_border=true&bg_color=0D1117&color=58A6FF&line=58A6FF&point=58A6FF&area=true&area_color=58A6FF" alt="Activity Graph" />\n`;
   readme += `</p>\n\n`;
+  
+  readme += `<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">\n\n`;
 
   // DevCard Section
   if (devcardUrl) {
@@ -396,16 +395,23 @@ function generateFallbackReadme(data: GitHubProfileData): string {
 
   readme += `---\n\n`;
 
-  // Connect Section
+  // Connect Section with Enhanced Badges
   readme += `## 📫 Connect with Me\n\n`;
   readme += `<p align="left">\n`;
+  readme += `  <a href="https://github.com/${username}" target="_blank">\n`;
+  readme += `    <img align="left" alt="${username}'s Github" width="100px" src="https://img.shields.io/badge/Github-181717?style=for-the-badge&logo=Github&logoColor=white" />\n`;
+  readme += `  </a>\n`;
   if (profile.blog) {
-    readme += `  <a href="${profile.blog}" target="_blank"><img src="https://img.shields.io/badge/Portfolio-000000?style=for-the-badge&logo=About.me&logoColor=white" alt="Portfolio" /></a>\n`;
+    const blogUrl = profile.blog.startsWith('http') ? profile.blog : `https://${profile.blog}`;
+    readme += `  <a href="${blogUrl}" target="_blank">\n`;
+    readme += `    <img align="left" alt="${username}'s Portfolio" width="100px" src="https://img.shields.io/badge/Portfolio-000000?style=for-the-badge&logo=About.me&logoColor=white" />\n`;
+    readme += `  </a>\n`;
   }
   if (profile.twitterUsername) {
-    readme += `  <a href="https://twitter.com/${profile.twitterUsername}" target="_blank"><img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Twitter" /></a>\n`;
+    readme += `  <a href="https://twitter.com/${profile.twitterUsername}" target="_blank">\n`;
+    readme += `    <img align="left" alt="${username}'s Twitter" width="100px" src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" />\n`;
+    readme += `  </a>\n`;
   }
-  readme += `  <a href="https://github.com/${username}" target="_blank"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" /></a>\n`;
   readme += `</p>\n\n`;
 
   readme += `---\n\n`;

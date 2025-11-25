@@ -194,18 +194,28 @@ ${devcardUrl ? `DEVCARD IFRAME URL: ${devcardUrl}\nInclude this devcard iframe i
 
 MANDATORY SECTIONS - Generate ALL of these in this exact order with CREATIVE, MODERN designs:
 
-1. **NAME + SHORT TAGLINE** (Hero Section - MUST BE STUNNING):
-   - Name MUST be centered: <h1 align="center"> with animated typing SVG
-   - Tagline/Bio MUST be left-aligned: <h3 align="left">[Tagline]</h3>
-   - Use reliable coding GIF: https://i.imgur.com/mChG9re.gif (DO NOT use broken sources)
-   - Center the coding animation image: <div align="center"><img src="https://i.imgur.com/mChG9re.gif" width="400" /></div>
-   - Profile views badge: <p align="left">
-   - GitHub trophy badges: <p align="left">
-   - Use proper spacing between elements (margin: 10px-20px)
-   - Make bio/tagline clearly visible with good color contrast
-   - CRITICAL: Write HTML directly, NOT in code blocks - it must render as HTML
+1. **SOCIAL MEDIA BADGES** (Top Section - MUST BE FIRST):
+   - Create a row of professional social media badges using shields.io for-the-badge style
+   - Include badges for: LinkedIn, GitHub, Twitter (if available), Instagram (if available), YouTube (if available), Portfolio/Blog (if available)
+   - Format: <a href="[URL]"><img align="left" alt="[label]" width="100px" src="https://img.shields.io/badge/[Label]-[Color]?style=for-the-badge&logo=[Logo]&logoColor=white" /></a>
+   - Use proper spacing: <br><br> between rows if needed
+   - Colors: LinkedIn (0A66C2), GitHub (181717), Twitter (1DA1F2), Instagram (E4405F), YouTube (FF0000), Portfolio (000000)
+   - Make it visually appealing with proper alignment
 
-2. **ABOUT ME**:
+2. **NAME + HERO SECTION** (MUST BE STUNNING AND UNIQUE):
+   - Start with: # Hey Everyone! I'm [Name](https://github.com/${username})
+   - Add <br><br> for spacing
+   - Create a two-column layout using HTML divs:
+     - Left column: Name, tagline, and key information
+     - Right column: Animated coding GIF or terminal animation
+   - Use: <div><img align="right" src="https://i.imgur.com/mChG9re.gif" width="40%"/></div> for right-aligned animation
+   - OR use terminal GIF: <img align="right" src="https://github.com/${username}/${username}/blob/main/terminal.gif" width="40%"/>
+   - Include profile views badge: <img src="https://komarev.com/ghpvc/?username=${username}&color=00a0a0&style=plastic" />
+   - Add GitHub Trophy: <a href="https://github.com/ryo-ma/github-profile-trophy"><img src="https://github-profile-trophy.vercel.app/?username=${username}&column=8&theme=onedark&no-frame=true&no-bg=true"/></a>
+   - Use creative tagline: <h4 align="center"><samp>[Professional tagline based on their work]</samp></h4>
+   - Make it stand out with unique styling
+
+3. **ABOUT ME / BIOGRAPHY** (Enhanced with Icons and Structure):
    - Section header: ## 🚀 About Me
    - Use a creative layout with icons and badges
    - 2-3 compelling sentences about what you do, your passion, and goals
@@ -216,26 +226,20 @@ MANDATORY SECTIONS - Generate ALL of these in this exact order with CREATIVE, MO
    - Use professional but engaging tone
    - Include stats badges: <img src="https://img.shields.io/badge/Repositories-${stats?.repos || 0}-blue?style=flat-square" />
 
-3. **SKILLS / TECH STACK**:
+3. **SKILLS / TECH STACK** (Enhanced with Icon APIs):
    - Section header: ## 💻 Tech Stack
-   - Group by categories with subheadings (Frontend, Backend, Tools & DevOps, etc.)
-   - Each category MUST be in a beautiful gradient box with:
-     - Gradient background: linear-gradient(135deg, rgba(color, 0.1) 0%, rgba(0, 0, 0, 0.5) 100%)
-     - Colored border: 2px solid rgba(color, 0.4)
-     - Border radius: 12px
-     - Padding: 24px
-     - Box shadow for depth
-     - display: flex; flex-wrap: wrap; gap: 16px
-   - Each technology MUST have:
-     - Large icon (36x36px) from devicons with glow effect: filter: drop-shadow(0 0 4px rgba(color, 0.5))
-     - Technology name as text (not badge): <span style="color: #ffffff; font-weight: 600; font-size: 14px;">[Name]</span>
-     - Wrapped in a dark box: background: rgba(0, 0, 0, 0.6); padding: 12px 16px; border-radius: 10px
-     - Colored border matching category
-     - Box shadow for depth
-   - All technologies in a category should appear in ONE row that wraps responsively
-   - Use gradient boxes per category (cyan gradient for Frontend, pink gradient for Backend, purple gradient for Tools)
-   - Make it modern and clean with icons and text labels
-   - CRITICAL: Write HTML directly, NOT in code blocks - it must render as HTML
+   - Use skills.syvixor.com or skillicons.dev API for beautiful skill icons
+   - Format: ![](https://skills.syvixor.com/api/icons?i=[tech1],[tech2],[tech3]&perline=18)
+   - Group by categories with subheadings:
+     - ### Languages: ![](https://skills.syvixor.com/api/icons?i=cpp,c,python,js,java,bash&perline=18)
+     - ### Frontend: ![](https://skills.syvixor.com/api/icons?i=html,css,tailwind,javascript,react&perline=18)
+     - ### Backend: ![](https://skillicons.dev/icons?i=django,php,nodejs,express&perline=18)
+     - ### DevOps: ![](https://skills.syvixor.com/api/icons?i=git,docker,kubernetes,terraform,jenkins&perline=18)
+     - ### Database: ![](https://skills.syvixor.com/api/icons?i=postgresql,mysql,sqlite,firebase&perline=18)
+   - Map languages from data to appropriate icons
+   - Use both APIs for variety: skills.syvixor.com and skillicons.dev
+   - Add category headers: <h4><b><samp>[Category Name]</samp></b></h4>
+   - Make it visually organized and easy to scan
 
 4. **CURRENT WORK / LEARNING** (MUST BE CREATIVE AND VISUAL):
    - Section header: ## 🔨 Currently Working On / Learning
@@ -249,43 +253,39 @@ MANDATORY SECTIONS - Generate ALL of these in this exact order with CREATIVE, MO
    - Use creative layouts with icons and descriptions
    - Format as cards or grid layout (2-column table)
 
-5. **PROJECTS TO HIGHLIGHT** (MUST BE STUNNING AND CREATIVE):
-   - Section header: ## 🚀 Featured Projects
-   - Use HTML tables to create card-like layouts in a 2-column grid
-   - Each project card MUST have inline styles for proper rendering:
-     - Dark background: background-color: rgba(0, 0, 0, 0.5)
-     - Colored border: border: 2px solid rgba(88, 166, 255, 0.4)
-     - Rounded corners: border-radius: 12px
-     - Proper padding: padding: 20px
-   - Project name MUST be styled: color: #58A6FF, font-size: 1.2em, font-weight: 600
-   - Description MUST be styled: color: rgba(255, 255, 255, 0.95)
-   - Use badges with labelColor=0D1117 for dark backgrounds
-   - Truncate long names to 28 characters max
-   - Make project names clearly visible and clickable
-   - Use flex layout for badges: display: flex; flex-wrap: wrap; gap: 8px
+5. **FEATURED REPOSITORIES** (Using GitHub Stats API Pins):
+   - Section header: ## 🚀 Featured Projects / Check out my Repositories
+   - Use GitHub readme-stats pin API for beautiful repository cards
+   - Format: <a href="https://github.com/${username}/[repo]"><img align="[left/right/center]" src="https://github-readme-stats.vercel.app/api/pin/?username=${username}&repo=[repo]" /></a>
+   - Show top 2-4 repositories in a grid layout
+   - Use <span> wrapper with proper alignment
+   - Add horizontal rule: <hr> before and after
+   - Make repositories clickable and visually appealing
+   - Include repository descriptions and stats automatically via API
 
-6. **GITHUB STATS**:
+6. **GITHUB STATS & TROPHIES**:
    - Section header: ## 📊 GitHub Stats
+   - GitHub Trophy (centered, full width): <p align="center"><a href="https://github.com/ryo-ma/github-profile-trophy"><img width=800 src="https://github-profile-trophy.vercel.app/?username=${username}&column=8&theme=onedark&no-frame=true&no-bg=true"/></a></p>
    - GitHub stats card: <img src="https://github-readme-stats.vercel.app/api?username=${username}&show_icons=true&theme=radical&hide_border=true&bg_color=0D1117&title_color=58A6FF&icon_color=58A6FF&include_all_commits=true&count_private=true" />
    - Top languages card: <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=${username}&layout=compact&theme=radical&hide_border=true&bg_color=0D1117&title_color=58A6FF&langs_count=8" />
    - GitHub streak stats: <img src="https://github-readme-streak-stats.herokuapp.com/?user=${username}&theme=radical&hide_border=true&background=0D1117&ring=58A6FF&fire=58A6FF&currStreakLabel=58A6FF" />
    - Activity graph: <img src="https://github-readme-activity-graph.vercel.app/graph?username=${username}&theme=radical&hide_border=true&bg_color=0D1117&color=58A6FF&line=58A6FF&point=58A6FF&area=true&area_color=58A6FF" />
    - Arrange stats in a visually appealing layout (side-by-side or stacked)
+   - Add horizontal rule separators: <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
 
 7. **DEVCARD SECTION** (if devcardUrl provided):
    - Section header: ## 🎴 My DevCard
    - Include iframe: <iframe src="${devcardUrl}" width="100%" height="600" frameborder="0" scrolling="no" title="DevCard"></iframe>
    - Center it properly
 
-8. **CONTACT / SOCIAL LINKS**:
+8. **CONTACT / SOCIAL LINKS** (Enhanced Badge Layout):
    - Section header: ## 📫 Connect with Me
-   - LinkedIn (if available)
-   - Portfolio/Blog (if available)
-   - Email (if available)
-   - Twitter (if available)
-   - GitHub link
-   - Format as organized list or badges
-   - Use professional icons
+   - Use for-the-badge style badges in a row
+   - Format: <a href="[URL]" target="_blank"><img src="https://img.shields.io/badge/[Label]-[Color]?style=for-the-badge&logo=[Logo]&logoColor=white" alt="[Label]" /></a>
+   - Include: LinkedIn, GitHub, Twitter, Portfolio/Blog, Email (if available)
+   - Use <p align="left"> wrapper for alignment
+   - Make badges clickable and professional
+   - Add proper spacing between badges
 
 9. **FUN / PERSONALITY SECTION**:
    - Section header: ## 💡 Fun Facts / About Me
@@ -331,13 +331,19 @@ CREATIVE DESIGN PRINCIPLES:
 - Create modern, professional card designs
 
 SPECIAL INSTRUCTIONS FOR CREATIVITY:
-- Hero section should be eye-catching with animated elements
-- Projects section should use card layouts with badges
-- Current Work section should use visual indicators
-- Make it so attractive that others would want to copy the design
-- Use modern web design principles
-- Create visual interest with colors, badges, and layouts
+- Start with social media badges at the very top - this is the first thing people see
+- Hero section should use two-column layout with animated GIF on right side
+- Use skills icon APIs (skills.syvixor.com, skillicons.dev) for beautiful skill displays
+- Include GitHub Trophy section prominently
+- Use repository pins API for featured projects
+- Add horizontal rule separators between major sections
+- Make it so attractive and unique that others would want to copy the design
+- Use modern web design principles with proper spacing and alignment
+- Create visual interest with colors, badges, icons, and layouts
 - Make each section unique and memorable
+- Include profile views counter and GitHub Trophy badges
+- Use <samp> tags for professional taglines
+- Add animated elements and GIFs where appropriate
 
 CRITICAL OUTPUT FORMAT:
 - Return ONLY the raw README content

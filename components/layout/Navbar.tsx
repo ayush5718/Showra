@@ -19,7 +19,7 @@ const navLinks = [
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { user, isAuthenticating, setAuthenticating, setUser } = useAuthStore();
+  const { user, isAuthenticating, setAuthenticating } = useAuthStore();
   const authLoading = isAuthenticating;
 
   useEffect(() => {
@@ -46,37 +46,40 @@ export function Navbar() {
 
   const closeMobileMenu = () => setMobileOpen(false);
 
-  useEffect(() => {
-    if (user) return;
-    let isMounted = true;
-    supabase.auth.getUser().then(({ data: { user: authUser } }) => {
-      if (!isMounted || !authUser) return;
-      const metadata = authUser.user_metadata as Record<string, any>;
-      setUser({
-        id: authUser.id,
-        name: metadata?.name ?? authUser.email ?? "Showra Maker",
-        username: metadata?.user_name ?? metadata?.nickname ?? authUser.email ?? "maker",
-        avatarUrl:
-          metadata?.avatar_url ??
-          `https://api.dicebear.com/7.x/initials/svg?seed=${metadata?.user_name ?? "showra"}`,
-        email: authUser.email ?? undefined,
-      });
-    });
-    return () => {
-      isMounted = false;
-    };
-  }, [setUser, user]);
+  // User is now managed by AuthProvider, no need to fetch here
 
-  const handleGetStarted = async () => {
+  const handleGetStarted = async (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
     if (authLoading) return;
     try {
       setAuthenticating(true);
-      await supabase.auth.signInWithOAuth({
+      // Build the full callback URL with next parameter
+      const callbackUrl = `${window.location.origin}/auth/callback?next=${encodeURIComponent('/dashboard')}`;
+      console.log('🔐 Starting OAuth with redirectTo:', callbackUrl);
+      
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "github",
-        options: { redirectTo: `${window.location.origin}/auth/callback?next=/dashboard` },
+        options: { 
+          redirectTo: callbackUrl,
+        },
       });
+      
+      if (error) {
+        console.error('❌ OAuth error:', error);
+        setAuthenticating(false);
+        return;
+      }
+      
+      if (data?.url) {
+        console.log('✅ OAuth URL generated, redirecting to:', data.url);
+        window.location.replace(data.url);
+      }
     } catch (error) {
-      console.error("GitHub login failed", error);
+      console.error("❌ GitHub login failed", error);
       setAuthenticating(false);
     }
   };
@@ -138,7 +141,7 @@ export function Navbar() {
                 className={`inline-flex items-center overflow-hidden rounded-2xl border border-white/10 bg-[linear-gradient(120deg,rgba(108,99,255,0.92),rgba(51,208,255,0.92))] px-4 py-[0.55rem] text-sm font-semibold text-white shadow-[0_22px_65px_-28px_rgba(70,140,255,0.88)] transition duration-300 hover:-translate-y-[1px] hover:shadow-[0_28px_85px_-30px_rgba(78,205,255,0.92)] sm:px-5 sm:py-[0.65rem] ${
                   authLoading ? "cursor-not-allowed opacity-80" : ""
                 }`}
-                onClick={handleGetStarted}
+                onClick={(e) => handleGetStarted(e)}
                 disabled={authLoading}
               >
                 {authLoading ? (

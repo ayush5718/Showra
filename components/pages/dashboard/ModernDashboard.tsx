@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Download, RefreshCw, Code, AlertCircle, Share2 } from "lucide-react";
@@ -106,16 +106,21 @@ export function ModernDashboard() {
   const [selectedCard, setSelectedCard] = useState<CardVariant>('card1');
   const [generatedREADME, setGeneratedREADME] = useState<string>('');
   const [isGeneratingREADME, setIsGeneratingREADME] = useState(false);
+  const hasLoadedPreferencesRef = useRef(false);
 
   // Load preferences and card data on mount
   useEffect(() => {
-    if (!user) return;
+    if (!user || hasLoadedPreferencesRef.current) return;
+    
+    hasLoadedPreferencesRef.current = true;
     
     // Load user preferences from Supabase
     getUserPreferences().then(prefs => {
       if (prefs?.selectedCardDesign) {
         setSelectedCard(prefs.selectedCardDesign);
       }
+    }).catch(() => {
+      hasLoadedPreferencesRef.current = false; // Reset on error
     });
     
     const stored = loadCardData();
@@ -237,8 +242,8 @@ export function ModernDashboard() {
     // Use cached data if available and not forcing refresh
     if (!forceRefresh) {
       const stored = loadCardData();
-      if (stored && cardData) {
-        // We already have data loaded, don't fetch again
+      if (stored) {
+        // We already have cached data, don't fetch again
         return;
       }
     }
@@ -618,18 +623,25 @@ export function ModernDashboard() {
     return () => {
       isMounted = false;
     };
-  }, [user, session, authLoading, validateSession, refreshSession, cardData]);
+  }, [user, session, authLoading, validateSession, refreshSession]);
 
   // Fetch data on mount if no cached data
   useEffect(() => {
-    if (!cardData && user && !authLoading && !profileLoading) {
-      // Small delay to ensure session is ready
-      const timer = setTimeout(() => {
-        fetchGitHubData(false);
-      }, 100);
-      return () => clearTimeout(timer);
+    if (!user || authLoading || profileLoading) return;
+    
+    // Check if we have cached data
+    const stored = loadCardData();
+    if (stored) {
+      // We have cached data, don't fetch
+      return;
     }
-  }, [user, authLoading, cardData, profileLoading, fetchGitHubData]);
+    
+    // Small delay to ensure session is ready
+    const timer = setTimeout(() => {
+      fetchGitHubData(false);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [user, authLoading, profileLoading, fetchGitHubData]);
 
   const fallbackProfileData = useMemo(() => {
     const safeUser = user ?? {
@@ -663,12 +675,32 @@ export function ModernDashboard() {
     []
   );
 
-  if (!user) {
+  // Wait for auth to finish loading before checking for user
+  if (authLoading) {
     return (
       <main className="relative flex min-h-screen items-center justify-center bg-[#0A0A0A]">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-10 text-center text-white/70">
             <p className="text-sm sm:text-base">Loading your dashboard…</p>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  // Only show "no user" message after auth has finished loading
+  if (!user) {
+    return (
+      <main className="relative flex min-h-screen items-center justify-center bg-[#0A0A0A]">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-10 text-center text-white/70">
+            <p className="text-sm sm:text-base mb-4">Please sign in to access your dashboard</p>
+            <a 
+              href="/" 
+              className="inline-block rounded-xl bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] px-6 py-3 text-sm font-bold text-white"
+            >
+              Go to Home
+            </a>
           </div>
         </div>
       </main>
