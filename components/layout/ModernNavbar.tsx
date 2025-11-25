@@ -12,7 +12,7 @@ import { Logo } from "@/components/common/Logo";
 export function ModernNavbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { user, isAuthenticating, setAuthenticating, setUser, logout } = useAuthStore();
+  const { user, isAuthenticating, setAuthenticating, logout } = useAuthStore();
   const authLoading = isAuthenticating;
 
   useEffect(() => {
@@ -39,38 +39,58 @@ export function ModernNavbar() {
 
   const closeMobileMenu = () => setMobileOpen(false);
 
-  useEffect(() => {
-    if (user) return;
-    let isMounted = true;
-    supabase.auth.getUser().then(({ data: { user: authUser } }) => {
-      if (!isMounted || !authUser) return;
-      const metadata = authUser.user_metadata as Record<string, any>;
-      setUser({
-        id: authUser.id,
-        name: metadata?.name ?? authUser.email ?? "Showra Maker",
-        username: metadata?.user_name ?? metadata?.nickname ?? authUser.email ?? "maker",
-        avatarUrl:
-          metadata?.avatar_url ??
-          `https://api.dicebear.com/7.x/initials/svg?seed=${metadata?.user_name ?? "showra"}`,
-        email: authUser.email ?? undefined,
-      });
-    });
-    return () => {
-      isMounted = false;
-    };
-  }, [setUser, user]);
+  // User is now managed by AuthProvider, no need to fetch here
 
-  const handleGetStarted = async () => {
-    if (authLoading) return;
+  const handleGetStarted = async (e?: React.MouseEvent) => {
+    // Prevent any default behavior
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    if (authLoading) {
+      console.log('⏸️ Auth already loading, skipping...');
+      return;
+    }
+    
     try {
+      console.log('🚀 Get Started clicked');
       setAuthenticating(true);
-      await supabase.auth.signInWithOAuth({
+      // Build the full callback URL with next parameter
+      const callbackUrl = `${window.location.origin}${ROUTES.AUTH_CALLBACK}?next=${encodeURIComponent(ROUTES.DASHBOARD)}`;
+      console.log('🔐 Starting OAuth with redirectTo:', callbackUrl);
+      console.log('🔐 Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+      
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "github",
-        options: { redirectTo: `${window.location.origin}${ROUTES.AUTH_CALLBACK}?next=${ROUTES.DASHBOARD}` },
+        options: { 
+          redirectTo: callbackUrl,
+        },
       });
-    } catch (error) {
-      console.error("GitHub login failed", error);
+      
+      console.log('📦 OAuth response:', { data, error, hasUrl: !!data?.url });
+      
+      if (error) {
+        console.error('❌ OAuth error:', error);
+        setAuthenticating(false);
+        alert(`OAuth Error: ${error.message}`);
+        return;
+      }
+      
+      if (data?.url) {
+        console.log('✅ OAuth URL generated, redirecting to:', data.url);
+        // Use replace instead of href to prevent back button issues
+        // Also ensure we redirect immediately
+        window.location.replace(data.url);
+      } else {
+        console.warn('⚠️ No URL in OAuth response');
+        console.log('Full response:', JSON.stringify({ data, error }, null, 2));
+        setAuthenticating(false);
+      }
+    } catch (error: any) {
+      console.error("❌ GitHub login failed:", error);
       setAuthenticating(false);
+      alert(`Login failed: ${error?.message || 'Unknown error'}`);
     }
   };
 
@@ -186,8 +206,8 @@ export function ModernNavbar() {
               ) : (
                 <button
                   type="button"
-                  onClick={() => {
-                    handleGetStarted();
+                  onClick={(e) => {
+                    handleGetStarted(e);
                     closeMobileMenu();
                   }}
                   disabled={authLoading}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Copy, Sparkles } from "lucide-react";
@@ -89,6 +89,8 @@ export function DashboardClient() {
   const [repositories, setRepositories] = useState<GitHubRepo[]>([]);
   const [orientation, setOrientation] = useState<"vertical" | "horizontal">("vertical");
   const [copied, setCopied] = useState(false);
+  const fetchingRef = useRef(false);
+  const lastTokenRef = useRef<string | null>(null);
 
   // Initialize and validate session on mount
   useEffect(() => {
@@ -123,19 +125,42 @@ export function DashboardClient() {
     // Wait for user to be available
     if (!user) return;
 
+    // Prevent multiple simultaneous fetches
+    if (fetchingRef.current) return;
+
     // Wait for session to be available
     if (!session || !session.providerToken) {
       // Try to refresh session if we have user but no token
-      const refreshAndRetry = async () => {
-        const refreshed = await refreshSession();
-        if (!refreshed) {
+      // Only refresh if we're not already fetching
+      if (!fetchingRef.current) {
+        fetchingRef.current = true;
+        refreshSession().then((refreshed) => {
+          fetchingRef.current = false;
+          if (!refreshed) {
+            setProfileError("Unable to authenticate. Please sign in again.");
+            setProfileLoading(false);
+          }
+          // If refresh succeeded, the session will update and this effect will run again
+        }).catch(() => {
+          fetchingRef.current = false;
           setProfileError("Unable to authenticate. Please sign in again.");
           setProfileLoading(false);
-        }
-      };
-      refreshAndRetry();
+        });
+      }
       return;
     }
+
+    // Check if token has actually changed
+    const currentToken = session.providerToken;
+    if (currentToken === lastTokenRef.current && cardData) {
+      // Token hasn't changed and we already have data, don't fetch again
+      return;
+    }
+
+    // Prevent multiple simultaneous fetches
+    if (fetchingRef.current) return;
+    fetchingRef.current = true;
+    lastTokenRef.current = currentToken;
 
     let isMounted = true;
     setProfileLoading(true);
@@ -395,13 +420,15 @@ export function DashboardClient() {
         if (isMounted) {
           setProfileLoading(false);
         }
+        fetchingRef.current = false;
       }
     })();
 
     return () => {
       isMounted = false;
+      fetchingRef.current = false;
     };
-  }, [user, session, authLoading, validateSession, refreshSession]);
+  }, [user, session?.providerToken, authLoading, validateSession, refreshSession]);
 
   const embedCode = useMemo(() => {
     const username = cardData?.profile.login ?? profile?.login ?? user?.username ?? "your-github";
