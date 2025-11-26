@@ -194,6 +194,8 @@ ${devcardUrl ? `DEVCARD IFRAME URL: ${devcardUrl}\nInclude this devcard iframe i
 
 MANDATORY SECTIONS - Generate ALL of these in this exact order with CREATIVE, MODERN designs:
 
+CRITICAL: Follow this exact order - do not rearrange sections or place content outside of designated sections.
+
 1. **SOCIAL MEDIA BADGES** (Top Section - MUST BE FIRST):
    - Create a row of professional social media badges using shields.io for-the-badge style
    - Include badges for: LinkedIn, GitHub, Twitter (if available), Instagram (if available), YouTube (if available), Portfolio/Blog (if available)
@@ -218,30 +220,59 @@ MANDATORY SECTIONS - Generate ALL of these in this exact order with CREATIVE, MO
 3. **ABOUT ME / BIOGRAPHY** (Enhanced with Icons and Structure):
    - Section header: ## 🚀 About Me
    - Use a creative layout with icons and badges
-   - 2-3 compelling sentences about what you do, your passion, and goals
+   - Start with 2-3 compelling sentences about what you do, your passion, and goals
    - Include animated badges for key info:
      - Location badge using shields.io format
      - Company badge using shields.io format
-   - Add a quote or motto in a styled box
+   - If including a quote or motto, format it properly in a styled box:
+     * Format: <div align="center"><blockquote><p><em>"Quote text here"</em></p></blockquote></div>
+     * OR use a simpler format: <p align="center"><em>"Quote text here"</em></p>
+     * CRITICAL: DO NOT place quotes at the top of the README, before the About Me section, or outside of any section
+     * Quotes belong INSIDE the About Me section only, AFTER the section header (## 🚀 About Me) and main bio text
+     * Structure should be: Section header → Main bio text → Quote (if included) → Badges
    - Use professional but engaging tone
    - Include stats badges: <img src="https://img.shields.io/badge/Repositories-${stats?.repos || 0}-blue?style=flat-square" />
 
-3. **SKILLS / TECH STACK** (Enhanced with Icon APIs):
+4. **SKILLS / TECH STACK** (Enhanced with Icon APIs):
    - Section header: ## 💻 Tech Stack
    - Use skills.syvixor.com or skillicons.dev API for beautiful skill icons
-   - Format: ![](https://skills.syvixor.com/api/icons?i=[tech1],[tech2],[tech3]&perline=18)
-   - Group by categories with subheadings:
-     - ### Languages: ![](https://skills.syvixor.com/api/icons?i=cpp,c,python,js,java,bash&perline=18)
-     - ### Frontend: ![](https://skills.syvixor.com/api/icons?i=html,css,tailwind,javascript,react&perline=18)
-     - ### Backend: ![](https://skillicons.dev/icons?i=django,php,nodejs,express&perline=18)
-     - ### DevOps: ![](https://skills.syvixor.com/api/icons?i=git,docker,kubernetes,terraform,jenkins&perline=18)
-     - ### Database: ![](https://skills.syvixor.com/api/icons?i=postgresql,mysql,sqlite,firebase&perline=18)
-   - Map languages from data to appropriate icons
+   - CRITICAL FORMATTING RULES:
+     * DO NOT use dashes or list items before image markdown syntax
+     * DO NOT wrap image markdown in code blocks or backticks
+     * DO NOT write category names as plain text - they MUST be markdown headers
+     * Write the image markdown syntax directly so it renders as images
+     * Each category MUST start with ### (three hashes) followed by the category name
+     * Each category should have: markdown header (###), blank line, then image markdown on next line
+   - Correct format structure (MUST follow this exactly):
+     * Line 1: ### Languages (MUST start with ###, not just "Languages")
+     * Line 2: (blank line - REQUIRED)
+     * Line 3: ![](https://skills.syvixor.com/api/icons?i=tech1,tech2,tech3&perline=18)
+     * Line 4: (blank line before next category - REQUIRED)
+   - Example of CORRECT output structure (copy this format exactly):
+     ### Languages
+
+     ![](https://skills.syvixor.com/api/icons?i=cpp,c,python,js,java,bash&perline=18)
+
+     ### Frontend
+
+     ![](https://skills.syvixor.com/api/icons?i=html,css,tailwind,javascript,react&perline=18)
+
+     ### Backend
+
+     ![](https://skillicons.dev/icons?i=django,php,nodejs,express&perline=18)
+   - WRONG formats (DO NOT do any of these):
+     * Languages (missing ### - will not render as header)
+     * Languages: ![](url) (on same line - WRONG)
+     * - ![](url) (with dash/list item - WRONG)
+     * Languages\n![](url) (no blank line - WRONG)
+     * \`\`\`markdown\n![](url)\n\`\`\` (in code block - WRONG)
+   - Map languages from the provided data to appropriate icon names (e.g., JavaScript -> js, TypeScript -> ts, Python -> python, Node.js -> nodejs)
    - Use both APIs for variety: skills.syvixor.com and skillicons.dev
-   - Add category headers: <h4><b><samp>[Category Name]</samp></b></h4>
+   - Only show categories that have technologies based on the developer's actual languages/repos
+   - Group technologies logically based on the languages provided in the data
    - Make it visually organized and easy to scan
 
-4. **CURRENT WORK / LEARNING** (MUST BE CREATIVE AND VISUAL):
+5. **CURRENT WORK / LEARNING** (MUST BE CREATIVE AND VISUAL):
    - Section header: ## 🔨 Currently Working On / Learning
    - Use animated badges or cards design
    - Create visual cards for each item using HTML tables
@@ -253,7 +284,7 @@ MANDATORY SECTIONS - Generate ALL of these in this exact order with CREATIVE, MO
    - Use creative layouts with icons and descriptions
    - Format as cards or grid layout (2-column table)
 
-5. **FEATURED REPOSITORIES** (Using GitHub Stats API Pins):
+6. **FEATURED REPOSITORIES** (Using GitHub Stats API Pins):
    - Section header: ## 🚀 Featured Projects / Check out my Repositories
    - Use GitHub readme-stats pin API for beautiful repository cards
    - Format: <a href="https://github.com/${username}/[repo]"><img align="[left/right/center]" src="https://github-readme-stats.vercel.app/api/pin/?username=${username}&repo=[repo]" /></a>
@@ -263,7 +294,7 @@ MANDATORY SECTIONS - Generate ALL of these in this exact order with CREATIVE, MO
    - Make repositories clickable and visually appealing
    - Include repository descriptions and stats automatically via API
 
-6. **GITHUB STATS & TROPHIES**:
+7. **GITHUB STATS & TROPHIES**:
    - Section header: ## 📊 GitHub Stats
    - GitHub Trophy (centered, full width): <p align="center"><a href="https://github.com/ryo-ma/github-profile-trophy"><img width=800 src="https://github-profile-trophy.vercel.app/?username=${username}&column=8&theme=onedark&no-frame=true&no-bg=true"/></a></p>
    - GitHub stats card: <img src="https://github-readme-stats.vercel.app/api?username=${username}&show_icons=true&theme=radical&hide_border=true&bg_color=0D1117&title_color=58A6FF&icon_color=58A6FF&include_all_commits=true&count_private=true" />
@@ -273,12 +304,12 @@ MANDATORY SECTIONS - Generate ALL of these in this exact order with CREATIVE, MO
    - Arrange stats in a visually appealing layout (side-by-side or stacked)
    - Add horizontal rule separators: <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
 
-7. **DEVCARD SECTION** (if devcardUrl provided):
+8. **DEVCARD SECTION** (if devcardUrl provided):
    - Section header: ## 🎴 My DevCard
    - Include iframe: <iframe src="${devcardUrl}" width="100%" height="600" frameborder="0" scrolling="no" title="DevCard"></iframe>
    - Center it properly
 
-8. **CONTACT / SOCIAL LINKS** (Enhanced Badge Layout):
+9. **CONTACT / SOCIAL LINKS** (Enhanced Badge Layout):
    - Section header: ## 📫 Connect with Me
    - Use for-the-badge style badges in a row
    - Format: <a href="[URL]" target="_blank"><img src="https://img.shields.io/badge/[Label]-[Color]?style=for-the-badge&logo=[Logo]&logoColor=white" alt="[Label]" /></a>
@@ -287,7 +318,7 @@ MANDATORY SECTIONS - Generate ALL of these in this exact order with CREATIVE, MO
    - Make badges clickable and professional
    - Add proper spacing between badges
 
-9. **FUN / PERSONALITY SECTION**:
+10. **FUN / PERSONALITY SECTION**:
    - Section header: ## 💡 Fun Facts / About Me
    - Mini bio or interesting facts
    - Hobbies or interests (tech-related preferred)
@@ -295,7 +326,7 @@ MANDATORY SECTIONS - Generate ALL of these in this exact order with CREATIVE, MO
    - Keep it clean, professional, not cringe
    - 2-3 bullet points max
 
-10. **ACHIEVEMENTS / CERTIFICATIONS** (if applicable):
+11. **ACHIEVEMENTS / CERTIFICATIONS** (if applicable):
     - Section header: ## 🏆 Achievements & Certifications
     - Any notable achievements
     - Certifications
@@ -352,6 +383,11 @@ CRITICAL OUTPUT FORMAT:
 - Start directly with the content (e.g., h1 align="center" or # Header)
 - The output should be ready to paste directly into a GitHub README.md file
 - All HTML must be written directly, not in code blocks
+- MOST IMPORTANT RULES:
+  1. For tech stack image markdown syntax like ![](url), write it EXACTLY as shown with no wrapping, no dashes before it, no code blocks, no indentation. It must be on its own line after the category header (### Category Name) with a blank line before it
+  2. Category headers in Tech Stack MUST start with ### (three hashes) - NEVER write just "Languages" or "Frontend", always write "### Languages", "### Frontend", etc.
+  3. DO NOT place quotes or mottos at the top level before sections - quotes belong INSIDE the About Me section, formatted properly
+  4. Each tech stack category must follow this exact format: "### CategoryName" on one line, blank line, then "![](url)" on next line
 
 Return ONLY the complete README content in markdown/HTML format. Make it comprehensive, professional, engaging, visually stunning, and CREATIVE. Include ALL sections listed above. Use HTML extensively for advanced styling, layouts, and visual appeal. Make it stand out from typical READMEs.`;
 
