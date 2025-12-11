@@ -183,9 +183,9 @@ export function READMEPreview({ readmeContent, onContentChange }: READMEPreviewP
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
-              className="p-4 sm:p-6"
+              className="p-4 sm:p-6 bg-[#0d1117]"
             >
-              <div className="markdown-preview">
+              <div className="markdown-preview github-markdown-body" style={{ isolation: 'isolate', contain: 'style' }}>
                 <ReactMarkdown 
                   remarkPlugins={[remarkGfm]}
                   rehypePlugins={[rehypeRaw]}
@@ -193,6 +193,9 @@ export function READMEPreview({ readmeContent, onContentChange }: READMEPreviewP
                   {content}
                 </ReactMarkdown>
               </div>
+              <p className="mt-4 text-xs text-white/40 text-center italic">
+                Preview matches GitHub's markdown rendering
+              </p>
             </motion.div>
           ) : activeTab === "edit" ? (
             <motion.div
@@ -231,12 +234,20 @@ export function READMEPreview({ readmeContent, onContentChange }: READMEPreviewP
 
       <style dangerouslySetInnerHTML={{
         __html: `
+          /* GitHub-compatible markdown styles - matches GitHub's exact rendering */
           .markdown-preview {
-            color: #c9d1d9;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
-            font-size: 14px;
-            line-height: 1.5;
-            word-wrap: break-word;
+            color: #c9d1d9 !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif !important;
+            font-size: 14px !important;
+            line-height: 1.5 !important;
+            word-wrap: break-word !important;
+            isolation: isolate !important;
+            all: revert-layer;
+          }
+          
+          /* Reset any global font inheritance */
+          .markdown-preview * {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif !important;
           }
 
           @media (min-width: 640px) {
@@ -245,152 +256,128 @@ export function READMEPreview({ readmeContent, onContentChange }: READMEPreviewP
             }
           }
 
+          /* GitHub heading styles - no custom fonts, only GitHub's system fonts */
           .markdown-preview h1 {
-            font-size: 1.5em;
-            margin: 0.67em 0;
-            font-weight: 600;
-            padding-bottom: 0.3em;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            color: #f0f6fc;
-          }
-
-          @media (min-width: 640px) {
-            .markdown-preview h1 {
-              font-size: 2em;
-            }
+            font-size: 2em !important;
+            margin: 0.67em 0 !important;
+            font-weight: 600 !important;
+            padding-bottom: 0.3em !important;
+            border-bottom: 1px solid #30363d !important;
+            color: #f0f6fc !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif !important;
           }
 
           .markdown-preview h2 {
-            font-size: 1.25em;
-            margin: 1em 0 0.5em 0;
-            font-weight: 600;
-            padding-bottom: 0.3em;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            color: #f0f6fc;
-          }
-
-          @media (min-width: 640px) {
-            .markdown-preview h2 {
-              font-size: 1.5em;
-            }
+            font-size: 1.5em !important;
+            margin: 1em 0 0.5em 0 !important;
+            font-weight: 600 !important;
+            padding-bottom: 0.3em !important;
+            border-bottom: 1px solid #30363d !important;
+            color: #f0f6fc !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif !important;
           }
 
           .markdown-preview h3 {
-            font-size: 1.1em;
-            margin: 1em 0 0.5em 0;
-            font-weight: 600;
-            color: #f0f6fc;
+            font-size: 1.25em !important;
+            margin: 1em 0 0.5em 0 !important;
+            font-weight: 600 !important;
+            color: #f0f6fc !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif !important;
+          }
+          
+          .markdown-preview h4 {
+            font-size: 1em !important;
+            margin: 1em 0 0.5em 0 !important;
+            font-weight: 600 !important;
+            color: #f0f6fc !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif !important;
           }
 
-          @media (min-width: 640px) {
-            .markdown-preview h3 {
-              font-size: 1.25em;
-            }
-          }
-
+          /* GitHub body text styles */
           .markdown-preview p {
-            margin: 0 0 12px 0;
-            color: #c9d1d9;
-          }
-
-          @media (min-width: 640px) {
-            .markdown-preview p {
-              margin: 0 0 16px 0;
-            }
+            margin: 0 0 16px 0 !important;
+            color: #c9d1d9 !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif !important;
           }
 
           .markdown-preview ul,
           .markdown-preview ol {
-            margin: 0 0 12px 0;
-            padding-left: 1.5em;
-            color: #c9d1d9;
-          }
-
-          @media (min-width: 640px) {
-            .markdown-preview ul,
-            .markdown-preview ol {
-              margin: 0 0 16px 0;
-              padding-left: 2em;
-            }
+            margin: 0 0 16px 0 !important;
+            padding-left: 2em !important;
+            color: #c9d1d9 !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif !important;
           }
 
           .markdown-preview li {
-            margin: 0.25em 0;
-            color: #c9d1d9;
+            margin: 0.25em 0 !important;
+            color: #c9d1d9 !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif !important;
           }
 
           .markdown-preview li p {
-            margin: 0;
+            margin: 0 !important;
           }
 
+          /* GitHub link styles */
           .markdown-preview a {
-            color: #58a6ff;
-            text-decoration: none;
+            color: #58a6ff !important;
+            text-decoration: none !important;
           }
 
           .markdown-preview a:hover {
-            text-decoration: underline;
+            text-decoration: underline !important;
           }
 
           .markdown-preview strong {
-            font-weight: 600;
-            color: #f0f6fc;
+            font-weight: 600 !important;
+            color: #f0f6fc !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif !important;
           }
 
+          /* GitHub code styles */
           .markdown-preview code:not(pre code) {
-            padding: 0.2em 0.4em;
-            margin: 0;
-            font-size: 85%;
-            background-color: rgba(110, 118, 129, 0.4);
-            border-radius: 6px;
-            color: #f0f6fc;
-            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+            padding: 0.2em 0.4em !important;
+            margin: 0 !important;
+            font-size: 85% !important;
+            background-color: rgba(110, 118, 129, 0.4) !important;
+            border-radius: 6px !important;
+            color: #f0f6fc !important;
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace !important;
           }
 
           .markdown-preview pre {
-            padding: 12px;
-            overflow: auto;
-            font-size: 80%;
-            line-height: 1.45;
-            background-color: #161b22;
-            border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin: 0 0 12px 0;
-          }
-
-          @media (min-width: 640px) {
-            .markdown-preview pre {
-              padding: 16px;
-              font-size: 85%;
-              margin: 0 0 16px 0;
-            }
+            padding: 16px !important;
+            overflow: auto !important;
+            font-size: 85% !important;
+            line-height: 1.45 !important;
+            background-color: #161b22 !important;
+            border-radius: 6px !important;
+            border: 1px solid #30363d !important;
+            margin: 0 0 16px 0 !important;
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace !important;
           }
 
           .markdown-preview pre code {
-            display: inline;
-            padding: 0;
-            margin: 0;
-            overflow: visible;
-            line-height: inherit;
-            word-wrap: normal;
-            background-color: transparent;
-            border: 0;
-            color: #c9d1d9;
+            display: inline !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            overflow: visible !important;
+            line-height: inherit !important;
+            word-wrap: normal !important;
+            background-color: transparent !important;
+            border: 0 !important;
+            color: #c9d1d9 !important;
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace !important;
           }
 
+          /* GitHub image styles */
           .markdown-preview img {
-            max-width: 100%;
-            box-sizing: content-box;
-            background-color: #0d1117;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
-            margin: 12px 0;
-          }
-
-          @media (min-width: 640px) {
-            .markdown-preview img {
-              margin: 16px 0;
-            }
+            max-width: 100% !important;
+            box-sizing: content-box !important;
+            background-color: #0d1117 !important;
+            border: 1px solid #30363d !important;
+            border-radius: 6px !important;
+            margin: 16px 0 !important;
           }
 
           /* HTML elements support */
@@ -529,25 +516,52 @@ export function READMEPreview({ readmeContent, onContentChange }: READMEPreviewP
             vertical-align: middle;
           }
 
+          /* GitHub horizontal rule and blockquote */
           .markdown-preview hr {
-            height: 0.25em;
-            padding: 0;
-            margin: 16px 0;
-            background-color: rgba(255, 255, 255, 0.1);
-            border: 0;
-          }
-
-          @media (min-width: 640px) {
-            .markdown-preview hr {
-              margin: 24px 0;
-            }
+            height: 0.25em !important;
+            padding: 0 !important;
+            margin: 24px 0 !important;
+            background-color: #21262d !important;
+            border: 0 !important;
           }
 
           .markdown-preview blockquote {
-            padding: 0 1em;
-            color: #8b949e;
-            border-left: 0.25em solid rgba(255, 255, 255, 0.1);
-            margin: 0 0 16px 0;
+            padding: 0 1em !important;
+            color: #8b949e !important;
+            border-left: 0.25em solid #30363d !important;
+            margin: 0 0 16px 0 !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif !important;
+          }
+          
+          /* GitHub table styles */
+          .markdown-preview table {
+            border-spacing: 0 !important;
+            border-collapse: collapse !important;
+            display: block !important;
+            width: max-content !important;
+            max-width: 100% !important;
+            overflow: auto !important;
+            margin: 16px 0 !important;
+          }
+          
+          .markdown-preview table th,
+          .markdown-preview table td {
+            padding: 6px 13px !important;
+            border: 1px solid #30363d !important;
+          }
+          
+          .markdown-preview table th {
+            font-weight: 600 !important;
+            background-color: #161b22 !important;
+          }
+          
+          .markdown-preview table tr {
+            background-color: #0d1117 !important;
+            border-top: 1px solid #21262d !important;
+          }
+          
+          .markdown-preview table tr:nth-child(2n) {
+            background-color: #161b22 !important;
           }
         `
       }} />

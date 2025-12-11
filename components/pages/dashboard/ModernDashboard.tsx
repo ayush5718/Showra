@@ -18,6 +18,7 @@ import { READMESkeleton } from "@/components/ui/READMESkeleton";
 import { saveCardData, loadCardData, clearCardData, clearAIAnalysis } from "@/lib/utils/storage";
 import { CardSelector, CardVariant } from "@/components/features/card/variants/CardSelector";
 import { saveUserPreferences, getUserPreferences, saveGitHubDataToMetadata } from "@/lib/utils/supabase/userMetadata";
+import { savePublicCardData } from "@/lib/utils/supabase/cardStorage";
 import { generateMarkdown, convertCardDataToFormData } from "@/lib/utils/generateReadme";
 import { generateReadmeWithAI } from "@/lib/utils/generateReadmeAI";
 import { getWelcomeMessage } from "@/lib/utils/format";
@@ -98,6 +99,71 @@ export function ModernDashboard() {
   }));
 
   const [profile, setProfile] = useState<GitHubProfile | null>(null);
+  
+  // Function to generate and save card image for README embedding
+  const generateAndSaveCardImageForReadme = async (username: string, variant: CardVariant) => {
+    try {
+      // Wait a bit for card to fully render
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Find the card element
+      const cardSelector = `[data-card-variant="${variant}"]`;
+      let cardElement = document.querySelector(cardSelector) as HTMLElement;
+      
+      if (!cardElement) {
+        // Try alternative selectors
+        const allCards = document.querySelectorAll('[data-card-variant]');
+        cardElement = allCards[0] as HTMLElement;
+      }
+      
+      if (!cardElement) {
+        console.warn('Could not find card element for image generation');
+        return;
+      }
+      
+      // Wait for images to load
+      const imgs = cardElement.querySelectorAll("img");
+      await Promise.all(Array.from(imgs).map(img => {
+        if ((img as HTMLImageElement).complete) return Promise.resolve();
+        return new Promise(res => {
+          (img as HTMLImageElement).onload = res;
+          (img as HTMLImageElement).onerror = res;
+          setTimeout(res, 2000);
+        });
+      }));
+      
+      // Generate image using html-to-image
+      const dataUrl = await htmlToImage.toPng(cardElement, {
+        pixelRatio: 2,
+        backgroundColor: '#0A0A0A',
+        cacheBust: true,
+        quality: 1,
+        skipFonts: false,
+      });
+      
+      // Upload to server
+      const response = await fetch(`/api/generate-card-image/${username}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageDataUrl: dataUrl }),
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Card image generated successfully:', result.imageUrl);
+        // Store the image URL for README generation
+        if (result.imageUrl) {
+          // Update the devcardUrl in state or storage
+          const cardUrl = `${window.location.origin}/card/${username}?variant=${variant}`;
+          const imageUrl = result.imageUrl;
+          // This will be used when generating README
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to generate card image for README:', error);
+      // Don't block - this is optional
+    }
+  };
   const [profileLoading, setProfileLoading] = useState(false);
   const [profileError, setProfileError] = useState<string | null>(null);
   const [cardData, setCardData] = useState<DevCardData | null>(null);
@@ -157,10 +223,25 @@ export function ModernDashboard() {
       (async () => {
         setIsGeneratingREADME(true);
         try {
-          // Generate devcard share URL
+          // Generate devcard share URL and image URL
           const devcardShareUrl = typeof window !== 'undefined' 
             ? `${window.location.origin}/card/${stored.profile.login}?variant=${selectedCard}`
             : '';
+          
+          // Try to get the card image URL (may not exist if not generated yet)
+          let devcardImageUrl = '';
+          try {
+            const imageResponse = await fetch(`/api/devcard-image/${stored.profile.login}?variant=${selectedCard}`);
+            if (imageResponse.ok) {
+              const imageData = await imageResponse.json();
+              // Check if we have an actual image URL or just instructions
+              if (imageData.imageUrl && imageData.imageUrl.endsWith('.png')) {
+                devcardImageUrl = imageData.imageUrl;
+              }
+            }
+          } catch (err) {
+            // Ignore - image may not be generated yet
+          }
           
           const aiReadme = await generateReadmeWithAI({
             profile: {
@@ -181,13 +262,13 @@ export function ModernDashboard() {
             },
             languages: stored.languages,
             topRepo: stored.topRepo,
-            repositories: stored.repositories?.map((repo: any) => ({
-              name: repo.name,
-              description: repo.description,
-              stars: repo.stars || repo.stargazers_count || 0,
-              language: repo.language,
-            })),
-            devcardUrl: devcardShareUrl,
+              repositories: stored.repositories?.map((repo: any) => ({
+                name: repo.name,
+                description: repo.description,
+                stars: repo.stars || repo.stargazers_count || 0,
+                language: repo.language,
+              })),
+            devcardUrl: devcardImageUrl || devcardShareUrl, // Use image URL if available, otherwise card page URL
           });
           setGeneratedREADME(aiReadme);
         } catch (error) {
@@ -554,6 +635,45 @@ export function ModernDashboard() {
           heatmap: finalCardData.heatmap,
           timeline: finalCardData.timeline,
         });
+
+        // Save to public storage so it can be accessed via /card/[username]
+        // Use API endpoint for better error handling
+        if (user?.id && profileData.login) {
+          fetch('/api/save-card/' + profileData.login, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              cardData: {
+                username: profileData.login,
+                profile: finalCardData.profile,
+                stats: finalCardData.stats,
+                languages: finalCardData.languages,
+                repositories: reposData.map((repo) => ({
+                  name: repo.name,
+                  description: repo.description,
+                  stars: repo.stargazers_count,
+                  language: repo.language,
+                  topics: repo.topics,
+                })),
+                technologies: detectedTechnologies,
+                topRepo: finalCardData.topRepo,
+                heatmap: finalCardData.heatmap,
+                timeline: finalCardData.timeline,
+              },
+              userId: user.id,
+            }),
+          }).catch(err => {
+            console.warn('Failed to save public card data:', err);
+            // Don't block if this fails - it's not critical
+          });
+        }
+        
+        // Auto-generate card image for README embedding (after a short delay to ensure card is rendered)
+        setTimeout(() => {
+          if (profileData.login && cardData) {
+            generateAndSaveCardImageForReadme(profileData.login, selectedCard);
+          }
+        }, 3000);
         
         setProfile(profileData);
         setCardData(finalCardData);
@@ -566,6 +686,21 @@ export function ModernDashboard() {
           const devcardShareUrl = typeof window !== 'undefined' 
             ? `${window.location.origin}/card/${profileData.login}?variant=${selectedCard}`
             : '';
+          
+          // Try to get the card image URL (may not exist if not generated yet)
+          let devcardImageUrl = '';
+          try {
+            const imageResponse = await fetch(`/api/devcard-image/${profileData.login}?variant=${selectedCard}`);
+            if (imageResponse.ok) {
+              const imageData = await imageResponse.json();
+              // Check if we have an actual image URL or just instructions
+              if (imageData.imageUrl && (imageData.imageUrl.endsWith('.png') || imageData.imageUrl.endsWith('.jpg') || imageData.imageUrl.endsWith('.jpeg'))) {
+                devcardImageUrl = imageData.imageUrl;
+              }
+            }
+          } catch (err) {
+            // Ignore - image may not be generated yet
+          }
           
           const aiReadme = await generateReadmeWithAI({
             profile: {
@@ -592,7 +727,7 @@ export function ModernDashboard() {
               stars: repo.stargazers_count,
               language: repo.language,
             })),
-            devcardUrl: devcardShareUrl,
+            devcardUrl: devcardImageUrl || devcardShareUrl, // Use image URL if available, otherwise card page URL
           });
           setGeneratedREADME(aiReadme);
         } catch (error) {

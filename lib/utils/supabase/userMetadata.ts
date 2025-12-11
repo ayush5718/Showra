@@ -130,9 +130,35 @@ export async function saveUserPreferences(preferences: UserMetadata['preferences
 /**
  * Get user preferences
  */
-export async function getUserPreferences(): Promise<UserMetadata['preferences'] | null> {
+export async function getUserPreferences(username?: string): Promise<UserMetadata['preferences'] | null> {
+  // If username provided, try to get preferences by matching user's GitHub login
+  if (username) {
+    const metadata = await getUserMetadata();
+    const githubLogin = metadata?.githubData?.profile?.login;
+    if (githubLogin === username) {
+      return metadata?.preferences || null;
+    }
+    // Return null if username doesn't match (for now)
+    // In future, could query by username if we add that field
+    return null;
+  }
   const metadata = await getUserMetadata();
   return metadata?.preferences || null;
+}
+
+/**
+ * Get user metadata by GitHub username (requires fetching from Supabase)
+ * This is a simplified version - in production, you'd query a users table
+ */
+export async function getUserMetadataByUsername(username: string): Promise<UserMetadata | null> {
+  // For now, this only works for the current user
+  // In production, you'd want a proper users table to query by username
+  const metadata = await getUserMetadata();
+  const githubLogin = metadata?.githubData?.profile?.login;
+  if (githubLogin === username) {
+    return metadata;
+  }
+  return null;
 }
 
 /**
