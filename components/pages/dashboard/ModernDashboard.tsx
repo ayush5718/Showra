@@ -20,6 +20,7 @@ import { CardSelector, CardVariant } from "@/components/features/card/variants/C
 import { saveUserPreferences, getUserPreferences, saveGitHubDataToMetadata } from "@/lib/utils/supabase/userMetadata";
 import { generateMarkdown, convertCardDataToFormData } from "@/lib/utils/generateReadme";
 import { generateReadmeWithAI } from "@/lib/utils/generateReadmeAI";
+import { getWelcomeMessage } from "@/lib/utils/format";
 
 interface GitHubProfile {
   login: string;
@@ -773,29 +774,46 @@ export function ModernDashboard() {
             )}
 
             {/* Heading */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
-              className="mb-12 text-center px-4 w-full max-w-4xl mx-auto"
-            >
-              <h1 className="mb-2 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white whitespace-nowrap">
-                Welcome,
-              </h1>
-              {user?.email && (
-                <p className="mb-3 text-sm sm:text-base md:text-lg text-white/70 break-all break-words max-w-full overflow-wrap-anywhere px-2">
-                  {user.email}
-                </p>
-              )}
-              <p className="text-base sm:text-lg text-white/70 font-medium mb-2">
-                Your developer card is ready to share
-              </p>
-              {profile?.login && (
-                <p className="mt-1 text-xs sm:text-sm text-white/50 break-words">
-                  @{profile.login}
-                </p>
-              )}
-            </motion.div>
+            {(() => {
+              const welcome = getWelcomeMessage(profile?.name, user?.name, user?.email);
+              return (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2, duration: 0.6 }}
+                  className="mb-12 text-center px-4 w-full max-w-4xl mx-auto"
+                >
+                  <h1 className="mb-3 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white">
+                    <span className="whitespace-nowrap">{welcome.greeting}</span>
+                    <span className="block mt-2 break-words px-2">
+                      {welcome.name}
+                    </span>
+                  </h1>
+                  {welcome.email && (
+                    <p className="mb-4 text-xs sm:text-sm text-white/50 font-normal max-w-full mx-auto px-2">
+                      <span 
+                        className="inline-block" 
+                        style={{ 
+                          wordBreak: 'break-word',
+                          overflowWrap: 'anywhere',
+                          hyphens: 'auto'
+                        }}
+                      >
+                        {welcome.email}
+                      </span>
+                    </p>
+                  )}
+                  <p className="text-base sm:text-lg text-white/70 font-medium mb-2">
+                    Your developer card is ready to share
+                  </p>
+                  {profile?.login && (
+                    <p className="mt-1 text-xs sm:text-sm text-white/50 break-words">
+                      @{profile.login}
+                    </p>
+                  )}
+                </motion.div>
+              );
+            })()}
 
             {/* Quick Stats */}
             {cardData && (
