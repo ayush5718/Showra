@@ -46,12 +46,15 @@ export async function POST(
       );
     }
 
-    // Get public URL
+    // Get public URL - this is the URL that can be embedded in READMEs
     const { data: publicUrlData } = supabase.storage
       .from('devcards')
       .getPublicUrl(fileName);
 
     const imageUrl = publicUrlData.publicUrl;
+    
+    // Verify it's accessible (optional check)
+    // The URL should be something like: https://[project].supabase.co/storage/v1/object/public/devcards/username.png
 
     return NextResponse.json({
       success: true,

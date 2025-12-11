@@ -236,7 +236,7 @@ INTELLIGENT REPOSITORY ANALYSIS REQUIRED:
 - Generate project cards that tell a story, not just list features
 - Make connections between projects to show growth and learning trajectory
 
-${devcardUrl ? `DEVCARD URL: ${devcardUrl}\nCRITICAL: If the URL ends with .png/.jpg/.jpeg, it's an IMAGE URL - embed it directly as: <img src="${devcardUrl}" alt="My DevCard" width="600" /> or ![My DevCard](${devcardUrl})\nIf it's a page URL (ends with /card/username), use a clickable badge: <a href="${devcardUrl}" target="_blank"><img src="https://img.shields.io/badge/View_My_DevCard-00E5FF?style=for-the-badge&logo=github&logoColor=white" alt="View My DevCard" /></a>\nGitHub READMEs do NOT support iframes or interactive components - only static images and links.` : ''}
+${devcardUrl ? `DEVCARD IMAGE URL: ${devcardUrl}\nCRITICAL: This MUST be a direct image URL (.png, .jpg, .jpeg) that can be embedded. If it's an image URL, embed it directly in markdown: ![My DevCard](${devcardUrl})\nGitHub READMEs ONLY support static images - the image must be hosted and publicly accessible.` : ''}
 
 MANDATORY SECTIONS - Generate ALL of these in this exact order with CREATIVE, MODERN designs:
 
@@ -358,16 +358,21 @@ CRITICAL: Follow this exact order - do not rearrange sections or place content o
 
 8. **DEVCARD SECTION** (if devcardUrl provided):
    - Section header: ## 🎴 My DevCard
-   - CRITICAL: GitHub READMEs only support STATIC IMAGES, not interactive components or iframes
-   - If devcardUrl is an image URL (ends with .png/.jpg/.jpeg): 
-     * Use: <p align="center"><img src="${devcardUrl}" alt="My DevCard" width="600" /></p>
-     * Or markdown: <p align="center">![My DevCard](${devcardUrl})</p>
-     * Make the image clickable by wrapping: <p align="center"><a href="${devcardUrl.replace(/\.(png|jpg|jpeg)$/i, '') || devcardUrl}" target="_blank"><img src="${devcardUrl}" alt="My DevCard" width="600" /></a></p>
-   - If devcardUrl is a page URL (contains /card/):
-     * Use a clickable badge: <p align="center"><a href="${devcardUrl}" target="_blank"><img src="https://img.shields.io/badge/View_My_DevCard-00E5FF?style=for-the-badge&logo=github&logoColor=white" alt="View My DevCard" /></a></p>
-     * Or a text link: <p align="center"><a href="${devcardUrl}" target="_blank">🎴 <b>View My Interactive DevCard</b></a></p>
-   - Make it visually appealing and centered
-   - Add description: "Check out my developer profile card with real-time GitHub stats!"
+   - CRITICAL: devcardUrl is a DIRECT IMAGE URL (.png, .jpg, .jpeg) - embed it as an IMAGE, NOT a link
+   - GitHub READMEs ONLY support static images - embed the image directly, NOT links or badges
+   - Format: <div align="center">\n\n![My DevCard](${devcardUrl})\n\n</div>
+   - DO NOT wrap in links, DO NOT use badges, DO NOT use clickable elements
+   - The image URL should be publicly accessible (like from Supabase storage)
+   - Example output:
+     ## 🎴 My DevCard
+     
+     <div align="center">
+     
+     ![My DevCard](${devcardUrl})
+     
+     </div>
+     
+     Check out my developer profile card with real-time GitHub stats!
 
 9. **CONTACT / SOCIAL LINKS** (Enhanced Badge Layout):
    - Section header: ## 📫 Connect with Me

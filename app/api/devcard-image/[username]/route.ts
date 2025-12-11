@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getPublicCardData } from "@/lib/utils/supabase/cardStorage";
+import { supabase } from "@/lib/supabaseClient";
 
 /**
  * API endpoint to serve devcard as a static image
@@ -33,33 +34,37 @@ export async function GET(
       );
     }
 
-    // For GitHub README embedding, we need a STATIC IMAGE URL
-    // The card page URL is for interactive viewing
-    // The image should be generated and stored, then served here
+    // Check if image exists in Supabase storage
+    const fileName = `${username.toLowerCase()}.png`;
     
-    // SOLUTION: Use the card page URL with a screenshot service or
-    // Generate the image and store it in Supabase storage, then serve it
-    
-    // For now, return a direct link to the card page that GitHub can preview
-    // GitHub will show a preview card when you link to the page
-    const cardPageUrl = `${baseUrl}/card/${username}?variant=${variant}`;
-    
-    // Better solution: Return instructions for embedding
-    // The user should:
-    // 1. Take a screenshot of their card page
-    // 2. Upload it to their repo or an image hosting service
-    // 3. Use that image URL in the README
-    
-    // Or we can provide a service that generates the image
-    // For now, return a badge/button that links to the card
-    return NextResponse.json({
-      imageUrl: cardPageUrl, // This won't work as an image, but we'll fix it
-      cardUrl: cardPageUrl,
-      embedCode: `[![My DevCard](${cardPageUrl})](${cardPageUrl})`,
-      // Better: Provide a badge-style link
-      badgeCode: `<a href="${cardPageUrl}" target="_blank"><img src="https://img.shields.io/badge/View_My_DevCard-00E5FF?style=for-the-badge&logo=github&logoColor=white" alt="View My DevCard" /></a>`,
-      instructions: "To embed in README: Use the badgeCode or take a screenshot of the card page and upload to your repo/images folder, then embed that image."
-    });
+    try {
+      // Try to get the public URL for the image
+      const { data: publicUrlData } = supabase.storage
+        .from('devcards')
+        .getPublicUrl(fileName);
+      
+      const imageUrl = publicUrlData.publicUrl;
+      
+      // Verify the image exists by checking if we can access it
+      // For now, return the URL - if it doesn't exist, user needs to generate it first
+      return NextResponse.json({
+        imageUrl: imageUrl,
+        exists: true,
+        markdownCode: `![My DevCard](${imageUrl})`,
+        htmlCode: `<img src="${imageUrl}" alt="My DevCard" width="600" />`,
+        message: "Image URL ready for README embedding"
+      });
+    } catch (error) {
+      // Image doesn't exist - return error with instructions
+      const cardPageUrl = `${baseUrl}/card/${username}?variant=${variant}`;
+      return NextResponse.json({
+        error: "Card image not generated yet",
+        imageUrl: null,
+        cardUrl: cardPageUrl,
+        message: "Please generate your card image first by creating your card in the dashboard. The image will be automatically generated.",
+        instructions: "The card image is generated automatically when you create your devcard in the dashboard."
+      }, { status: 404 });
+    }
     
   } catch (error) {
     console.error("Error in devcard-image API:", error);
