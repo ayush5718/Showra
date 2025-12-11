@@ -783,26 +783,12 @@ export function ModernDashboard() {
                   transition={{ delay: 0.2, duration: 0.6 }}
                   className="mb-12 text-center px-4 w-full max-w-4xl mx-auto"
                 >
-                  <h1 className="mb-3 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white">
+                  <h1 className="mb-4 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white">
                     <span className="whitespace-nowrap">{welcome.greeting}</span>
-                    <span className="block mt-2 break-words px-2">
+                    <span className="block mt-3 text-3xl sm:text-4xl md:text-5xl lg:text-6xl break-words px-2">
                       {welcome.name}
                     </span>
                   </h1>
-                  {welcome.email && (
-                    <p className="mb-4 text-xs sm:text-sm text-white/50 font-normal max-w-full mx-auto px-2">
-                      <span 
-                        className="inline-block" 
-                        style={{ 
-                          wordBreak: 'break-word',
-                          overflowWrap: 'anywhere',
-                          hyphens: 'auto'
-                        }}
-                      >
-                        {welcome.email}
-                      </span>
-                    </p>
-                  )}
                   <p className="text-base sm:text-lg text-white/70 font-medium mb-2">
                     Your developer card is ready to share
                   </p>
