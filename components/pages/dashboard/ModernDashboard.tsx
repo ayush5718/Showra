@@ -101,7 +101,7 @@ export function ModernDashboard() {
   const [profileError, setProfileError] = useState<string | null>(null);
   const [cardData, setCardData] = useState<DevCardData | null>(null);
   const [repositories, setRepositories] = useState<GitHubRepo[]>([]);
-  const [activeTab, setActiveTab] = useState<'card' | 'readme'>('card');
+  const [activeTab, setActiveTab] = useState<'card' | 'readme'>('card'); // README tab disabled but keeping state for future
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedCard, setSelectedCard] = useState<CardVariant>('card1');
   const [generatedREADME, setGeneratedREADME] = useState<string>('');
@@ -1088,43 +1088,8 @@ export function ModernDashboard() {
                 )}
               </div>
             ) : (
-              /* README Tab Content - Commented out temporarily */
-              /* <div className="space-y-6">
-                {profileLoading && !cardData ? (
-                  <ReadmeLoader />
-                ) : isGeneratingREADME && !generatedREADME ? (
-                  <ReadmeLoader />
-                ) : profileError ? (
-                  <div className="w-full max-w-4xl mx-auto rounded-2xl border border-red-500/30 bg-red-500/10 p-8 text-center">
-                    <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
-                    <p className="text-red-300 font-semibold mb-2">Error Loading Data</p>
-                    <p className="text-sm text-red-300/80 mb-6">{profileError}</p>
-                    <button
-                      onClick={() => {
-                        clearCardData();
-                        clearAIAnalysis();
-                        fetchGitHubData(true);
-                      }}
-                      className="px-6 py-3 rounded-xl bg-red-500/20 border border-red-500/30 text-red-300 text-sm font-semibold hover:bg-red-500/30 transition-colors"
-                    >
-                      Retry
-                    </button>
-                  </div>
-                ) : generatedREADME ? (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                  >
-                    <READMEPreview 
-                      readmeContent={generatedREADME} 
-                      onContentChange={setGeneratedREADME}
-                    />
-                  </motion.div>
-                ) : (
-                  <ReadmeLoader />
-                )}
-              </div> */
+              /* README Tab Content - Commented out temporarily, showing "Coming Soon" instead
+                 All README generation logic is preserved above in the component, just the UI is hidden */
               <div className="flex min-h-[400px] items-center justify-center">
                 <div className="text-center">
                   <h3 className="text-2xl font-bold text-white mb-2">README Generator</h3>
