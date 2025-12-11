@@ -10,29 +10,30 @@ interface CardSelectorProps {
   onSelectCard: (variant: CardVariant) => void;
 }
 
-const cardVariants: Array<{ id: CardVariant; name: string; description: string; gradient: string }> = [
+const cardVariants: Array<{ id: CardVariant; name: string; description: string; gradient: string; badge?: string }> = [
   {
     id: 'card1',
     name: 'Classic Neon',
-    description: 'Original gradient design with neon borders',
-    gradient: 'from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF]'
+    description: 'Bold gradient borders with vibrant neon glow',
+    gradient: 'from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF]',
+    badge: 'Popular'
   },
   {
     id: 'card2',
     name: 'Vertical Flow',
-    description: 'Vertical layout with enhanced stats display',
+    description: 'Structured vertical layout with detailed stats',
     gradient: 'from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF]'
   },
   {
     id: 'card3',
     name: 'Compact Modern',
-    description: 'Compact design with modern aesthetics',
+    description: 'Space-efficient design perfect for profiles',
     gradient: 'from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF]'
   },
   {
     id: 'card4',
     name: 'Minimalist',
-    description: 'Clean minimalist design with subtle gradients',
+    description: 'Elegant and clean with subtle visual effects',
     gradient: 'from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF]'
   },
 ];
@@ -58,17 +59,28 @@ export function CardSelector({ selectedCard, onSelectCard }: CardSelectorProps) 
               <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] opacity-50 blur-sm -z-10" />
             )}
             
-            <div className="relative flex items-center gap-2.5">
+            <div className="relative flex items-start gap-2.5">
               {selectedCard === variant.id && (
-                <Check className="h-4 w-4 text-white flex-shrink-0" />
+                <Check className="h-4 w-4 text-white flex-shrink-0 mt-0.5" />
               )}
-              <div className="flex flex-col items-start gap-0.5 flex-1 min-w-0">
-                <span className={`text-sm font-bold whitespace-nowrap ${
-                  selectedCard === variant.id ? 'text-white' : 'text-white/80 group-hover:text-white'
-                }`}>
-                  {variant.name}
-                </span>
-                <span className={`text-xs leading-tight ${
+              <div className="flex flex-col items-start gap-1 flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className={`text-sm font-bold whitespace-nowrap ${
+                    selectedCard === variant.id ? 'text-white' : 'text-white/80 group-hover:text-white'
+                  }`}>
+                    {variant.name}
+                  </span>
+                  {variant.badge && (
+                    <span className={`px-1.5 py-0.5 text-[10px] font-semibold rounded-md ${
+                      selectedCard === variant.id 
+                        ? 'bg-white/20 text-white' 
+                        : 'bg-white/10 text-white/60'
+                    }`}>
+                      {variant.badge}
+                    </span>
+                  )}
+                </div>
+                <span className={`text-xs leading-relaxed ${
                   selectedCard === variant.id ? 'text-white/90' : 'text-white/50 group-hover:text-white/70'
                 }`}>
                   {variant.description}
