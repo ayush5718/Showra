@@ -1,12 +1,13 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, Copy, Check, Edit2, Settings, Eye, EyeOff, Type, Layers, Zap, X, Code, Eye as EyeIcon } from "lucide-react";
+import { FileText, Copy, Check, Edit2, Settings, Eye, EyeOff, Type, Layers, Zap, Code, Eye as EyeIcon } from "lucide-react";
 import { useState, useEffect, useMemo, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import { parseReadmeSections, getSectionDisplayName, toggleSectionVisibility, applyFontToContent } from "./READMEUtils";
+import { Dialog } from "@/components/ui/Dialog";
 
 interface READMEPreviewProps {
   readmeContent?: string;
@@ -164,45 +165,19 @@ export function READMEPreview({ readmeContent, onContentChange }: READMEPreviewP
       </div>
       </div>
 
-      {/* Settings Dialog Modal */}
-      <AnimatePresence>
-        {showSettings && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowSettings(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
-            />
-            
-            {/* Settings Dialog */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="fixed inset-4 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 z-50 w-[calc(100vw-2rem)] sm:w-[90vw] sm:max-w-2xl max-h-[calc(100vh-2rem)] bg-black/98 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl overflow-hidden flex flex-col"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Dialog Header */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 flex-shrink-0">
-                <h3 className="text-white font-semibold flex items-center gap-2 text-lg">
-                  <Settings className="h-5 w-5 text-cyan-400" />
-                  README Settings
-                </h3>
-                <button
-                  onClick={() => setShowSettings(false)}
-                  className="text-white/60 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg"
-                  title="Close Settings"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-
-              {/* Dialog Content */}
-              <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
+      {/* Settings Dialog */}
+      <Dialog
+        open={showSettings}
+        onOpenChange={setShowSettings}
+        title={
+          <div className="flex items-center gap-2">
+            <Settings className="h-5 w-5 text-cyan-400" />
+            README Settings
+          </div>
+        }
+        maxWidth="2xl"
+      >
+        <div className="p-6">
                 {/* Section Visibility Toggles */}
                 <div className="mb-6">
                   <h4 className="text-white/80 text-xs font-semibold mb-3 flex items-center gap-2 uppercase tracking-wide">
@@ -302,11 +277,8 @@ export function READMEPreview({ readmeContent, onContentChange }: READMEPreviewP
                     Reset to Original
                   </button>
                 </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+        </div>
+      </Dialog>
 
       {/* Tab Area */}
       <div className="flex-1">
