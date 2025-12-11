@@ -777,22 +777,21 @@ export function ModernDashboard() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="mb-12 text-center"
+              className="mb-12 text-center px-4 w-full max-w-4xl mx-auto"
             >
-              <h1 className="mb-4 leading-tight">
-                <SplitText
-                  text={`Welcome, ${profile?.name || user.name}!`}
-                  tag="span"
-                  className="block"
-                  delay={50}
-                  duration={0.6}
-                />
+              <h1 className="mb-2 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white whitespace-nowrap">
+                Welcome,
               </h1>
-              <p className="text-lg sm:text-xl text-white/70 font-medium">
+              {user?.email && (
+                <p className="mb-3 text-sm sm:text-base md:text-lg text-white/70 break-all break-words max-w-full overflow-wrap-anywhere px-2">
+                  {user.email}
+                </p>
+              )}
+              <p className="text-base sm:text-lg text-white/70 font-medium mb-2">
                 Your developer card is ready to share
               </p>
               {profile?.login && (
-                <p className="mt-2 text-sm text-white/50">
+                <p className="mt-1 text-xs sm:text-sm text-white/50 break-words">
                   @{profile.login}
                 </p>
               )}
