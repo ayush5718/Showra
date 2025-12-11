@@ -190,6 +190,14 @@ CRITICAL TECHNICAL REQUIREMENTS:
 4. GITHUB COMPATIBILITY: Only use HTML/CSS that GitHub markdown supports
 5. FORMATTING: Every image markdown ![](url) must be on its own line with proper spacing
 6. VALIDATION: Ensure all URLs are correct, all usernames match, all syntax is valid
+7. FONTS: GitHub READMEs support inline HTML styles with font-family. Use web-safe fonts or system fonts:
+   - Example: <h1 style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Text</h1>
+   - Recommended font stacks: 
+     * For headings: <span style="font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">Text</span>
+     * For code/monospace: <span style="font-family: 'Courier New', 'Consolas', monospace;">Text</span>
+     * For elegant text: <span style="font-family: Georgia, 'Times New Roman', serif;">Text</span>
+   - You can wrap text in <span> tags with inline styles to change fonts
+   - GitHub's default font is system-dependent, but you can override with inline styles
 
 INTELLIGENT CONTENT GENERATION:
 - Deeply analyze repositories to understand the developer's expertise and interests
@@ -251,7 +259,8 @@ CRITICAL: Follow this exact order - do not rearrange sections or place content o
    - Make it visually appealing with proper alignment
 
 2. **NAME + HERO SECTION** (MUST BE STUNNING AND UNIQUE):
-   - Start with: # Hey Everyone! I'm [Name](https://github.com/${username})
+   - Start with styled header using custom font: <h1 align="center" style="font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-size: 2.5em;">Hey Everyone! I'm <a href="https://github.com/${username}" style="text-decoration: none;"><span style="font-family: 'Courier New', monospace; color: #00E5FF;">[Name]</span></a></h1>
+   - OR use: <div align="center"><h1 style="font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">Hey Everyone! I'm <span style="font-family: 'Courier New', monospace; color: #00E5FF;">[Name]</span></h1></div>
    - Add <br><br> for spacing
    - Create a two-column layout using HTML divs:
      - Left column: Name, tagline, and key information
@@ -260,12 +269,14 @@ CRITICAL: Follow this exact order - do not rearrange sections or place content o
    - OR use terminal GIF: <img align="right" src="https://github.com/${username}/${username}/blob/main/terminal.gif" width="40%"/>
    - Include profile views badge: <img src="https://komarev.com/ghpvc/?username=${username}&color=00a0a0&style=plastic" />
    - Add GitHub Trophy: <a href="https://github.com/ryo-ma/github-profile-trophy"><img src="https://github-profile-trophy.vercel.app/?username=${username}&column=8&theme=onedark&no-frame=true&no-bg=true"/></a>
-   - Use creative tagline: <h4 align="center"><samp>[Professional tagline based on their work]</samp></h4>
-   - Make it stand out with unique styling
+   - Use creative tagline with custom font: <h4 align="center"><samp style="font-family: 'Courier New', 'Consolas', monospace; font-size: 1.1em;">[Professional tagline based on their work]</samp></h4>
+   - Make it stand out with unique styling and font variations
 
 3. **ABOUT ME / BIOGRAPHY** (Enhanced with Icons and Structure):
    - Section header: ## 🚀 About Me
    - Use a creative layout with icons and badges
+   - Style the bio text with custom fonts: <p style="font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; line-height: 1.6;">[Bio text]</p>
+   - For elegant sections, use: <p style="font-family: Georgia, 'Times New Roman', serif; font-size: 1.05em;">[Text]</p>
    - Start with 2-3 compelling sentences about what you do, your passion, and goals
    - Include animated badges for key info:
      - Location badge using shields.io format
@@ -508,7 +519,15 @@ QUALITY CHECKLIST (Before finalizing output):
 ✓ No code blocks wrapping the output
 ✓ Ready to copy-paste directly into GitHub README.md
 
-Return ONLY the complete, polished README content. Make it exceptional, professional, authentic, and visually stunning. This should be a README that makes people think "Wow, I want my profile to look like this!" Every word should be intentional, every section should be valuable, and the entire README should reflect the developer's unique expertise and personality based on their actual GitHub data.`;
+FONT STYLING GUIDELINES (Use these for visual impact):
+- Headers (H1/H2): Use <h1 style="font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;"> for modern look
+- Important names/terms: Use <span style="font-family: 'Courier New', 'Consolas', monospace; color: #00E5FF;"> for tech emphasis
+- Body text: Use <p style="font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; line-height: 1.6;"> for readability
+- Elegant quotes: Use <span style="font-family: Georgia, 'Times New Roman', serif; font-style: italic;"> for quotes
+- Code/technical: Always use monospace fonts: 'Courier New', 'Consolas', monospace
+- Mix fonts strategically but don't overuse - maintain professional appearance
+
+Return ONLY the complete, polished README content. Make it exceptional, professional, authentic, and visually stunning. This should be a README that makes people think "Wow, I want my profile to look like this!" Every word should be intentional, every section should be valuable, and the entire README should reflect the developer's unique expertise and personality based on their actual GitHub data. Use font styling to create visual hierarchy and make key information stand out.`;
 
     let readme = await generateReadmeWithGemini(
       prompt,
