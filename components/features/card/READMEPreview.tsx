@@ -1,67 +1,106 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, Copy, Check, Code, Eye, Edit2 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { FileText, Copy, Check, Edit2, Settings, Eye, EyeOff, Type, Layers, Zap, Code, Eye as EyeIcon } from "lucide-react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
-
-// Demo README content
-const demoREADME = `# Hi there, I'm John Doe 👋
-
-## 🚀 About Me
-Full-stack developer passionate about building beautiful and functional applications. Open source enthusiast and tech blogger.
-
-## 💻 Tech Stack
-- **Frontend:** TypeScript, React, Next.js
-- **Backend:** Node.js, Python, Go
-- **Tools:** Docker, Kubernetes, AWS
-
-## 🔥 My Top Repositories
-- [awesome-project](https://github.com/johndoe/awesome-project) - A modern web application
-- [cool-library](https://github.com/johndoe/cool-library) - Utility library for JavaScript
-- [api-server](https://github.com/johndoe/api-server) - RESTful API server
-
-## 📫 Connect with Me
-- GitHub: [@johndoe](https://github.com/johndoe)
-- Twitter: [@johndoe](https://twitter.com/johndoe)
-- Website: [johndoe.dev](https://johndoe.dev)
-
----
-
-⭐️ From [@johndoe](https://github.com/johndoe)`;
-
-type TabType = "markdown" | "preview" | "edit";
+import { parseReadmeSections, getSectionDisplayName, toggleSectionVisibility, applyFontToContent } from "./READMEUtils";
+import { Dialog } from "@/components/ui/Dialog";
 
 interface READMEPreviewProps {
   readmeContent?: string;
   onContentChange?: (content: string) => void;
 }
 
+type TabType = "preview" | "edit" | "markdown";
+
 export function READMEPreview({ readmeContent, onContentChange }: READMEPreviewProps) {
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("preview");
-  const [editableContent, setEditableContent] = useState<string>("");
+  const [showSettings, setShowSettings] = useState(false);
+  const [editedContent, setEditedContent] = useState<string>("");
+  const [sectionVisibility, setSectionVisibility] = useState<Record<string, boolean>>({});
+  const [selectedFonts, setSelectedFonts] = useState({
+    header: "Segoe UI",
+    body: "Segoe UI",
+    code: "Courier New",
+  });
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Initialize and update editable content from prop
   useEffect(() => {
-    if (readmeContent !== undefined) {
-      setEditableContent(readmeContent);
-    } else if (!editableContent) {
-      setEditableContent(demoREADME);
+    if (readmeContent !== undefined && readmeContent !== editedContent) {
+      setEditedContent(readmeContent);
+      
+      // Initialize visibility from content
+      const parsed = parseReadmeSections(readmeContent);
+      const visibility: Record<string, boolean> = {};
+      parsed.forEach(section => {
+        visibility[section.id] = !readmeContent.includes(`<!-- HIDDEN: ${section.id} -->`);
+      });
+      setSectionVisibility(visibility);
     }
   }, [readmeContent]);
 
+  // Parse sections from README
+  const sections = useMemo(() => {
+    const parsed = parseReadmeSections(editedContent);
+    return parsed.map(section => ({
+      id: section.id,
+      name: section.name,
+      visible: sectionVisibility[section.id] !== undefined 
+        ? sectionVisibility[section.id] 
+        : !editedContent.includes(`<!-- HIDDEN: ${section.id} -->`),
+      displayName: getSectionDisplayName(section.id, section.name),
+    }));
+  }, [editedContent, sectionVisibility]);
+
   // Handle content changes
   const handleContentChange = (newContent: string) => {
-    setEditableContent(newContent);
+    setEditedContent(newContent);
     if (onContentChange) {
       onContentChange(newContent);
     }
   };
 
-  const content = editableContent || demoREADME;
+  // Toggle section visibility
+  const toggleSection = (sectionId: string) => {
+    const currentVisible = sectionVisibility[sectionId] !== false;
+    const newVisible = !currentVisible;
+    
+    setSectionVisibility(prev => ({
+      ...prev,
+      [sectionId]: newVisible,
+    }));
+    
+    const newContent = toggleSectionVisibility(editedContent, sectionId, newVisible);
+    handleContentChange(newContent);
+  };
+
+  // Apply font changes
+  const applyFont = (elementType: 'header' | 'body' | 'code', fontFamily: string) => {
+    setSelectedFonts(prev => ({ ...prev, [elementType]: fontFamily }));
+    const newContent = applyFontToContent(editedContent, elementType, fontFamily);
+    handleContentChange(newContent);
+  };
+
+  // Reset to original
+  const handleReset = () => {
+    if (readmeContent !== undefined) {
+      setEditedContent(readmeContent);
+      handleContentChange(readmeContent);
+      setSectionVisibility({});
+      setSelectedFonts({
+        header: "Segoe UI",
+        body: "Segoe UI",
+        code: "Courier New",
+      });
+    }
+  };
+
+  const content = editedContent || "";
 
   const handleCopy = async () => {
     try {
@@ -81,7 +120,7 @@ export function READMEPreview({ readmeContent, onContentChange }: READMEPreviewP
       className="relative overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-black/60 to-black/40 backdrop-blur-xl shadow-2xl"
     >
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-white/10 bg-gradient-to-r from-white/5 to-white/3 px-3 sm:px-5 py-2 sm:py-3">
+      <div className="flex items-center justify-between border-b border-white/10 bg-gradient-to-r from-white/5 to-white/3 px-3 sm:px-5 py-2.5 sm:py-3">
         <div className="flex items-center gap-2 sm:gap-3">
           <div className="flex gap-1.5 sm:gap-2">
             <div className="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full bg-red-500/80" />
@@ -90,28 +129,159 @@ export function READMEPreview({ readmeContent, onContentChange }: READMEPreviewP
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-white/60">
             <FileText className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-            <span className="truncate max-w-[80px] sm:max-w-none">README.md</span>
+            <span className="truncate max-w-[80px] sm:max-w-none font-medium">README.md</span>
           </div>
         </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowSettings(!showSettings)}
+            className={`flex items-center gap-1.5 rounded-lg border px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-medium transition-all ${
+              showSettings
+                ? "border-cyan-500/50 bg-cyan-500/10 text-cyan-400"
+                : "border-white/10 bg-white/5 text-white hover:border-white/20 hover:bg-white/10"
+            }`}
+            title="Toggle Settings"
+          >
+            <Settings className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Settings</span>
+          </button>
         <button
           onClick={handleCopy}
           className="flex items-center gap-1.5 sm:gap-2 rounded-lg border border-white/10 bg-white/5 px-2.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-white transition-all hover:border-white/20 hover:bg-white/10"
+            title="Copy README"
         >
           {copied ? (
             <>
-              <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-400" />
               <span className="hidden sm:inline">Copied!</span>
             </>
           ) : (
             <>
               <Copy className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Copy README</span>
-              <span className="sm:hidden">Copy</span>
+                <span className="hidden sm:inline">Copy</span>
             </>
           )}
         </button>
       </div>
+      </div>
 
+      {/* Settings Dialog */}
+      <Dialog
+        open={showSettings}
+        onOpenChange={setShowSettings}
+        title={
+          <div className="flex items-center gap-2">
+            <Settings className="h-5 w-5 text-cyan-400" />
+            README Settings
+          </div>
+        }
+        maxWidth="2xl"
+      >
+        <div className="p-6">
+                {/* Section Visibility Toggles */}
+                <div className="mb-6">
+                  <h4 className="text-white/80 text-xs font-semibold mb-3 flex items-center gap-2 uppercase tracking-wide">
+                    <Layers className="h-3.5 w-3.5" />
+                    Sections ({sections.length})
+                  </h4>
+                  <div className="space-y-1.5 max-h-64 overflow-y-auto custom-scrollbar">
+                  {sections.length === 0 ? (
+                    <p className="text-white/40 text-xs text-center py-4 italic">No sections detected</p>
+                  ) : (
+                    sections.map(section => (
+                      <label
+                        key={section.id}
+                        className="flex items-center gap-2 p-2.5 rounded-lg bg-white/5 hover:bg-white/10 cursor-pointer transition-all group"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={section.visible}
+                          onChange={() => toggleSection(section.id)}
+                          className="w-4 h-4 rounded border-white/20 bg-white/5 text-cyan-500 focus:ring-cyan-500 focus:ring-2 cursor-pointer"
+                        />
+                        <span className="text-white/80 text-xs flex-1 font-medium">{section.displayName || section.name}</span>
+                        {section.visible ? (
+                          <Eye className="h-3.5 w-3.5 text-green-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        ) : (
+                          <EyeOff className="h-3.5 w-3.5 text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        )}
+                      </label>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              {/* Font Options */}
+              <div className="mb-6">
+                <h4 className="text-white/80 text-xs font-semibold mb-3 flex items-center gap-2 uppercase tracking-wide">
+                  <Type className="h-3.5 w-3.5" />
+                  Typography
+                </h4>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-white/60 text-xs mb-1.5 block font-medium">Headers</label>
+                    <select
+                      value={selectedFonts.header}
+                      onChange={(e) => applyFont('header', e.target.value)}
+                      className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all"
+                    >
+                      <option value="Segoe UI">Segoe UI</option>
+                      <option value="Helvetica Neue">Helvetica Neue</option>
+                      <option value="Arial">Arial</option>
+                      <option value="Georgia">Georgia (Serif)</option>
+                      <option value="Times New Roman">Times New Roman</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-white/60 text-xs mb-1.5 block font-medium">Body Text</label>
+                    <select
+                      value={selectedFonts.body}
+                      onChange={(e) => applyFont('body', e.target.value)}
+                      className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all"
+                    >
+                      <option value="Segoe UI">Segoe UI</option>
+                      <option value="Helvetica Neue">Helvetica Neue</option>
+                      <option value="Georgia">Georgia (Serif)</option>
+                      <option value="Times New Roman">Times New Roman</option>
+                      <option value="Arial">Arial</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-white/60 text-xs mb-1.5 block font-medium">Code/Technical</label>
+                    <select
+                      value={selectedFonts.code}
+                      onChange={(e) => applyFont('code', e.target.value)}
+                      className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all"
+                    >
+                      <option value="Courier New">Courier New</option>
+                      <option value="Consolas">Consolas</option>
+                      <option value="Monaco">Monaco</option>
+                      <option value="Menlo">Menlo</option>
+                      <option value="SF Mono">SF Mono</option>
+                    </select>
+                  </div>
+                </div>
+                </div>
+
+                {/* Quick Actions */}
+                <div className="pt-4 border-t border-white/10">
+                  <h4 className="text-white/80 text-xs font-semibold mb-3 flex items-center gap-2 uppercase tracking-wide">
+                    <Zap className="h-3.5 w-3.5" />
+                    Actions
+                  </h4>
+                  <button
+                    onClick={handleReset}
+                    disabled={!readmeContent}
+                    className="w-full px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-white text-xs transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                  >
+                    Reset to Original
+                  </button>
+                </div>
+        </div>
+      </Dialog>
+
+      {/* Tab Area */}
+      <div className="flex-1">
       {/* Tabs */}
       <div className="flex border-b border-white/10 bg-white/3">
         <button
@@ -122,7 +292,7 @@ export function READMEPreview({ readmeContent, onContentChange }: READMEPreviewP
               : "text-white/50 hover:text-white/70"
           }`}
         >
-          <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <EyeIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           <span>Preview</span>
           {activeTab === "preview" && (
             <motion.div
@@ -174,7 +344,7 @@ export function READMEPreview({ readmeContent, onContentChange }: READMEPreviewP
       </div>
 
       {/* Tab Content */}
-      <div className="relative min-h-[250px] sm:min-h-[300px] max-h-[400px] sm:max-h-[800px] lg:max-h-[900px] overflow-auto">
+          <div className="relative min-h-[400px] sm:min-h-[500px] max-h-[600px] sm:max-h-[800px] overflow-auto">
         <AnimatePresence mode="wait">
           {activeTab === "preview" ? (
             <motion.div
@@ -183,16 +353,25 @@ export function READMEPreview({ readmeContent, onContentChange }: READMEPreviewP
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
-              className="p-4 sm:p-6"
+                  className="p-4 sm:p-6 bg-[#0d1117] min-h-full"
             >
-              <div className="markdown-preview">
+                  <div className="markdown-preview github-markdown-body" style={{ isolation: 'isolate', contain: 'style' }}>
+                    {content.trim() ? (
                 <ReactMarkdown 
                   remarkPlugins={[remarkGfm]}
                   rehypePlugins={[rehypeRaw]}
                 >
                   {content}
                 </ReactMarkdown>
+                    ) : (
+                      <p className="text-white/40 italic text-sm text-center py-12">
+                        Preview will appear here as you edit your README...
+                      </p>
+                    )}
               </div>
+                  <p className="mt-6 text-xs text-white/40 text-center italic">
+                    Preview matches GitHub's markdown rendering
+                  </p>
             </motion.div>
           ) : activeTab === "edit" ? (
             <motion.div
@@ -203,10 +382,16 @@ export function READMEPreview({ readmeContent, onContentChange }: READMEPreviewP
               transition={{ duration: 0.2 }}
               className="p-4 sm:p-6 h-full"
             >
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs text-white/60">
+                      {content.length.toLocaleString()} characters
+                    </span>
+                  </div>
               <textarea
+                    ref={textareaRef}
                 value={content}
                 onChange={(e) => handleContentChange(e.target.value)}
-                className="w-full h-full min-h-[300px] font-mono text-xs sm:text-sm leading-relaxed text-white/90 bg-black/30 border border-white/10 rounded-lg p-4 resize-none focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50"
+                    className="w-full h-full min-h-[400px] font-mono text-xs sm:text-sm leading-relaxed text-white/90 bg-black/40 border border-white/10 rounded-lg p-4 resize-none focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
                 placeholder="Edit your README markdown here..."
                 spellCheck={false}
               />
@@ -221,22 +406,40 @@ export function READMEPreview({ readmeContent, onContentChange }: READMEPreviewP
               className="p-4 sm:p-6"
             >
               <pre className="font-mono text-xs sm:text-sm leading-relaxed text-white/90 whitespace-pre-wrap break-words overflow-x-auto">
-                <code className="text-white/80">{content}</code>
+                    <code className="text-white/80">{content || "Your markdown code will appear here..."}</code>
               </pre>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
-
+      </div>
 
       <style dangerouslySetInnerHTML={{
         __html: `
+          /* Custom Scrollbar */
+          .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+          }
+
+          /* GitHub-compatible markdown styles */
           .markdown-preview {
-            color: #c9d1d9;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
-            font-size: 14px;
-            line-height: 1.5;
-            word-wrap: break-word;
+            color: #c9d1d9 !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif !important;
+            font-size: 14px !important;
+            line-height: 1.5 !important;
+            word-wrap: break-word !important;
+            isolation: isolate !important;
           }
 
           @media (min-width: 640px) {
@@ -246,312 +449,157 @@ export function READMEPreview({ readmeContent, onContentChange }: READMEPreviewP
           }
 
           .markdown-preview h1 {
-            font-size: 1.5em;
-            margin: 0.67em 0;
-            font-weight: 600;
-            padding-bottom: 0.3em;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            color: #f0f6fc;
-          }
-
-          @media (min-width: 640px) {
-            .markdown-preview h1 {
-              font-size: 2em;
-            }
+            font-size: 2em !important;
+            margin: 0.67em 0 !important;
+            font-weight: 600 !important;
+            padding-bottom: 0.3em !important;
+            border-bottom: 1px solid #30363d !important;
+            color: #f0f6fc !important;
           }
 
           .markdown-preview h2 {
-            font-size: 1.25em;
-            margin: 1em 0 0.5em 0;
-            font-weight: 600;
-            padding-bottom: 0.3em;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            color: #f0f6fc;
-          }
-
-          @media (min-width: 640px) {
-            .markdown-preview h2 {
-              font-size: 1.5em;
-            }
+            font-size: 1.5em !important;
+            margin: 1em 0 0.5em 0 !important;
+            font-weight: 600 !important;
+            padding-bottom: 0.3em !important;
+            border-bottom: 1px solid #30363d !important;
+            color: #f0f6fc !important;
           }
 
           .markdown-preview h3 {
-            font-size: 1.1em;
-            margin: 1em 0 0.5em 0;
-            font-weight: 600;
-            color: #f0f6fc;
+            font-size: 1.25em !important;
+            margin: 1em 0 0.5em 0 !important;
+            font-weight: 600 !important;
+            color: #f0f6fc !important;
           }
-
-          @media (min-width: 640px) {
-            .markdown-preview h3 {
-              font-size: 1.25em;
-            }
+          
+          .markdown-preview h4 {
+            font-size: 1em !important;
+            margin: 1em 0 0.5em 0 !important;
+            font-weight: 600 !important;
+            color: #f0f6fc !important;
           }
 
           .markdown-preview p {
-            margin: 0 0 12px 0;
-            color: #c9d1d9;
-          }
-
-          @media (min-width: 640px) {
-            .markdown-preview p {
-              margin: 0 0 16px 0;
-            }
+            margin: 0 0 16px 0 !important;
+            color: #c9d1d9 !important;
           }
 
           .markdown-preview ul,
           .markdown-preview ol {
-            margin: 0 0 12px 0;
-            padding-left: 1.5em;
-            color: #c9d1d9;
-          }
-
-          @media (min-width: 640px) {
-            .markdown-preview ul,
-            .markdown-preview ol {
-              margin: 0 0 16px 0;
-              padding-left: 2em;
-            }
+            margin: 0 0 16px 0 !important;
+            padding-left: 2em !important;
+            color: #c9d1d9 !important;
           }
 
           .markdown-preview li {
-            margin: 0.25em 0;
-            color: #c9d1d9;
-          }
-
-          .markdown-preview li p {
-            margin: 0;
+            margin: 0.25em 0 !important;
+            color: #c9d1d9 !important;
           }
 
           .markdown-preview a {
-            color: #58a6ff;
-            text-decoration: none;
+            color: #58a6ff !important;
+            text-decoration: none !important;
           }
 
           .markdown-preview a:hover {
-            text-decoration: underline;
+            text-decoration: underline !important;
           }
 
           .markdown-preview strong {
-            font-weight: 600;
-            color: #f0f6fc;
+            font-weight: 600 !important;
+            color: #f0f6fc !important;
           }
 
           .markdown-preview code:not(pre code) {
-            padding: 0.2em 0.4em;
-            margin: 0;
-            font-size: 85%;
-            background-color: rgba(110, 118, 129, 0.4);
-            border-radius: 6px;
-            color: #f0f6fc;
-            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+            padding: 0.2em 0.4em !important;
+            margin: 0 !important;
+            font-size: 85% !important;
+            background-color: rgba(110, 118, 129, 0.4) !important;
+            border-radius: 6px !important;
+            color: #f0f6fc !important;
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace !important;
           }
 
           .markdown-preview pre {
-            padding: 12px;
-            overflow: auto;
-            font-size: 80%;
-            line-height: 1.45;
-            background-color: #161b22;
-            border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin: 0 0 12px 0;
-          }
-
-          @media (min-width: 640px) {
-            .markdown-preview pre {
-              padding: 16px;
-              font-size: 85%;
-              margin: 0 0 16px 0;
-            }
+            padding: 16px !important;
+            overflow: auto !important;
+            font-size: 85% !important;
+            line-height: 1.45 !important;
+            background-color: #161b22 !important;
+            border-radius: 6px !important;
+            border: 1px solid #30363d !important;
+            margin: 0 0 16px 0 !important;
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace !important;
           }
 
           .markdown-preview pre code {
-            display: inline;
-            padding: 0;
-            margin: 0;
-            overflow: visible;
-            line-height: inherit;
-            word-wrap: normal;
-            background-color: transparent;
-            border: 0;
-            color: #c9d1d9;
+            display: inline !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            overflow: visible !important;
+            line-height: inherit !important;
+            word-wrap: normal !important;
+            background-color: transparent !important;
+            border: 0 !important;
+            color: #c9d1d9 !important;
           }
 
           .markdown-preview img {
-            max-width: 100%;
-            box-sizing: content-box;
-            background-color: #0d1117;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
-            margin: 12px 0;
-          }
-
-          @media (min-width: 640px) {
-            .markdown-preview img {
-              margin: 16px 0;
-            }
-          }
-
-          /* HTML elements support */
-          .markdown-preview h1[align],
-          .markdown-preview h2[align],
-          .markdown-preview h3[align],
-          .markdown-preview p[align] {
-            text-align: inherit;
-          }
-
-          .markdown-preview h1[align="center"],
-          .markdown-preview h2[align="center"],
-          .markdown-preview h3[align="center"],
-          .markdown-preview p[align="center"] {
-            text-align: center;
-          }
-
-          .markdown-preview h1[align="left"],
-          .markdown-preview h2[align="left"],
-          .markdown-preview h3[align="left"],
-          .markdown-preview p[align="left"] {
-            text-align: left;
-          }
-
-          .markdown-preview h1[align="right"],
-          .markdown-preview h2[align="right"],
-          .markdown-preview h3[align="right"],
-          .markdown-preview p[align="right"] {
-            text-align: right;
-          }
-
-          .markdown-preview img[align="right"] {
-            float: right;
-            margin-left: 16px;
-            margin-bottom: 16px;
-          }
-
-          .markdown-preview img[align="left"] {
-            float: left;
-            margin-right: 16px;
-            margin-bottom: 16px;
-          }
-
-          .markdown-preview img[align="center"] {
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-          }
-
-          .markdown-preview iframe {
-            width: 100%;
-            max-width: 100%;
-            border: none;
-            border-radius: 8px;
-            margin: 16px 0;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-          }
-
-          .markdown-preview div[align="center"] {
-            text-align: center;
-            margin: 16px 0;
+            max-width: 100% !important;
+            box-sizing: content-box !important;
+            background-color: #0d1117 !important;
+            border: 1px solid #30363d !important;
+            border-radius: 6px !important;
+            margin: 16px 0 !important;
           }
 
           .markdown-preview table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
+            border-spacing: 0 !important;
+            border-collapse: collapse !important;
+            display: block !important;
+            width: max-content !important;
+            max-width: 100% !important;
+            overflow: auto !important;
+            margin: 16px 0 !important;
           }
-
-          .markdown-preview table {
-            border-spacing: 12px;
-            border-collapse: separate;
-          }
-
+          
+          .markdown-preview table th,
           .markdown-preview table td {
-            padding: 16px;
-            vertical-align: top;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background-color: rgba(0, 0, 0, 0.5);
-            border-radius: 12px;
+            padding: 6px 13px !important;
+            border: 1px solid #30363d !important;
           }
-
-          .markdown-preview table td h3 {
-            color: #ffffff !important;
-            margin-top: 0 !important;
-            margin-bottom: 12px !important;
+          
+          .markdown-preview table th {
+            font-weight: 600 !important;
+            background-color: #161b22 !important;
           }
-
-          .markdown-preview table td h3 a {
-            color: #58A6FF !important;
-            text-decoration: none;
-            font-weight: 600;
+          
+          .markdown-preview table tr {
+            background-color: #0d1117 !important;
+            border-top: 1px solid #21262d !important;
           }
-
-          .markdown-preview table td h3 a:hover {
-            text-decoration: underline;
-          }
-
-          .markdown-preview table td p {
-            color: rgba(255, 255, 255, 0.95) !important;
-            margin: 12px 0 !important;
-          }
-
-          .markdown-preview div[style*="background-color"] {
-            margin: 12px 0 !important;
-          }
-
-          .markdown-preview div[style*="background-color"] p {
-            margin: 0 !important;
-          }
-
-          .markdown-preview div[style*="display: flex"],
-          .markdown-preview div[style*="display:inline-flex"] {
-            display: flex !important;
-            flex-wrap: wrap !important;
-            gap: 12px !important;
-            align-items: center !important;
-          }
-
-          .markdown-preview div[style*="display: flex"] > div,
-          .markdown-preview div[style*="display:inline-flex"] > div {
-            display: inline-flex !important;
-            align-items: center !important;
-            gap: 8px !important;
-          }
-
-          .markdown-preview div[style*="display: flex"] img,
-          .markdown-preview div[style*="display:inline-flex"] img {
-            margin: 0 !important;
-            vertical-align: middle !important;
-          }
-
-
-          .markdown-preview table td img {
-            margin: 4px;
-            vertical-align: middle;
+          
+          .markdown-preview table tr:nth-child(2n) {
+            background-color: #161b22 !important;
           }
 
           .markdown-preview hr {
-            height: 0.25em;
-            padding: 0;
-            margin: 16px 0;
-            background-color: rgba(255, 255, 255, 0.1);
-            border: 0;
-          }
-
-          @media (min-width: 640px) {
-            .markdown-preview hr {
-              margin: 24px 0;
-            }
+            height: 0.25em !important;
+            padding: 0 !important;
+            margin: 24px 0 !important;
+            background-color: #21262d !important;
+            border: 0 !important;
           }
 
           .markdown-preview blockquote {
-            padding: 0 1em;
-            color: #8b949e;
-            border-left: 0.25em solid rgba(255, 255, 255, 0.1);
-            margin: 0 0 16px 0;
+            padding: 0 1em !important;
+            color: #8b949e !important;
+            border-left: 0.25em solid #30363d !important;
+            margin: 0 0 16px 0 !important;
           }
         `
       }} />
     </motion.div>
   );
 }
-

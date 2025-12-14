@@ -191,9 +191,6 @@ export function FeaturesSection() {
                       <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-[#00E5FF] via-[#FF00CC] to-[#9D4BFF] bg-clip-text text-transparent">
                         README Generator
                       </h3>
-                      <span className="px-3 py-1 text-sm font-bold rounded-full bg-gradient-to-r from-[#00E5FF]/30 to-[#FF00CC]/30 border border-[#00E5FF]/50 text-[#00E5FF] animate-pulse">
-                        Coming Soon
-                      </span>
                     </div>
                     <p className="text-lg md:text-xl text-white/70 max-w-2xl">
                       AI-powered GitHub profile README generation with beautiful templates and automatic content creation

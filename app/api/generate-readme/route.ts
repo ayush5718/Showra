@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { groupLanguagesByCategory, getIconNamesString, mapLanguageToIcon } from "@/lib/utils/format/languageMapper";
+import { postProcessReadme } from "@/lib/utils/format";
+import { detectTechnologies } from "@/lib/utils/transform/detectTechnologies";
 
 const GEMINI_API_KEY =
   process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
@@ -129,7 +132,7 @@ export async function POST(request: NextRequest) {
           })), null, 2)
         : "No repositories available";
 
-    // Build languages info
+    // Build languages info with intelligent categorization
     const languagesInfo =
       languages && languages.length > 0
         ? languages
@@ -138,25 +141,72 @@ export async function POST(request: NextRequest) {
             .join("\n")
         : "No language data available";
 
+    // Detect technologies from repositories for better tech stack
+    const detectedTechs = repositories && repositories.length > 0 
+      ? detectTechnologies(repositories.slice(0, 10).map((repo: any) => ({
+          name: repo.name,
+          description: repo.description || '',
+          language: repo.language,
+          topics: repo.topics || []
+        })))
+      : [];
+
+    // Group languages by category for intelligent tech stack organization
+    const groupedLanguages = languages && languages.length > 0
+      ? groupLanguagesByCategory(languages.slice(0, 15))
+      : { languages: [], frontend: [], backend: [], database: [], devops: [], tools: [] };
+
+    // Build tech stack mapping guide for AI
+    const techStackGuide = `
+TECH STACK ICON MAPPING GUIDE (Use these exact mappings):
+${[
+  ...groupedLanguages.languages.map(l => `- ${l.name} → icon: "${l.iconName}"`),
+  ...groupedLanguages.frontend.map(l => `- ${l.name} → icon: "${l.iconName}" (Frontend)`),
+  ...groupedLanguages.backend.map(l => `- ${l.name} → icon: "${l.iconName}" (Backend)`),
+  ...groupedLanguages.database.map(l => `- ${l.name} → icon: "${l.iconName}" (Database)`),
+  ...groupedLanguages.devops.map(l => `- ${l.name} → icon: "${l.iconName}" (DevOps)`),
+  ...groupedLanguages.tools.map(l => `- ${l.name} → icon: "${l.iconName}" (Tool)`),
+].join('\n')}
+
+DETECTED TECHNOLOGIES FROM REPOSITORIES:
+${detectedTechs.length > 0 
+  ? detectedTechs.map(t => `- ${t.name} (confidence: ${t.confidence}%)`).join('\n')
+  : 'None detected'}`;
+
     const devcardUrl = data.devcardUrl || '';
     const username = profile?.login || "developer";
     
-    const prompt = `You are an expert at creating world-class, professional GitHub profile README files. Generate a comprehensive, engaging, and highly professional README that showcases the developer's expertise and personality.
+    const prompt = `You are an EXPERT GitHub README architect and AI content strategist. Your task is to create a WORLD-CLASS, professional GitHub profile README that is:
+- Visually stunning and immediately impressive
+- Professionally written with authentic, compelling content
+- Technically accurate based on the developer's actual work
+- GitHub-compatible (all HTML renders correctly on GitHub)
+- Unique and memorable (something others would want to copy)
 
-CRITICAL REQUIREMENTS:
-1. Use HTML tags for advanced styling BUT ensure they render properly (no code blocks showing)
-2. Use markdown for basic formatting (headers, lists, links)
-3. DO NOT wrap HTML in code blocks - write HTML directly so it renders
-4. Analyze the repositories provided and generate appropriate styling based on their content
-5. Create a professional, clean design with excellent visual hierarchy
-6. Use professional badges, shields, and GitHub stats widgets
-7. Include ALL required sections listed below
-8. Make content engaging but professional - no cringe, no excessive emojis
-9. Use emojis strategically and sparingly (1-2 per section max)
-10. Write compelling, professional copy based on actual repository data
-11. Include dynamic GitHub stats with proper URLs
-12. Create sections that flow naturally and tell a story
-13. IMPORTANT: Generate HTML that will render in GitHub markdown, not show as code
+CRITICAL TECHNICAL REQUIREMENTS:
+1. HTML RENDERING: Write HTML tags directly (NOT in code blocks) so they render on GitHub
+2. MARKDOWN SYNTAX: Use markdown for headers (#, ##), lists, links - but HTML for advanced styling
+3. NO CODE BLOCKS: NEVER wrap output in triple backticks - write raw markdown/HTML
+4. GITHUB COMPATIBILITY: Only use HTML/CSS that GitHub markdown supports
+5. FORMATTING: Every image markdown ![](url) must be on its own line with proper spacing
+6. VALIDATION: Ensure all URLs are correct, all usernames match, all syntax is valid
+7. FONTS: GitHub READMEs support inline HTML styles with font-family. Use web-safe fonts or system fonts:
+   - Example: <h1 style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Text</h1>
+   - Recommended font stacks: 
+     * For headings: <span style="font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">Text</span>
+     * For code/monospace: <span style="font-family: 'Courier New', 'Consolas', monospace;">Text</span>
+     * For elegant text: <span style="font-family: Georgia, 'Times New Roman', serif;">Text</span>
+   - You can wrap text in <span> tags with inline styles to change fonts
+   - GitHub's default font is system-dependent, but you can override with inline styles
+
+INTELLIGENT CONTENT GENERATION:
+- Deeply analyze repositories to understand the developer's expertise and interests
+- Write personalized, authentic content - not generic templates
+- Create compelling narratives that tell a story about their coding journey
+- Highlight unique strengths and achievements based on actual data
+- Make connections between projects to show growth and learning
+- Write descriptions that are specific, not vague or generic
+- Use repository topics and descriptions to infer technologies and skills
 
 DEVELOPER PROFILE:
 - Name: ${profile?.name || profile?.login || "Developer"}
@@ -180,17 +230,21 @@ ${topRepo ? `- ${topRepo.name}: ${topRepo.description || "No description"} (${to
 LANGUAGES:
 ${languagesInfo}
 
-REPOSITORIES DATA (Analyze these and generate appropriate styling):
+REPOSITORIES DATA (Analyze these deeply and generate compelling descriptions):
 ${reposInfo}
 
-IMPORTANT: Analyze each repository's:
-- Name and description to create compelling project cards
-- Language to choose appropriate colors and icons
-- Stars count to highlight popular projects
-- Topics to understand tech stack used
-- Generate styling that matches the repository's purpose and tech stack
+${techStackGuide}
 
-${devcardUrl ? `DEVCARD IFRAME URL: ${devcardUrl}\nInclude this devcard iframe in a dedicated section.` : ''}
+INTELLIGENT REPOSITORY ANALYSIS REQUIRED:
+- Analyze repository names, descriptions, and topics to understand the developer's expertise
+- Identify patterns: Are they a full-stack developer? Frontend specialist? Backend engineer? DevOps expert?
+- Create compelling project descriptions that highlight what makes each project special
+- Use repository data to write personalized, authentic content about their work
+- If repositories show specific domains (e.g., AI/ML, web apps, mobile apps), reflect that in the bio
+- Generate project cards that tell a story, not just list features
+- Make connections between projects to show growth and learning trajectory
+
+${devcardUrl ? `DEVCARD IMAGE URL: ${devcardUrl}\nCRITICAL: This MUST be a direct image URL (.png, .jpg, .jpeg) that can be embedded. If it's an image URL, embed it directly in markdown: ![My DevCard](${devcardUrl})\nGitHub READMEs ONLY support static images - the image must be hosted and publicly accessible.` : ''}
 
 MANDATORY SECTIONS - Generate ALL of these in this exact order with CREATIVE, MODERN designs:
 
@@ -205,7 +259,8 @@ CRITICAL: Follow this exact order - do not rearrange sections or place content o
    - Make it visually appealing with proper alignment
 
 2. **NAME + HERO SECTION** (MUST BE STUNNING AND UNIQUE):
-   - Start with: # Hey Everyone! I'm [Name](https://github.com/${username})
+   - Start with styled header using custom font: <h1 align="center" style="font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-size: 2.5em;">Hey Everyone! I'm <a href="https://github.com/${username}" style="text-decoration: none;"><span style="font-family: 'Courier New', monospace; color: #00E5FF;">[Name]</span></a></h1>
+   - OR use: <div align="center"><h1 style="font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">Hey Everyone! I'm <span style="font-family: 'Courier New', monospace; color: #00E5FF;">[Name]</span></h1></div>
    - Add <br><br> for spacing
    - Create a two-column layout using HTML divs:
      - Left column: Name, tagline, and key information
@@ -214,12 +269,14 @@ CRITICAL: Follow this exact order - do not rearrange sections or place content o
    - OR use terminal GIF: <img align="right" src="https://github.com/${username}/${username}/blob/main/terminal.gif" width="40%"/>
    - Include profile views badge: <img src="https://komarev.com/ghpvc/?username=${username}&color=00a0a0&style=plastic" />
    - Add GitHub Trophy: <a href="https://github.com/ryo-ma/github-profile-trophy"><img src="https://github-profile-trophy.vercel.app/?username=${username}&column=8&theme=onedark&no-frame=true&no-bg=true"/></a>
-   - Use creative tagline: <h4 align="center"><samp>[Professional tagline based on their work]</samp></h4>
-   - Make it stand out with unique styling
+   - Use creative tagline with custom font: <h4 align="center"><samp style="font-family: 'Courier New', 'Consolas', monospace; font-size: 1.1em;">[Professional tagline based on their work]</samp></h4>
+   - Make it stand out with unique styling and font variations
 
 3. **ABOUT ME / BIOGRAPHY** (Enhanced with Icons and Structure):
    - Section header: ## 🚀 About Me
    - Use a creative layout with icons and badges
+   - Style the bio text with custom fonts: <p style="font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; line-height: 1.6;">[Bio text]</p>
+   - For elegant sections, use: <p style="font-family: Georgia, 'Times New Roman', serif; font-size: 1.05em;">[Text]</p>
    - Start with 2-3 compelling sentences about what you do, your passion, and goals
    - Include animated badges for key info:
      - Location badge using shields.io format
@@ -236,41 +293,47 @@ CRITICAL: Follow this exact order - do not rearrange sections or place content o
 4. **SKILLS / TECH STACK** (Enhanced with Icon APIs):
    - Section header: ## 💻 Tech Stack
    - Use skills.syvixor.com or skillicons.dev API for beautiful skill icons
-   - CRITICAL FORMATTING RULES:
-     * DO NOT use dashes or list items before image markdown syntax
-     * DO NOT wrap image markdown in code blocks or backticks
-     * DO NOT write category names as plain text - they MUST be markdown headers
-     * Write the image markdown syntax directly so it renders as images
+   - USE THE EXACT ICON MAPPINGS PROVIDED ABOVE in "TECH STACK ICON MAPPING GUIDE"
+   - CRITICAL FORMATTING RULES (MUST FOLLOW EXACTLY):
+     * DO NOT use dashes, bullets, or list markers before image markdown syntax
+     * DO NOT wrap image markdown in code blocks, backticks, or any formatting
+     * DO NOT write category names as plain text - they MUST be markdown headers with ###
+     * Write the image markdown syntax directly so it renders as actual images on GitHub
      * Each category MUST start with ### (three hashes) followed by the category name
-     * Each category should have: markdown header (###), blank line, then image markdown on next line
-   - Correct format structure (MUST follow this exactly):
-     * Line 1: ### Languages (MUST start with ###, not just "Languages")
-     * Line 2: (blank line - REQUIRED)
-     * Line 3: ![](https://skills.syvixor.com/api/icons?i=tech1,tech2,tech3&perline=18)
-     * Line 4: (blank line before next category - REQUIRED)
-   - Example of CORRECT output structure (copy this format exactly):
+     * Each category format: header on one line, blank line, then image markdown on next line
+   - CORRECT FORMAT (copy this structure exactly):
      ### Languages
 
-     ![](https://skills.syvixor.com/api/icons?i=cpp,c,python,js,java,bash&perline=18)
+     ![](https://skills.syvixor.com/api/icons?i=js,ts,python,java&perline=18)
 
      ### Frontend
 
-     ![](https://skills.syvixor.com/api/icons?i=html,css,tailwind,javascript,react&perline=18)
+     ![](https://skills.syvixor.com/api/icons?i=react,nextjs,html,css,tailwind&perline=18)
 
      ### Backend
 
-     ![](https://skillicons.dev/icons?i=django,php,nodejs,express&perline=18)
-   - WRONG formats (DO NOT do any of these):
-     * Languages (missing ### - will not render as header)
-     * Languages: ![](url) (on same line - WRONG)
-     * - ![](url) (with dash/list item - WRONG)
-     * Languages\n![](url) (no blank line - WRONG)
-     * \`\`\`markdown\n![](url)\n\`\`\` (in code block - WRONG)
-   - Map languages from the provided data to appropriate icon names (e.g., JavaScript -> js, TypeScript -> ts, Python -> python, Node.js -> nodejs)
-   - Use both APIs for variety: skills.syvixor.com and skillicons.dev
-   - Only show categories that have technologies based on the developer's actual languages/repos
-   - Group technologies logically based on the languages provided in the data
-   - Make it visually organized and easy to scan
+     ![](https://skillicons.dev/icons?i=nodejs,express,django,python&perline=18)
+
+     ### Database
+
+     ![](https://skills.syvixor.com/api/icons?i=postgresql,mongodb,redis&perline=18)
+
+     ### DevOps
+
+     ![](https://skills.syvixor.com/api/icons?i=docker,kubernetes,aws,terraform&perline=18)
+   - WRONG FORMATS (DO NOT DO):
+     * "Languages" (missing ###)
+     * "- ![](url)" (with dash - WRONG)
+     * "Languages: ![](url)" (on same line - WRONG)
+     * No blank line between header and image - WRONG
+     * Wrapped in code blocks - WRONG
+   - INTELLIGENT ORGANIZATION:
+     * Only show categories that actually have technologies (don't show empty categories)
+     * Group by: Languages, Frontend, Backend, Database, DevOps, Tools
+     * Use the exact icon names from the mapping guide above
+     * Mix APIs: Use skills.syvixor.com for some categories, skillicons.dev for others for variety
+     * Limit to 8-10 icons per category to keep it clean
+     * Prioritize technologies detected from repositories + top languages
 
 5. **CURRENT WORK / LEARNING** (MUST BE CREATIVE AND VISUAL):
    - Section header: ## 🔨 Currently Working On / Learning
@@ -306,8 +369,21 @@ CRITICAL: Follow this exact order - do not rearrange sections or place content o
 
 8. **DEVCARD SECTION** (if devcardUrl provided):
    - Section header: ## 🎴 My DevCard
-   - Include iframe: <iframe src="${devcardUrl}" width="100%" height="600" frameborder="0" scrolling="no" title="DevCard"></iframe>
-   - Center it properly
+   - CRITICAL: devcardUrl is a DIRECT IMAGE URL (.png, .jpg, .jpeg) - embed it as an IMAGE, NOT a link
+   - GitHub READMEs ONLY support static images - embed the image directly, NOT links or badges
+   - Format: <div align="center">\n\n![My DevCard](${devcardUrl})\n\n</div>
+   - DO NOT wrap in links, DO NOT use badges, DO NOT use clickable elements
+   - The image URL should be publicly accessible (like from Supabase storage)
+   - Example output:
+     ## 🎴 My DevCard
+     
+     <div align="center">
+     
+     ![My DevCard](${devcardUrl})
+     
+     </div>
+     
+     Check out my developer profile card with real-time GitHub stats!
 
 9. **CONTACT / SOCIAL LINKS** (Enhanced Badge Layout):
    - Section header: ## 📫 Connect with Me
@@ -334,14 +410,17 @@ CRITICAL: Follow this exact order - do not rearrange sections or place content o
     - Open source contributions
     - Only include if there's actual content
 
-WRITING STYLE:
-- Professional but approachable
-- Concise and impactful
-- No filler words
-- Use active voice
-- Show, don't tell
-- Be specific about technologies and projects
-- Write compelling descriptions
+ADVANCED WRITING STYLE (Follow these principles):
+1. AUTHENTICITY: Write as if you know the developer personally - use their actual data
+2. SPECIFICITY: Instead of "I work on projects" → "I build full-stack web applications using React and Node.js"
+3. IMPACT: Focus on what they've accomplished, not just what they do
+4. STORYTELLING: Create a narrative flow - where they started, what they're doing now, where they're going
+5. CONVERSATIONAL: Professional but human - avoid corporate speak or buzzword bingo
+6. DATA-DRIVEN: Reference actual stats, repositories, and technologies from their profile
+7. UNIQUE: Every sentence should add value - cut filler and generic statements
+8. ACTIVE VOICE: "I build..." not "Projects are built by me..."
+9. SHOW DON'T TELL: Instead of "I'm passionate" → show through project descriptions
+10. TECHNICAL ACCURACY: Only mention technologies they actually use (from repos/languages data)
 
 CREATIVE DESIGN PRINCIPLES:
 - Use radical theme for GitHub stats (dark, professional)
@@ -361,52 +440,126 @@ CREATIVE DESIGN PRINCIPLES:
 - Include progress indicators and animated elements
 - Create modern, professional card designs
 
-SPECIAL INSTRUCTIONS FOR CREATIVITY:
-- Start with social media badges at the very top - this is the first thing people see
-- Hero section should use two-column layout with animated GIF on right side
-- Use skills icon APIs (skills.syvixor.com, skillicons.dev) for beautiful skill displays
-- Include GitHub Trophy section prominently
-- Use repository pins API for featured projects
-- Add horizontal rule separators between major sections
-- Make it so attractive and unique that others would want to copy the design
-- Use modern web design principles with proper spacing and alignment
-- Create visual interest with colors, badges, icons, and layouts
-- Make each section unique and memorable
-- Include profile views counter and GitHub Trophy badges
-- Use <samp> tags for professional taglines
-- Add animated elements and GIFs where appropriate
+AI-POWERED CREATIVITY INSTRUCTIONS:
+1. REPOSITORY INTELLIGENCE:
+   - Analyze repository names and descriptions to write personalized project highlights
+   - Identify themes (e.g., "Passionate about AI/ML" if they have ML repos)
+   - Write unique descriptions for each featured project (don't repeat generic text)
+   - Highlight what makes each project special or noteworthy
 
-CRITICAL OUTPUT FORMAT:
-- Return ONLY the raw README content
-- DO NOT wrap the output in markdown code blocks (triple backticks)
-- Write HTML tags directly so they render as HTML, not as code
-- Start directly with the content (e.g., h1 align="center" or # Header)
-- The output should be ready to paste directly into a GitHub README.md file
-- All HTML must be written directly, not in code blocks
-- MOST IMPORTANT RULES:
-  1. For tech stack image markdown syntax like ![](url), write it EXACTLY as shown with no wrapping, no dashes before it, no code blocks, no indentation. It must be on its own line after the category header (### Category Name) with a blank line before it
-  2. Category headers in Tech Stack MUST start with ### (three hashes) - NEVER write just "Languages" or "Frontend", always write "### Languages", "### Frontend", etc.
-  3. DO NOT place quotes or mottos at the top level before sections - quotes belong INSIDE the About Me section, formatted properly
-  4. Each tech stack category must follow this exact format: "### CategoryName" on one line, blank line, then "![](url)" on next line
+2. VISUAL HIERARCHY:
+   - Start with social badges (first impression)
+   - Hero section with two-column layout (GIF + content)
+   - Use GitHub Trophy prominently if they have achievements
+   - Create visual flow: Badges → Hero → About → Tech → Projects → Stats → Contact
 
-Return ONLY the complete README content in markdown/HTML format. Make it comprehensive, professional, engaging, visually stunning, and CREATIVE. Include ALL sections listed above. Use HTML extensively for advanced styling, layouts, and visual appeal. Make it stand out from typical READMEs.`;
+3. TECHNICAL EXCELLENCE:
+   - Use exact icon mappings from the guide provided
+   - Ensure all GitHub stats URLs use the correct username
+   - Verify all badge URLs and repository links are valid
+   - Test that all HTML will render correctly on GitHub
 
-    const readme = await generateReadmeWithGemini(
+4. PERSONALIZATION POWER:
+   - If they have many stars → highlight their popular projects
+   - If they contribute a lot → emphasize their open source work
+   - If they're at a company → mention it naturally
+   - If they have a specific tech focus → make that clear throughout
+   - Use their actual bio/description to inform the About Me section
+
+5. CONTENT QUALITY:
+   - Write project descriptions that make readers want to click
+   - Create taglines that reflect their actual work (not generic)
+   - Make the README tell a coherent story about who they are as a developer
+   - Include specific technologies, numbers, and achievements
+
+FINAL OUTPUT REQUIREMENTS:
+1. FORMAT: Raw markdown/HTML ready for GitHub - NO code blocks, NO triple backticks
+2. VALIDATION: All URLs must be correct, all usernames must match the provided data (${username})
+3. COMPLETENESS: Include ALL mandatory sections in the correct order
+4. QUALITY: Every section should be well-written, specific, and valuable
+5. GITHUB COMPATIBILITY: Test in your mind - will this render correctly on GitHub?
+
+CRITICAL SYNTAX RULES (Must follow exactly):
+1. TECH STACK ICONS: 
+   - Format: ### CategoryName (with ###, three hashes)
+   - Then blank line (required)
+   - Then: ![](https://skills.syvixor.com/api/icons?i=icon1,icon2&perline=18)
+   - Use exact icon names from the mapping guide provided above
+   - NO dashes, NO list markers, NO code blocks, NO indentation
+
+2. QUOTES/MOTTOS:
+   - ONLY inside About Me section (## 🚀 About Me)
+   - Format: <div align="center"><blockquote><p><em>"text"</em></p></blockquote></div>
+   - NEVER at the top of the README or before sections
+
+3. HTML TAGS:
+   - Write directly: <div>, <img>, <table>, etc.
+   - NO wrapping in code blocks (no triple backticks)
+   - Must be valid HTML that GitHub markdown supports
+
+4. IMAGES & URLS:
+   - Use markdown syntax: ![](url) for tech stack icons
+   - Or HTML: <img src="url" /> for badges and stats
+   - All GitHub stats URLs must use correct username: ${username}
+   - Verify all repository URLs are correct
+
+5. SECTION ORDER:
+   - Social Badges → Hero → About Me → Tech Stack → Currently Working → Featured Projects → GitHub Stats → DevCard (if provided) → Contact → Fun Facts → Achievements
+
+QUALITY CHECKLIST (Before finalizing output):
+✓ All sections included and in correct order
+✓ Tech stack uses correct icon mappings and proper format (### Header, blank line, ![](url))
+✓ Repository descriptions are specific and compelling (not generic)
+✓ All URLs and usernames are correct and valid
+✓ Content is personalized based on actual repository data provided
+✓ No generic or filler content - every sentence adds value
+✓ Visual elements (badges, stats, trophies) are included and working
+✓ README tells a cohesive story about the developer
+✓ Formatting matches GitHub markdown standards
+✓ No code blocks wrapping the output
+✓ Ready to copy-paste directly into GitHub README.md
+
+FONT STYLING GUIDELINES (Use these for visual impact):
+- Headers (H1/H2): Use <h1 style="font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;"> for modern look
+- Important names/terms: Use <span style="font-family: 'Courier New', 'Consolas', monospace; color: #00E5FF;"> for tech emphasis
+- Body text: Use <p style="font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; line-height: 1.6;"> for readability
+- Elegant quotes: Use <span style="font-family: Georgia, 'Times New Roman', serif; font-style: italic;"> for quotes
+- Code/technical: Always use monospace fonts: 'Courier New', 'Consolas', monospace
+- Mix fonts strategically but don't overuse - maintain professional appearance
+
+Return ONLY the complete, polished README content. Make it exceptional, professional, authentic, and visually stunning. This should be a README that makes people think "Wow, I want my profile to look like this!" Every word should be intentional, every section should be valuable, and the entire README should reflect the developer's unique expertise and personality based on their actual GitHub data. Use font styling to create visual hierarchy and make key information stand out.`;
+
+    let readme = await generateReadmeWithGemini(
       prompt,
       GEMINI_API_KEY,
       "gemini-2.0-flash"
     );
+
+    // Validate and post-process README
+    if (!readme || readme.trim().length < 100) {
+      console.warn("Generated README seems too short, using fallback");
+      throw new Error("Generated README content is too short or empty");
+    }
+
+    // Post-process to fix common issues
+    readme = postProcessReadme(readme);
+    
+    // Final validation
+    if (readme.length < 100) {
+      throw new Error("Post-processed README content is too short");
+    }
 
     return NextResponse.json({ readme });
   } catch (error) {
     console.error("Error in generate-readme API:", error);
 
     if (error instanceof Error) {
+      // Handle specific error types
       if (error.message === "RATE_LIMIT_EXCEEDED") {
         return NextResponse.json(
           {
             error: "RATE_LIMIT_EXCEEDED",
-            message: "API rate limit exceeded. Please try again later.",
+            message: "API rate limit exceeded. Please try again in a few moments.",
           },
           { status: 429 }
         );
@@ -416,17 +569,34 @@ Return ONLY the complete README content in markdown/HTML format. Make it compreh
         return NextResponse.json(
           {
             error: "SERVICE_UNAVAILABLE",
-            message: "Gemini API is currently overloaded. Please try again later.",
+            message: "AI service is currently overloaded. Please try again in a few moments.",
           },
           { status: 503 }
         );
       }
+
+      // Handle validation errors
+      if (error.message.includes("too short") || error.message.includes("empty")) {
+        console.error("Generated README validation failed:", error.message);
+        return NextResponse.json(
+          {
+            error: "GENERATION_FAILED",
+            message: "Failed to generate valid README content. Please try again.",
+          },
+          { status: 500 }
+        );
+      }
     }
 
+    // Generic error response with helpful message
     return NextResponse.json(
       {
         error: "API_ERROR",
-        message: error instanceof Error ? error.message : "Unknown error occurred",
+        message: error instanceof Error 
+          ? (error.message.includes("API") || error.message.includes("key") 
+              ? error.message 
+              : "Failed to generate README. Please try again.")
+          : "Unknown error occurred while generating README.",
       },
       { status: 500 }
     );
